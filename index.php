@@ -17,7 +17,7 @@ label{
 }
 textarea{
 	width: 100%;
-	height: 440px;
+	height: 450px;
 	font-size: 8pt;
 }
 </style>
@@ -26,7 +26,7 @@ textarea{
 
 <!--
 CSS Compressor
-r:4, April 28, 2009
+r:5 - May 5, 2009
 Corey Hart @ http://www.codenothing.com
 -->
 
@@ -34,7 +34,10 @@ Corey Hart @ http://www.codenothing.com
 <?
 if ($_GET['view'] == "compress"){
 	include("css-compression.php");
-	echo "<textarea style='height:20px;' onclick='this.select()'>".$CSSC->compress($_POST['css'])."</textarea><br><br><a href='index.php'>Back</a>";
+	$css = $CSSC->compress($_POST['css']);
+	$height = (intval($_POST['readability']) > 0) ? "400px" : "20px";
+	$CSSC->displayStats();
+	echo "<textarea style='height:$height;' onclick='this.select()'>$css</textarea><br><br><a href='index.php'>Back</a>";
 }else{
 ?>
 
@@ -53,7 +56,7 @@ if ($_GET['view'] == "compress"){
 			Convert rgb colors to hex (rgb(159,80,98) -&gt; #9F5062, only 0-255 ranges)
 		</label>
 		<label>
-			<input type='checkbox' name='color-hex2shortcolor' checked='checked' />
+			<input type='checkbox' name='color-hex2shortcolor' />
 			Convert long hex codes to short color names (#f5f5dc -&gt; beige)
 		</label>
 		<label>
@@ -111,6 +114,15 @@ if ($_GET['view'] == "compress"){
 		<label>
 			<input type='checkbox' name='rm-multi-define' checked='checked' />
 			Remove multiply defined properties, STRONGLY SUGGESTED TO KEEP THIS ONE TRUE
+		</label>
+		<label>
+			<select name='readability'>
+				<option value='0' selected='selected'>None</option>
+				<option value='1'>Minimal</option>
+				<option value='2'>Average</option>
+				<option value='3'>Maximum</option>
+			</select>
+			<b>Readability</b> after compression (None == single line)
 		</label>
 	</td>
 </tr>

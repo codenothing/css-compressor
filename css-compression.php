@@ -1,7 +1,7 @@
 <?
 /**
  * CSS Compressor
- * r:4 - April 28, 2009
+ * r:5 - May 5, 2009
  * Corey Hart @ http://www.codenothing.com
  */ 
 
@@ -14,6 +14,7 @@ Class CSSCompression
 	var $selectors = array();
 	var $details = array();
 	var $options = array();
+	var $stats = array();
 
 	function setOptions(){
 		// Converts long color names to short hex names (aliceblue -> #f0f8ff)
@@ -70,8 +71,16 @@ Class CSSCompression
 	}
 
 	function compress($css){
+		// Start the timer
+		$time = explode(' ', microtime());
+		$this->stats['before']['time'] = $time[1] + $time[0];
+
+		// Initial count for stats
+		$this->stats['before']['size'] = strlen($css);
+
 		// Use defined options
 		$this->setOptions();
+
 		// Send body through initial trimings
 		$css = $this->initialTrim($css);
 
@@ -95,6 +104,9 @@ Class CSSCompression
 					// Run the tag/element through each compression
 					list ($property, $value) = $this->runSpecialCompressions($property, $value);
 
+					// Add counter to before stats
+					$this->stats['before']['props']++;
+
 					// Store the compressed element
 					$storage .= "$property:$value;";
 				}
@@ -104,29 +116,40 @@ Class CSSCompression
 				list ($import, $details) = explode(";", $details);
 				$IMPORT_STR .= trim($import).";";
 				$this->selectors[count($this->selectors)] = trim($details);
+				// Add counter to before stats
+				$this->stats['before']['selectors']++;
 			}
 			else if ($details){
 				$this->selectors[count($this->selectors)] = trim($details);
+				// Add counter to before stats
+				$this->stats['before']['selectors']++;
 			}
 
 		}
 		// Compression Functions
-		if ($this->options['lowercase-selectors']) $this->lowercaseSelectors();
-		if ($this->options['multiple-selectors']) $this->combineMultiplyDefinedSelectors();
-		if ($this->options['multiple-details']) $this->combineMuliplyDefinedDetails();
-		if ($this->options['csw-combine']) $this->combineCSWproperties();
-		if ($this->options['mp-combine']) $this->combineMPproperties();
-		if ($this->options['border-combine']) $this->combineBorderDefinitions();
-		if ($this->options['font-combine']) $this->combineFontDefinitions();
-		if ($this->options['background-combine']) $this->combineBackgroundDefinitions();
-		if ($this->options['list-combine']) $this->combineListProperties();
-		if ($this->options['rm-multi-define']) $this->removeMultipleDefinitions();
+		if ($this->options['lowercase-selectors']) 	$this->lowercaseSelectors();
+		if ($this->options['multiple-selectors']) 	$this->combineMultiplyDefinedSelectors();
+		if ($this->options['multiple-details']) 	$this->combineMuliplyDefinedDetails();
+		if ($this->options['csw-combine'])		$this->combineCSWproperties();
+		if ($this->options['mp-combine']) 		$this->combineMPproperties();
+		if ($this->options['border-combine']) 		$this->combineBorderDefinitions();
+		if ($this->options['font-combine']) 		$this->combineFontDefinitions();
+		if ($this->options['background-combine']) 	$this->combineBackgroundDefinitions();
+		if ($this->options['list-combine']) 		$this->combineListProperties();
+		if ($this->options['rm-multi-define']) 		$this->removeMultipleDefinitions();
 
-		// Store compressed script into body var
-		$css = $IMPORT_STR;
-		foreach ($this->selectors as $k=>$v){
-			$css .= trim("$v{".$this->details[$k]."}");
-		}
+		// Run final stats
+		$this->runFinalStatistics();
+
+		// Format css to users preference
+		$css =  $this->readability($IMPORT_STR, intval($_POST['readability']));
+
+		// Final count for stats
+		$this->stats['after']['size'] = strlen($css);
+
+		// Compression time
+		$time = explode(' ', microtime());
+		$this->stats['after']['time'] = $time[1] + $time[0];
 
 		// Return compressed css
 		return $css;
@@ -135,7 +158,6 @@ Class CSSCompression
 	function initialTrim($css){
 		// Regex
 		$search = array(
-			// 0-4 remove spaces/newline/returns/etc.
 			1 => "(\r|\n|\t)is", // Move extraneous spaces
 			2 => "(\s{2,})is", // Remove multiple spaces
 			3 => "((\/\*|\<\!\-\-)(.*?)(\*\/|\-\-\>))is", // Remove all comments
@@ -190,11 +212,10 @@ Class CSSCompression
 			$val = $this->removeUnits($val);
 		}
 
-		// Only run on color changes on color definitions
-		// (Working on recognizing colors from names)
-		if (eregi("color", $prop)){
-			$val = $this->runColorChanges($val);
-		}
+		// Seperate out multi-definitions if possible
+		$arr = explode(" ", $val);
+		foreach ($arr as $k=>$v) $arr[$k] = $this->runColorChanges($v);
+		$val = trim(implode(" ", $arr));
 
 		// Return for list retrival
 		return array($prop, $val);
@@ -282,24 +303,6 @@ Class CSSCompression
 
 	function runColorChanges($val){
 		global $long2hex, $hex2short;
-		// Set up search and replace arrays
-		$convert['search'] = array();
-		$convert['replace'] = array();
-		// Push long2hex vals for first conversion
-		if ($this->options['color-long2hex']){
-			foreach ($long2hex as $x=>$y){
-				array_push($convert['search'], "($x)is");
-				array_push($convert['replace'], $y);
-			}
-		}
-		// Now add hex2short vals
-		if ($this->options['color-hex2shortcolor']){
-			foreach($hex2short as $x=>$y){
-				array_push($convert['search'], "($x)is");
-				array_push($convert['replace'], $y);
-			}
-		}
-
 		// Transfer rgb colors to hex codes
 		if ($this->options['color-rgb2hex']){
 			$pattern = "/rgb\((\d{1,3}(,\s?\d{1,3},\s?\d{1,3})?)\)/i";
@@ -327,6 +330,20 @@ Class CSSCompression
 			}
 		}
 
+		// Push long2hex vals for first conversion
+		if ($this->options['color-long2hex']){
+			foreach ($long2hex as $x=>$y){
+				if (strtolower($val) == $x) $val = $y;
+			}
+		}
+
+		// Now add hex2short vals
+		if ($this->options['color-hex2shortcolor']){
+			foreach($hex2short as $x=>$y){
+				if (strtolower($val) == $x) $val = $y;
+			}
+		}
+
 		// Convert large hex codes to small codes
 		if ($this->options['color-hex2shorthex']){
 			$pattern = "/#([0-9a-fA-F]{6})/i";
@@ -341,8 +358,8 @@ Class CSSCompression
 			}
 		}
 
-		// Run long2hex & hex2short conversions stored at start of function
-		return preg_replace($convert['search'], $convert['replace'], $val);
+		// Return transformed value
+		return $val;
 	}
 
 	function lowercaseSelectors(){
@@ -382,7 +399,7 @@ Class CSSCompression
 		for ($i=0; $i<$max; $i++){
 			if (!$this->selectors[$i]) continue;
 			$arr = explode(";", $this->details[$i]);
-			for ($k=$i+1; $k<count($this->details); $k++){
+			for ($k=$i+1; $k<$max; $k++){
 				if (!$this->selectors[$k]) continue;
 				$match = explode(";", $this->details[$k]);
 				$x = array_diff($arr, $match);
@@ -652,7 +669,103 @@ Class CSSCompression
 			}
 		}
 	}
+
+	function runFinalStatistics(){
+		// Selectors and props
+		$this->stats['after']['selectors'] = count($this->selectors);
+		foreach ($this->details as $item){
+			$props = explode(";", $item);
+			// Make sure count is true
+			foreach ($props as $k=>$v){
+				if (!isset($v) || $v == "") unset($props[$k]);
+			}
+			$this->stats['after']['props'] += count($props);
+		}
+	}
+
+	function readability($import, $read){
+		if ($read == 3){
+			$css = str_replace(";", ";\n", $import);
+			foreach ($this->selectors as $k=>$v){
+				$v = str_replace(">", " > ", $v);
+				$v = str_replace(",", ", ", $v);
+				$css .= "$v {\n";
+				$arr = explode(";", $this->details[$k]);
+				foreach ($arr as $item){
+					if (!$item) continue;
+					list ($prop, $val) = explode(":", $item);
+					$css .= "\t$prop: $val;\n";
+				}
+				$css .= "}\n\n";
+			}
+		}
+		else if ($read == 2){
+			$css = str_replace(";", ";\n", $import);
+			foreach ($this->selectors as $k=>$v){
+				$css .= "$v {\n\t".$this->details[$k]."\n}\n";
+			}
+		}
+		else if ($read == 1){
+			$css = str_replace(";", ";\n", $import);
+			foreach ($this->selectors as $k=>$v){
+				$css .= "$v{".$this->details[$k]."}\n";
+			}
+		}
+		else{
+			$css = $import;
+			foreach ($this->selectors as $k=>$v){
+				$css .= trim("$v{".$this->details[$k]."}");
+			}
+		}
+
+		// Return formatted script
+		return trim($css);
+	}
+
+	function displayStats(){
+		// Set before/after arrays
+		$before = $this->stats['before'];
+		$after = $this->stats['after'];
+
+		// Calc final size
+		$size = $before['size']-$after['size'];
+
+		// Display the table
+		echo "<table cellspacing='1' cellpadding='2' style='width:400px;margin-bottom:20px;'>
+			<tr bgcolor='#d1d1d1' align='center'>
+				<th bgcolor='white' style='color:#8B0000;'>Results &raquo;</th>
+				<th width='100'>Before</th>
+				<th width='100'>After</th>
+				<th width='100'>Compresssion</th>
+			</tr>
+			<tr bgcolor='#f1f1f1' align='center'>
+				<th bgcolor='#d1d1d1'>Time</th>
+				<td>-</td>
+				<td>-</td>
+				<td>".round($after['time']-$before['time'],2)." seconds</td>
+			</tr>
+			<tr bgcolor='#f1f1f1' align='center'>
+				<th bgcolor='#d1d1d1'>Selectors</th>
+				<td>".$before['selectors']."</td>
+				<td>".$after['selectors']."</td>
+				<td>".($before['selectors']-$after['selectors'])."</td>
+			</tr>
+			<tr bgcolor='#f1f1f1' align='center'>
+				<th bgcolor='#d1d1d1'>Properties</th>
+				<td>".$before['props']."</td>
+				<td>".$after['props']."</td>
+				<td>".($before['props']-$after['props'])."</td>
+			</tr>
+			<tr bgcolor='#f1f1f1' align='center'>
+				<th bgcolor='#d1d1d1'>Size</th>
+				<td>".($before['size'] > 1024 ? round($before['size']/1024,2)."K" : $before['size']."B")."</td>
+				<td>".($after['size'] > 1024 ? round($after['size']/1024,2)."K" : $after['size']."B")."</td>
+				<td>".($size > 1024 ? round($size/1024,2)."K" : $size."B")."</td>
+			</tr>
+			</table>";
+	}
 };
 
+/* Create the object */
 $CSSC = new CSSCompression;
 ?>
