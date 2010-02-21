@@ -1,7 +1,7 @@
 <?
 /**
  * CSS Compressor
- * r:6 - May 7, 2009
+ * r:8 - May 13, 2009
  * Corey Hart @ http://www.codenothing.com
  */ 
 
@@ -122,38 +122,53 @@ Class CSSCompression
 					// Store the compressed element
 					$storage .= "$property:$value;";
 				}
-				$this->details[count($this->details)] = $storage;
+				// Store as the last known selector
+				$this->details[$SEL_COUNTER] = $storage;
 			}
 			else if (eregi("^@import", trim($details))){
-				list ($import, $details) = explode(";", $details);
-				$IMPORT_STR .= trim($import).";";
-				$this->selectors[count($this->selectors)] = trim($details);
-				// Add counter to before stats
-				$this->stats['before']['selectors']++;
+				// Seperate out each import string
+				$arr = explode(";", $details);
+
+				// Add to selector counter for details storage
+				$SEL_COUNTER++;
+				// Store the last entry as the selector
+				$this->selectors[$SEL_COUNTER] = trim($arr[count($arr)-1]);
+
+				// Clear out the last entry(the actual selector) and add to the import string
+				unset($arr[count($arr)-1]);
+				$IMPORT_STR .= trim(implode(';', $arr)).";";
 			}
 			else if (eregi("^@media", trim($details))){
 				$this->media = true;
 				$MEDIA_STR .= trim($details);
 			}
 			else if ($details){
-				$this->selectors[count($this->selectors)] = trim($details);
-				// Add counter to before stats
-				$this->stats['before']['selectors']++;
+				// Add to selector counter for details storage
+				$SEL_COUNTER++;
+				$this->selectors[$SEL_COUNTER] = trim($details);
 			}
 
 		}
+		// Store the number of selectors before compression
+		$this->stats['before']['selectors'] = count($this->selectors);
+
 		// Compression Functions
 		if ($this->options['lowercase-selectors']) 	$this->lowercaseSelectors();
 		if ($this->options['multiple-selectors']) 	$this->combineMultiplyDefinedSelectors();
 		if ($this->options['multiple-details']) 	$this->combineMuliplyDefinedDetails();
-		if ($this->options['csw-combine'])		$this->combineCSWproperties();
-		if ($this->options['auralcp-combine'])		$this->combineAuralCuePause();
-		if ($this->options['mp-combine']) 		$this->combineMPproperties();
-		if ($this->options['border-combine']) 		$this->combineBorderDefinitions();
-		if ($this->options['font-combine']) 		$this->combineFontDefinitions();
-		if ($this->options['background-combine']) 	$this->combineBackgroundDefinitions();
-		if ($this->options['list-combine']) 		$this->combineListProperties();
-		if ($this->options['rm-multi-define']) 		$this->removeMultipleDefinitions();
+		foreach ($this->details as $key => $value){
+			if ($this->options['csw-combine'])		$value = $this->combineCSWproperties($value);
+			if ($this->options['auralcp-combine'])		$value = $this->combineAuralCuePause($value);
+			if ($this->options['mp-combine']) 		$value = $this->combineMPproperties($value);
+			if ($this->options['border-combine']) 		$value = $this->combineBorderDefinitions($value);
+			if ($this->options['font-combine']) 		$value = $this->combineFontDefinitions($value);
+			if ($this->options['background-combine']) 	$value = $this->combineBackgroundDefinitions($value);
+			if ($this->options['list-combine']) 		$value = $this->combineListProperties($value);
+			if ($this->options['rm-multi-define']) 		$value = $this->removeMultipleDefinitions($value);
+
+			// Restore the value
+			$this->details[$key] = $value;
+		}
 
 		// Run final stats
 		$this->runFinalStatistics();
@@ -185,7 +200,7 @@ Class CSSCompression
 			1 => "(\r|\n|\t)is", // Move extraneous spaces
 			2 => "((\/\*|\<\!\-\-)(.*?)(\*\/|\-\-\>))is", // Remove all comments
 			3 => "(\s{2,})is", // Remove multiple spaces
-			4 => "(\s{0,}([,{};:>])\s{0,})is", // Remove un-needed spaces around special characters
+			4 => "(\s{0,}([,{};:>+])\s{0,})is", // Remove un-needed spaces around special characters
 			5 => "(url\(['\"](.*?)['\"]\))is", // Remove quotes from urls
 			6 => "(;{2,})is", // Remove unecessary semi-colons
 			// Leave section open for additional entries
@@ -220,7 +235,7 @@ Class CSSCompression
 		$prop = strtolower($prop);
 
 		// Remove uneeded side definitions if possible
-		if ($this->options['directional-compress'] && eregi("^(margin|padding|border-width)", $prop)){
+		if ($this->options['directional-compress'] && eregi("^(margin|padding|border|outline)", $prop)){
 			$val = $this->sidesDirectional($val);
 		}
 
@@ -301,7 +316,7 @@ Class CSSCompression
 
 	function removeDecimal($str){
 		// Find all instances of .0 and remove them
-		$pattern = "/^(\d+\.0)(\w{0,2})/i";
+		$pattern = "/^(\d+\.0)(\%|\w{2})/i";
 		preg_match_all($pattern, $str, $matches);
 		for ($i=0; $i<count($matches[1]); $i++){
 			$search = "(".$matches[0][$i].")is";
@@ -313,7 +328,7 @@ Class CSSCompression
 
 	function removeUnits($str){
 		// Find all instants of 0 size and remove suffix
-		$pattern = "/^(\d)(\w{0,2})/i";
+		$pattern = "/^(\d)(\%|\w{2})/i";
 		preg_match_all($pattern, $str, $matches);
 		for ($i=0; $i<count($matches[1]); $i++){
 			if (intval($matches[1][$i]) == 0){
@@ -393,10 +408,26 @@ Class CSSCompression
 				if (eregi(">", $a_val)){
 					$b_arr = explode(">", $a_val);
 					foreach ($b_arr as $b_key=>$b_val){
-						$b_arr[$b_key] = $this->lowerSelectorExtras($b_val);
+						if (eregi("\+", $b_val)){
+							$c_arr = explode("+", $b_val);
+							foreach ($c_arr as $c_key=>$c_val){
+								$c_arr[$c_key] = $this->lowerSelectorExtras($c_val);
+							}
+							$b_arr[$b_key] = trim(implode("+", $c_arr));
+						}else{
+							$b_arr[$b_key] = $this->lowerSelectorExtras($b_val);
+						}
 					}
 					$a_arr[$a_key] = trim(implode(">", $b_arr));
-				}else{
+				}
+				else if (eregi("\+", $a_val)){
+					$b_arr = explode("+", $a_val);
+					foreach ($b_arr as $b_key=>$b_val){
+						$b_arr[$b_key] = $this->lowerSelectorExtras($b_val);
+					}
+					$a_arr[$a_key] = trim(implode("+", $b_arr));
+				}
+				else{
 					$a_arr[$a_key] = $this->lowerSelectorExtras($a_val);
 				}
 			}
@@ -450,287 +481,299 @@ Class CSSCompression
 		}
 	}
 
-	function combineCSWproperties(){
-		foreach ($this->details as $k=>$v){
-			$storage = array();
-			$pattern = "/(border|outline)-(color|style|width):(.*?);/i";
-			preg_match_all($pattern, $this->details[$k], $matches);
-			for ($i=0; $i<count($matches[1]); $i++){
-				$storage[strtolower($matches[1][$i])][strtolower($matches[2][$i])] = $matches[3][$i];
-			}
+	function combineCSWproperties($val){
+		$storage = array();
+		$pattern = "/(border|outline)-(color|style|width):(.*?);/i";
+		preg_match_all($pattern, $val, $matches);
+		for ($i=0; $i<count($matches[1]); $i++){
+			$storage[strtolower($matches[1][$i])][strtolower($matches[2][$i])] = $matches[3][$i];
+		}
 
-			// Go through each tag for possible combination
-			foreach($storage as $tag => $arr){
-				if (count($arr) == 3){
-					// String to replace each instance with
-					$replace = "$tag:".$arr['width']." ".$arr['style']." ".$arr['color'];
-					foreach ($arr as $x=>$y){
-						// Replace every instance, as multiple declarations removal will correct it
-						$search = "($tag-$x:$y)is";
-						$this->details[$k] = preg_replace($search, $replace, $this->details[$k]);
-					}
+		// Go through each tag for possible combination
+		foreach($storage as $tag => $arr){
+			// Make sure all 3 are defined and they aren't directionals
+			if (count($arr) == 3 && !$this->checkUncombinables($arr)){
+				// String to replace each instance with
+				$replace = "$tag:".$arr['width']." ".$arr['style']." ".$arr['color'];
+				foreach ($arr as $x=>$y){
+					// Replace every instance, as multiple declarations removal will correct it
+					$search = "($tag-$x:$y)is";
+					$val = preg_replace($search, $replace, $val);
 				}
 			}
 		}
+
+		// Return value
+		return $val;
 	}
 
-	function combineAuralCuePause(){
-		foreach ($this->details as $k=>$v){
-			$storage = array();
-			$pattern = "/(cue|pause)-(before|after):(.*?);/i";
-			preg_match_all($pattern, $this->details[$k], $matches);
-			for ($i=0; $i<count($matches[1]); $i++){
-				$storage[strtolower($matches[1][$i])][strtolower($matches[2][$i])] = $matches[3][$i];
-			}
+	function combineAuralCuePause($val){
+		$storage = array();
+		$pattern = "/(cue|pause)-(before|after):(.*?);/i";
+		preg_match_all($pattern, $val, $matches);
+		for ($i=0; $i<count($matches[1]); $i++){
+			$storage[strtolower($matches[1][$i])][strtolower($matches[2][$i])] = $matches[3][$i];
+		}
 
-			// Go through each tag for possible combination
-			foreach($storage as $tag => $arr){
-				if (count($arr) == 2){
-					// String to replace each instance with
-					$replace = "$tag:".$arr['before']." ".$arr['after'];
-					foreach ($arr as $x=>$y){
-						// Escape out url parameters for searches
-						$y = str_replace("(", "\(", $y);
-						$y = str_replace(")", "\)", $y);
-						// Replace every instance, as multiple declarations removal will correct it
-						$search = "($tag-$x:$y)is";
-						$this->details[$k] = preg_replace($search, $replace, $this->details[$k]);
-					}
+		// Go through each tag for possible combination
+		foreach($storage as $tag => $arr){
+			if (count($arr) == 2 && !$this->checkUncombinables($arr)){
+				// String to replace each instance with
+				$replace = "$tag:".$arr['before']." ".$arr['after'];
+				foreach ($arr as $x=>$y){
+					// Escape out url parameters for searches
+					$y = str_replace("(", "\(", $y);
+					$y = str_replace(")", "\)", $y);
+					// Replace every instance, as multiple declarations removal will correct it
+					$search = "($tag-$x:$y)is";
+					$val = preg_replace($search, $replace, $val);
 				}
 			}
 		}
+
+		// Return value
+		return $val;
 	}
 
-	function combineMPproperties(){
-		foreach ($this->details as $k=>$v){
-			$storage = array();
-			$pattern = "/(margin|padding)-(top|right|bottom|left):(.*?);/i";
-			preg_match_all($pattern, $this->details[$k], $matches);
-			for ($i=0; $i<count($matches[1]); $i++){
-				if (!isset($storage[$matches[1][$i]])) $storage[$matches[1][$i]] = array($matches[2][$i] => $matches[3][$i]);
-				// Override double written properties
-				$storage[$matches[1][$i]][$matches[2][$i]] = $matches[3][$i];
-			}
-
-			// Go through each tag for possible combination
-			foreach($storage as $tag => $arr){
-				// Drop capitols
-				$tag = strtolower($tag);
-				// Only combine if all 4 definitions are found
-				if (count($arr) == 4){
-					// If all definitions are the same, combine into single definition
-					if ($arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['left']){
-						// String to replace each instance with
-						$replace = "$tag:".$arr['top'];
-						foreach ($arr as $a=>$b){
-							// Replace every instance, as multiple declarations removal will correct it
-							$search = "($tag-$a:$b)is";
-							$this->details[$k] = preg_replace($search, $replace, $this->details[$k]);
-						}
-					}
-					// If opposites are the same, combine into single definition
-					else if ($arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right']){
-						// String to replace each instance with
-						$replace = "$tag:".$arr['top']." ".$arr['left'];
-						foreach ($arr as $a=>$b){
-							// Replace every instance, as multiple declarations removal will correct it
-							$search = "($tag-$a:$b)is";
-							$this->details[$k] = preg_replace($search, $replace, $this->details[$k]);
-						}
-					}
-					else{
-						// String to replace each instance with
-						$replace = "$tag:".$arr['top']." ".$arr['right']." ".$arr['bottom']." ".$arr['left'];
-						foreach ($arr as $a=>$b){
-							// Replace every instance, as multiple declarations removal will correct it
-							$search = "($tag-$a:$b)is";
-							$this->details[$k] = preg_replace($search, $replace, $this->details[$k]);
-						}
-					}
-				}
-			}
+	function combineMPproperties($val){
+		$storage = array();
+		$pattern = "/(margin|padding)-(top|right|bottom|left):(.*?);/i";
+		preg_match_all($pattern, $val, $matches);
+		for ($i=0; $i<count($matches[1]); $i++){
+			if (!isset($storage[$matches[1][$i]])) $storage[$matches[1][$i]] = array($matches[2][$i] => $matches[3][$i]);
+			// Override double written properties
+			$storage[$matches[1][$i]][$matches[2][$i]] = $matches[3][$i];
 		}
-	}
 
-	function combineBorderDefinitions(){
-		foreach ($this->details as $k=>$v){
-			$storage = array();
-			$pattern = "/(border)-(top|right|bottom|left):(.*?);/i";
-			preg_match_all($pattern, $this->details[$k], $matches);
-			for ($i=0; $i<count($matches[1]); $i++){
-				if (!isset($storage[$matches[1][$i]])) $storage[$matches[1][$i]] = array($matches[2][$i] => $matches[3][$i]);
-				// Override double written properties
-				$storage[$matches[1][$i]][$matches[2][$i]] = $matches[3][$i];
-			}
-
-			foreach ($storage as $tag => $arr){
-				if (count($arr) == 4 && $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['right']){
+		// Go through each tag for possible combination
+		foreach($storage as $tag => $arr){
+			// Drop capitols
+			$tag = strtolower($tag);
+			// Only combine if all 4 definitions are found
+			if (count($arr) == 4 && !$this->checkUncombinables($arr)){
+				// If all definitions are the same, combine into single definition
+				if ($arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['left']){
 					// String to replace each instance with
 					$replace = "$tag:".$arr['top'];
 					foreach ($arr as $a=>$b){
 						// Replace every instance, as multiple declarations removal will correct it
 						$search = "($tag-$a:$b)is";
-						$this->details[$k] = preg_replace($search, $replace, $this->details[$k]);
+						$val = preg_replace($search, $replace, $val);
+					}
+				}
+				// If opposites are the same, combine into single definition
+				else if ($arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right']){
+					// String to replace each instance with
+					$replace = "$tag:".$arr['top']." ".$arr['left'];
+					foreach ($arr as $a=>$b){
+						// Replace every instance, as multiple declarations removal will correct it
+						$search = "($tag-$a:$b)is";
+						$val = preg_replace($search, $replace, $val);
+					}
+				}
+				else{
+					// String to replace each instance with
+					$replace = "$tag:".$arr['top']." ".$arr['right']." ".$arr['bottom']." ".$arr['left'];
+					foreach ($arr as $a=>$b){
+						// Replace every instance, as multiple declarations removal will correct it
+						$search = "($tag-$a:$b)is";
+						$val = preg_replace($search, $replace, $val);
 					}
 				}
 			}
 		}
+
+		// Return Value
+		return $val;
 	}
 
-	function combineFontDefinitions(){
-		foreach ($this->details as $k=>$v){
-			unset($replace, $storage);
-			$pattern = "/(font|line)-(style|variant|weight|size|height|family):(.*?);/i";
-			preg_match_all($pattern, $this->details[$k], $matches);
-			for ($i=0; $i<count($matches[1]); $i++){
-				// Store each property in it's full state
-				$storage[$matches[1][$i]."-".$matches[2][$i]] = $matches[3][$i];
-			}
-
-			// Combine font-size & line-height if possible
-			if (isset($storage['font-size']) && isset($storage['line-height'])){
-				$storage['size/height'] = $storage['font-size']."/".$storage['line-height'];
-				unset($storage['font-size'], $storage['line-height']);
-			}
-
-			// Run font checks and get replacement str
-			$replace = $this->searchDefinitions("font", $storage, array("font-style", "font-variant", "font-weight", "size/height", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-variant", "font-weight", "font-size", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-variant", "size/height", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-variant", "font-size", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-weight", "size/height", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-weight", "font-size", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-variant", "font-weight", "size/height", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-variant", "font-weight", "font-size", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-weight", "size/height", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-weight", "font-size", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-variant", "size/height", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-variant", "font-size", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "size/height", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-size", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("size/height", "font-family"));
-			if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-size", "font-family"));
-
-			// If replacement string found, run it on all options
-			if ($replace){
-				for ($i=0; $i<count($matches[1]); $i++){
-					if (!isset($storage['line-height']) || (isset($storage['line-height']) && !eregi("^line-height", $matches[0][$i]))){
-						$v = preg_replace("(".$matches[0][$i].")is", $replace, $v);
-					}
-				}
-			}
-
-			// Replace details
-			$this->details[$k] = $v;
+	function combineBorderDefinitions($val){
+		$storage = array();
+		$pattern = "/(border)-(top|right|bottom|left):(.*?);/i";
+		preg_match_all($pattern, $val, $matches);
+		for ($i=0; $i<count($matches[1]); $i++){
+			if (!isset($storage[$matches[1][$i]])) $storage[$matches[1][$i]] = array($matches[2][$i] => $matches[3][$i]);
+			// Override double written properties
+			$storage[$matches[1][$i]][$matches[2][$i]] = $matches[3][$i];
 		}
-	}
 
-	function combineBackgroundDefinitions(){
-		foreach ($this->details as $k=>$v){
-			unset($replace, $storage);
-			$pattern = "/background-(color|image|repeat|attachment|position):(.*?);/i";
-			preg_match_all($pattern, $this->details[$k], $matches);
-			for ($i=0; $i<count($matches[1]); $i++){
-				// Store each property in it's full state
-				$storage[$matches[1][$i]] = $matches[2][$i];
-			}
-
-			// Run background checks and get replacement str
-			// With color
-			$replace = $this->searchDefinitions("background", $storage, array("color", "image", "repeat", "attachment", "position"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "attachment", "position"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "repeat", "position"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "repeat", "attachment"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "repeat"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "attachment"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "position"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image"));
-			// Without Color
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "attachment", "position"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "repeat", "position"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "repeat", "attachment"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "repeat"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "attachment"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "position"));
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image"));
-			// Just Color
-			if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color"));
-
-			// If replacement string found, run it on all options
-			if ($replace){
-				for ($i=0; $i<count($matches[1]); $i++){
-					// Escape out url braces
-					$matches[0][$i] = str_replace("(", "\(", $matches[0][$i]);
-					$matches[0][$i] = str_replace(")", "\)", $matches[0][$i]);
-					$v = preg_replace("(".$matches[0][$i].")is", $replace, $v);
+		foreach ($storage as $tag => $arr){
+			if (count($arr) == 4 && $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['right']){
+				// String to replace each instance with
+				$replace = "$tag:".$arr['top'];
+				foreach ($arr as $a=>$b){
+					// Replace every instance, as multiple declarations removal will correct it
+					$search = "($tag-$a:$b)is";
+					$val = preg_replace($search, $replace, $val);
 				}
 			}
-
-			// Replace details
-			$this->details[$k] = $v;
 		}
+
+		// Return Value
+		return $val;
 	}
 
-	function combineListProperties(){
-		foreach ($this->details as $k=>$v){
-			$storage = array();
-			$pattern = "/list-style-(type|position|image):(.*?);/i";
-			preg_match_all($pattern, $this->details[$k], $matches);
+	function combineFontDefinitions($val){
+		$storage = array();
+		$pattern = "/(font|line)-(style|variant|weight|size|height|family):(.*?);/i";
+		preg_match_all($pattern, $val, $matches);
+		for ($i=0; $i<count($matches[1]); $i++){
+			// Store each property in it's full state
+			$storage[$matches[1][$i]."-".$matches[2][$i]] = $matches[3][$i];
+		}
+
+		// Combine font-size & line-height if possible
+		if (isset($storage['font-size']) && isset($storage['line-height'])){
+			$storage['size/height'] = $storage['font-size']."/".$storage['line-height'];
+			unset($storage['font-size'], $storage['line-height']);
+		}
+
+		// Run font checks and get replacement str
+		$replace = $this->searchDefinitions("font", $storage, array("font-style", "font-variant", "font-weight", "size/height", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-variant", "font-weight", "font-size", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-variant", "size/height", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-variant", "font-size", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-weight", "size/height", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-weight", "font-size", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-variant", "font-weight", "size/height", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-variant", "font-weight", "font-size", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-weight", "size/height", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-weight", "font-size", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-variant", "size/height", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-variant", "font-size", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "size/height", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-style", "font-size", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("size/height", "font-family"));
+		if (!$replace) $replace = $this->searchDefinitions("font", $storage, array("font-size", "font-family"));
+
+		// If replacement string found, run it on all options
+		if ($replace){
 			for ($i=0; $i<count($matches[1]); $i++){
-				// Store secondhand prop
-				$storage[$matches[1][$i]] = $matches[2][$i];
-			}
-
-			// Run search patterns for replacement string
-			$replace = $this->searchDefinitions("list-style", $storage, array("type", "position", "image"));
-			if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("type", "position"));
-			if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("type", "image"));
-			if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("position", "image"));
-			if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("type"));
-			if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("position"));
-			if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("image"));
-
-			// If replacement string found, run it on all options
-			if ($replace){
-				for ($i=0; $i<count($matches[1]); $i++){
-					// Escape out url braces
-					$matches[0][$i] = str_replace("(", "\(", $matches[0][$i]);
-					$matches[0][$i] = str_replace(")", "\)", $matches[0][$i]);
-					$v = preg_replace("(".$matches[0][$i].")is", $replace, $v);
+				if (!isset($storage['line-height']) || (isset($storage['line-height']) && !eregi("^line-height", $matches[0][$i]))){
+					$val = preg_replace("(".$matches[0][$i].")is", $replace, $val);
 				}
 			}
+		}
 
-			// Replace details
-			$this->details[$k] = $v;
+		// Return Value
+		return $val;
+	}
+
+	function combineBackgroundDefinitions($val){
+		$storage = array();
+		$pattern = "/background-(color|image|repeat|attachment|position):(.*?);/i";
+		preg_match_all($pattern, $val, $matches);
+		for ($i=0; $i<count($matches[1]); $i++){
+			// Store each property in it's full state
+			$storage[$matches[1][$i]] = $matches[2][$i];
+		}
+
+		// Run background checks and get replacement str
+		// With color
+		$replace = $this->searchDefinitions("background", $storage, array("color", "image", "repeat", "attachment", "position"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "attachment", "position"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "repeat", "position"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "repeat", "attachment"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "repeat"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "attachment"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image", "position"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color", "image"));
+		// Without Color
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "attachment", "position"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "repeat", "position"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "repeat", "attachment"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "repeat"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "attachment"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image", "position"));
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("image"));
+		// Just Color
+		if (!$replace) $replace = $this->searchDefinitions("background", $storage, array("color"));
+
+		// If replacement string found, run it on all options
+		if ($replace){
+			for ($i=0; $i<count($matches[1]); $i++){
+				// Escape out url braces
+				$matches[0][$i] = str_replace("(", "\(", $matches[0][$i]);
+				$matches[0][$i] = str_replace(")", "\)", $matches[0][$i]);
+				$val = preg_replace("(".$matches[0][$i].")is", $replace, $val);
+			}
+		}
+
+		// Return Value
+		return $val;
+	}
+
+	function combineListProperties($val){
+		$storage = array();
+		$pattern = "/list-style-(type|position|image):(.*?);/i";
+		preg_match_all($pattern, $val, $matches);
+		for ($i=0; $i<count($matches[1]); $i++){
+			// Store secondhand prop
+			$storage[$matches[1][$i]] = $matches[2][$i];
+		}
+
+		// Run search patterns for replacement string
+		$replace = $this->searchDefinitions("list-style", $storage, array("type", "position", "image"));
+		if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("type", "position"));
+		if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("type", "image"));
+		if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("position", "image"));
+		if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("type"));
+		if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("position"));
+		if (!$replace) $replace = $this->searchDefinitions("list-style", $storage, array("image"));
+
+		// If replacement string found, run it on all options
+		if ($replace){
+			for ($i=0; $i<count($matches[1]); $i++){
+				// Escape out url braces
+				$matches[0][$i] = str_replace("(", "\(", $matches[0][$i]);
+				$matches[0][$i] = str_replace(")", "\)", $matches[0][$i]);
+				$val = preg_replace("(".$matches[0][$i].")is", $replace, $val);
+			}
+		}
+
+		// Return Value
+		return $val;
+	}
+
+	// Returns true if special definitions are found
+	function checkUncombinables($obj){
+		if (is_array($obj)){
+			foreach ($obj as $item){
+				if (eregi("inherit|\!important| ", $item)) return true;
+			}
+			return false;
+		}else{
+			return eregi("inherit|\!important| ", $obj);
 		}
 	}
 
 	function searchDefinitions($prop, $storage, $search){
 		$str = "$prop:";
 		foreach ($search as $value){
-			if (!isset($storage[$value])) return false;
+			if (!isset($storage[$value]) || $this->checkUncombinables($storage[$value])) return false;
 			$str .= $storage[$value]." ";
 		}
 		return trim($str).";";
 	}
 
-	function removeMultipleDefinitions(){
-		foreach($this->details as $k=>$v){
-			$storage = array();
-			$arr = explode(";", $v);
-			foreach($arr as $x){
-				if ($x){
-					list($a, $b) = explode(":", $x);
-					$storage[$a] = $b;
-				}
-			}
-			if ($storage){
-				unset($this->details[$k]);
-				foreach($storage as $x=>$y){
-					$this->details[$k] .= "$x:$y;";
-				}
+	function removeMultipleDefinitions($val){
+		$storage = array();
+		$arr = explode(";", $val);
+		foreach($arr as $x){
+			if ($x){
+				list($a, $b) = explode(":", $x);
+				$storage[$a] = $b;
 			}
 		}
+		if ($storage){
+			unset($val);
+			foreach($storage as $x=>$y){
+				$val .= "$x:$y;";
+			}
+		}
+
+		// Return Value
+		return $val;
 	}
 
 	function runFinalStatistics(){
@@ -749,8 +792,10 @@ Class CSSCompression
 	function readability($import, $read){
 		if ($read == 3){
 			$css = str_replace(";", ";\n", $import);
+			if ($import) $css .= "\n";
 			foreach ($this->selectors as $k=>$v){
 				$v = str_replace(">", " > ", $v);
+				$v = str_replace("+", " + ", $v);
 				$v = str_replace(",", ", ", $v);
 				$css .= "$v {\n";
 				$arr = explode(";", $this->details[$k]);
@@ -821,11 +866,17 @@ Class CSSCompression
 			</tr>
 			<tr bgcolor='#f1f1f1' align='center'>
 				<th bgcolor='#d1d1d1'>Size</th>
-				<td>".($before['size'] > 1024 ? round($before['size']/1024,2)."K" : $before['size']."B")."</td>
-				<td>".($after['size'] > 1024 ? round($after['size']/1024,2)."K" : $after['size']."B")."</td>
-				<td>".($size > 1024 ? round($size/1024,2)."K" : $size."B")."</td>
+				<td>".$this->displaySizes($before['size'])."</td>
+				<td>".$this->displaySizes($after['size'])."</td>
+				<td>".$this->displaySizes($before['size']-$after['size'])."</td>
 			</tr>
 			</table>";
+	}
+
+	function displaySizes($size){
+		$ext = array('B', 'K', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+		for($c=0; $size>1024; $c++) $size /= 1024;
+		return round($size,2).$ext[$c];
 	}
 };
 
