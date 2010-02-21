@@ -1,7 +1,7 @@
 <?php
 /**
- * CSS Compressor 1.0
- * September 5, 2009
+ * CSS Compressor [VERSION]
+ * [DATE]
  * Corey Hart @ http://www.codenothing.com
  */ 
 
