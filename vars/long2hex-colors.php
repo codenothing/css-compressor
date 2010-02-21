@@ -1,7 +1,7 @@
 <?php
 /**
- * CSS Compressor
- * r:8 - May 13, 2009
+ * CSS Compressor 1.0
+ * September 5, 2009
  * Corey Hart @ http://www.codenothing.com
  */ 
 
@@ -51,7 +51,7 @@ $long2hex = array(
 	"gainsboro"=>"#dcdcdc",
 	"ghostwhite"=>"#f8f8ff",
 	"goldenrod"=>"#daa520",
-	"green"=>"#008000",
+	"green"=>"#008800",
 	"greenyellow"=>"#adff2f",
 	"honeydew"=>"#f0fff0",
 	"hotpink"=>"#ff69b4",

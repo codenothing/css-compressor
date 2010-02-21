@@ -1,0 +1,24 @@
+/**
+ * Testing the Inital Trim process
+ */ 
+
+/** More Comments **/
+
+/**
+
+
+More Comments
+
+
+**/
+
+
+body , h1 , 
+	a:active, 
+	b, 
+	span:first-child {
+		background-image: url('http://www.codenoting.com/images.jpg');;;;;
+		color: red ;
+		font-size : blue;;
+		height: 20px;
+	}
