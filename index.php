@@ -79,7 +79,7 @@ if ($_GET['view'] == "compress"){
 	// Run compression on passed script
 	require("css-compression.php");
 	$CSSC = new CSSCompression($_POST['css'], $_POST);
-	$height = ($CSSC->__get('media') || $CSSC->option('readability') > CSSCompression::READ_NONE) ? "400px" : "12px";
+	$height = ($CSSC->__get('media') || $CSSC->__get('readability') > CSSCompression::READ_NONE) ? "400px" : "12px";
 
 	// Add results above the form
 	echo "<div id='results'>";

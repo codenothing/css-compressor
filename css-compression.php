@@ -59,11 +59,80 @@ Class CSSCompression
 	const READ_NONE = 0;
 
 	/**
+	 * The Singleton access method (for those that want it)
+	 */
+	private static $instance;
+	public static function getInstance(){
+		if (! self::$instance)
+			self::$instance = new self;
+
+		return self::$instance;
+	}
+
+	/**
 	 * Extend the default options with user defined POST vars.
 	 *
-	 * @params none
+	 * @param (string) css: CSS to compress on initialization if needed
+	 * @param (array) prefs: Array of preferences to override the defaults
 	 */ 
 	public function __construct($css = '', $prefs = array()){
+		// Setup the options
+		$this->resetOptions();
+		$this->mergeOptions($prefs);
+
+		// Automatically compress css if passed
+		if ($css && $css != '')
+			$this->compress($css);
+	}
+
+	/**
+	 * Only allow access to stats/css/media/options
+	 *
+	 * @param (string) name: Name of variable that you want to access
+	 * 	-Passing stats/media/css returns the current value of that class var
+	 * 	-Passing option will return the current full options array
+	 * 	-Passing anything else returns that current value in the options array or NULL
+	 */ 
+	public function __get($name){
+		if ($name === 'stats' || $name === 'media' || $name === 'css' || $name === 'option'){
+			return $this->$name;
+		}
+		else if (isset($this->options[$name])){
+			return $this->options[$name];
+		}
+		else {
+			return NULL;
+		}
+	}
+
+	/**
+	 * The setter method only allows access to setting values in the options array
+	 *
+	 * @params (string) name: Key name of the option you want to set
+	 * @params (any) value: Value of the option you want to set
+	 */ 
+	public function __set($name, $value){
+		// Allow for passing array of options to merge into current ones
+		if ($name === 'option' && is_array($value)){
+			$this->mergeOptions($value);
+			return $this->options;
+		} else {
+			$this->options[$name] = $value;
+			return $this->options[$name];
+		}
+	}
+
+	/**
+	 * Reset's the default options
+	 *
+	 * @param (boolean) clear: When true, options array is cleared
+	 */ 
+	public function resetOptions($clear = false){
+		if ($clear){
+			$this->options = array();
+			return true;
+		}
+
 		$this->options = array(
 			// Converts long color names to short hex names
 			// (aliceblue -> #f0f8ff)
@@ -145,47 +214,25 @@ Class CSSCompression
 			'readability' => self::READ_NONE,
 		);
 
-		// Merge Preferences against defaults
+		// Return the reset options
+		return $this->options;
+	}
+
+	/**
+	 * Extend like function to merge an array of preferences into
+	 * the options array.
+	 *
+	 * @param (array) prefs: Array of preferences to merge into options
+	 */ 
+	protected function mergeOptions($prefs = array()){
 		if ($prefs && is_array($prefs) && count($prefs)){
-			$options = explode(',', 'color-long2hex,color-rgb2hex,color-hex2shortcolor,color-hex2shorthex,fontweight2num,format-units,lowercase-selectors,directional-compress,multiple-selectors,multiple-details,csw-combine,auralcp-combine,mp-combine,border-combine,font-combine,background-combine,list-combine,unnecessary-semicolons,rm-multi-define,readability');
-			foreach ($options as $key)
+			foreach ($this->options as $key => $value){
 				$this->options[$key] = ($prefs[$key] && $prefs[$key] == 'on') ? true : 
 					isset($prefs[$key]) ? intval($prefs[$key]) :
-					$this->options[$key];
+					$value;
+			}
 		}
-
-		// Automatically compress css if passed
-		if ($css && $css != '') $this->compress($css);
 	}
-
-	/**
-	 * Getter & Setter for options array, 
-	 *
-	 * 1) Passing nothing returns entire options array
-	 * 2) Passing just a name returns that options value
-	 * 3) Passing both name and value sets the value to that options
-	 */ 
-	public function option($name = NULL, $value = NULL){
-		return $name === NULL ? $this->options :
-			$value === NULL ? $this->options[$name] :
-			($this->options[$name] = $value);
-	}
-
-	/**
-	 * Only allow access to stats/css/media
-	 *
-	 * @param (string) name: Name of variable that you want to access
-	 */ 
-	public function __get($name){
-		return ($name === 'stats' || $name === 'media' || $name === 'css') ? $this->$name : NULL;
-	}
-
-	/**
-	 * Turn the magic setter method private to deny setting any class vars
-	 *
-	 * @params none(denied)
-	 */ 
-	private function __set($name, $value){ return false; }
 
 	/**
 	 * Centralized function to run css compression
@@ -230,7 +277,7 @@ Class CSSCompression
 	}
 
 	/**
-	 * Clear class variables
+	 * Clear class variables (but not options)
 	 *
 	 * @params none;
 	 */ 
