@@ -26,7 +26,7 @@ textarea{
 
 <!--
 CSS Compressor
-r:5 - May 5, 2009
+r:6 - May 7, 2009
 Corey Hart @ http://www.codenothing.com
 -->
 
@@ -35,7 +35,7 @@ Corey Hart @ http://www.codenothing.com
 if ($_GET['view'] == "compress"){
 	include("css-compression.php");
 	$css = $CSSC->compress($_POST['css']);
-	$height = (intval($_POST['readability']) > 0) ? "400px" : "20px";
+	$height = ($CSSC->media || intval($_POST['readability']) > 0) ? "400px" : "20px";
 	$CSSC->displayStats();
 	echo "<textarea style='height:$height;' onclick='this.select()'>$css</textarea><br><br><a href='index.php'>Back</a>";
 }else{
@@ -90,6 +90,10 @@ if ($_GET['view'] == "compress"){
 		<label>
 			<input type='checkbox' name='csw-combine' checked='checked' />
 			Combine color/style/width properties (border-style:dashed;border-color:black;border-width:4px; -&gt; border:4px dashed black)
+		</label>
+		<label>
+			<input type='checkbox' name='auralcp-combine' checked='checked' />
+			Combines cue/pause properties (cue-before: url(before.au); cue-after: url(after.au) -&gt; cue:url(before.au) url(after.au))
 		</label>
 		<label>
 			<input type='checkbox' name='mp-combine' checked='checked' />

@@ -1,7 +1,7 @@
 <?
 /**
  * CSS Compressor
- * r:5 - May 5, 2009
+ * r:6 - May 7, 2009
  * Corey Hart @ http://www.codenothing.com
  */ 
 
@@ -15,8 +15,13 @@ Class CSSCompression
 	var $details = array();
 	var $options = array();
 	var $stats = array();
+	var $media = false;
 
-	function setOptions(){
+	/**
+	 * Load the options according to user specifications with
+	 * the class constructor
+	 */ 
+	function __construct(){
 		// Converts long color names to short hex names (aliceblue -> #f0f8ff)
 		$this->options['color-long2hex'] = $_POST['color-long2hex'];
 
@@ -50,6 +55,9 @@ Class CSSCompression
 		// Combines color/style/width properties (border-style:dashed;border-color:black;border-width:4px; -> border:4px dashed black)
 		$this->options['csw-combine'] = $_POST['csw-combine'];
 
+		// Combines cue/pause properties (cue-before: url(before.au); cue-after: url(after.au) -> cue:url(before.au) url(after.au))
+		$this->options['auralcp-combine'] = $_POST['auralcp-combine'];
+
 		// Combines margin/padding directionals (margin-top:10px;margin-right:5px;margin-bottom:4px;margin-left:1px; -> margin:10px 5px 4px 1px;)
 		$this->options['mp-combine'] = $_POST['mp-combine'];
 
@@ -78,9 +86,6 @@ Class CSSCompression
 		// Initial count for stats
 		$this->stats['before']['size'] = strlen($css);
 
-		// Use defined options
-		$this->setOptions();
-
 		// Send body through initial trimings
 		$css = $this->initialTrim($css);
 
@@ -88,7 +93,14 @@ Class CSSCompression
 		$css = explode("\n", $css);
 		foreach ($css as $details){
 			// Determine whether your looking at the details or element
-			if (ereg("^{", $details)){
+			if ($this->media && trim($details) == "}"){
+				$MEDIA_STR .= "}\n";
+				$this->media = false;
+			}
+			else if ($this->media){
+				$MEDIA_STR .= trim($details);
+			}
+			else if (ereg("^{", $details)){
 				unset($storage);
 				$details = substr($details, 1, strlen($details)-2);
 				$details = explode(";", $details);
@@ -119,6 +131,10 @@ Class CSSCompression
 				// Add counter to before stats
 				$this->stats['before']['selectors']++;
 			}
+			else if (eregi("^@media", trim($details))){
+				$this->media = true;
+				$MEDIA_STR .= trim($details);
+			}
 			else if ($details){
 				$this->selectors[count($this->selectors)] = trim($details);
 				// Add counter to before stats
@@ -131,6 +147,7 @@ Class CSSCompression
 		if ($this->options['multiple-selectors']) 	$this->combineMultiplyDefinedSelectors();
 		if ($this->options['multiple-details']) 	$this->combineMuliplyDefinedDetails();
 		if ($this->options['csw-combine'])		$this->combineCSWproperties();
+		if ($this->options['auralcp-combine'])		$this->combineAuralCuePause();
 		if ($this->options['mp-combine']) 		$this->combineMPproperties();
 		if ($this->options['border-combine']) 		$this->combineBorderDefinitions();
 		if ($this->options['font-combine']) 		$this->combineFontDefinitions();
@@ -143,6 +160,13 @@ Class CSSCompression
 
 		// Format css to users preference
 		$css =  $this->readability($IMPORT_STR, intval($_POST['readability']));
+
+		// Add media string with comments to compress seperately
+		if ($MEDIA_STR){
+			$this->media = true;
+			$css = "/** Media Types are not compressed with this script, cut out and compress each section seperately **/"
+				."\n$MEDIA_STR\n\n/** The rest of your CSS File **/\n$css";
+		}
 
 		// Final count for stats
 		$this->stats['after']['size'] = strlen($css);
@@ -159,8 +183,8 @@ Class CSSCompression
 		// Regex
 		$search = array(
 			1 => "(\r|\n|\t)is", // Move extraneous spaces
-			2 => "(\s{2,})is", // Remove multiple spaces
-			3 => "((\/\*|\<\!\-\-)(.*?)(\*\/|\-\-\>))is", // Remove all comments
+			2 => "((\/\*|\<\!\-\-)(.*?)(\*\/|\-\-\>))is", // Remove all comments
+			3 => "(\s{2,})is", // Remove multiple spaces
 			4 => "(\s{0,}([,{};:>])\s{0,})is", // Remove un-needed spaces around special characters
 			5 => "(url\(['\"](.*?)['\"]\))is", // Remove quotes from urls
 			6 => "(;{2,})is", // Remove unecessary semi-colons
@@ -330,14 +354,14 @@ Class CSSCompression
 			}
 		}
 
-		// Push long2hex vals for first conversion
+		// Convert long color names to hex codes
 		if ($this->options['color-long2hex']){
 			foreach ($long2hex as $x=>$y){
 				if (strtolower($val) == $x) $val = $y;
 			}
 		}
 
-		// Now add hex2short vals
+		// Convert 6 digit hex codes to short color names
 		if ($this->options['color-hex2shortcolor']){
 			foreach($hex2short as $x=>$y){
 				if (strtolower($val) == $x) $val = $y;
@@ -363,20 +387,34 @@ Class CSSCompression
 	}
 
 	function lowercaseSelectors(){
-		global $standard_selectors;
-		$search = array();
-		$replace = array();
-		foreach ($standard_selectors as $k=>$v){
-			// Ensure its a tag thats being selected
-			array_push($search, "(([^a-zA-Z0-9#.])$v)is");
-			array_push($replace, "$1$v");
-			// For when the tag is the first defined
-			array_push($search, "(^$v)is");
-			array_push($replace, "$v");
-		}
-
 		foreach ($this->selectors as $k=>$v){
-			$this->selectors[$k] = preg_replace($search, $replace, $v);
+			$a_arr = explode(' ', $v);
+			foreach ($a_arr as $a_key=>$a_val){
+				if (eregi(">", $a_val)){
+					$b_arr = explode(">", $a_val);
+					foreach ($b_arr as $b_key=>$b_val){
+						$b_arr[$b_key] = $this->lowerSelectorExtras($b_val);
+					}
+					$a_arr[$a_key] = trim(implode(">", $b_arr));
+				}else{
+					$a_arr[$a_key] = $this->lowerSelectorExtras($a_val);
+				}
+			}
+			$this->selectors[$k] = trim(implode(' ', $a_arr));
+		}
+	}
+
+	function lowerSelectorExtras($val){
+		if (eregi(":", $val)){
+			list ($sel, $pseudo) = explode(":", $val);
+			if (eregi("^[a-zA-Z]+$", $sel)) $sel = strtolower($sel);
+			return "$sel:".strtolower($pseudo);
+		}
+		else if (eregi("^[a-zA-Z]+$", $val)){
+			return strtolower($val);
+		}
+		else{
+			return $val;
 		}
 	}
 
@@ -418,9 +456,7 @@ Class CSSCompression
 			$pattern = "/(border|outline)-(color|style|width):(.*?);/i";
 			preg_match_all($pattern, $this->details[$k], $matches);
 			for ($i=0; $i<count($matches[1]); $i++){
-				if (!isset($storage[$matches[1][$i]])) $storage[$matches[1][$i]] = array($matches[2][$i] => $matches[3][$i]);
-				// Override double written properties
-				$storage[$matches[1][$i]][$matches[2][$i]] = $matches[3][$i];
+				$storage[strtolower($matches[1][$i])][strtolower($matches[2][$i])] = $matches[3][$i];
 			}
 
 			// Go through each tag for possible combination
@@ -429,6 +465,33 @@ Class CSSCompression
 					// String to replace each instance with
 					$replace = "$tag:".$arr['width']." ".$arr['style']." ".$arr['color'];
 					foreach ($arr as $x=>$y){
+						// Replace every instance, as multiple declarations removal will correct it
+						$search = "($tag-$x:$y)is";
+						$this->details[$k] = preg_replace($search, $replace, $this->details[$k]);
+					}
+				}
+			}
+		}
+	}
+
+	function combineAuralCuePause(){
+		foreach ($this->details as $k=>$v){
+			$storage = array();
+			$pattern = "/(cue|pause)-(before|after):(.*?);/i";
+			preg_match_all($pattern, $this->details[$k], $matches);
+			for ($i=0; $i<count($matches[1]); $i++){
+				$storage[strtolower($matches[1][$i])][strtolower($matches[2][$i])] = $matches[3][$i];
+			}
+
+			// Go through each tag for possible combination
+			foreach($storage as $tag => $arr){
+				if (count($arr) == 2){
+					// String to replace each instance with
+					$replace = "$tag:".$arr['before']." ".$arr['after'];
+					foreach ($arr as $x=>$y){
+						// Escape out url parameters for searches
+						$y = str_replace("(", "\(", $y);
+						$y = str_replace(")", "\)", $y);
 						// Replace every instance, as multiple declarations removal will correct it
 						$search = "($tag-$x:$y)is";
 						$this->details[$k] = preg_replace($search, $replace, $this->details[$k]);
