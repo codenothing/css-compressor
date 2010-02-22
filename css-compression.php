@@ -227,9 +227,12 @@ Class CSSCompression
 	protected function mergeOptions($prefs = array()){
 		if ($prefs && is_array($prefs) && count($prefs)){
 			foreach ($this->options as $key => $value){
-				$this->options[$key] = ($prefs[$key] && $prefs[$key] == 'on') ? true : 
-					isset($prefs[$key]) ? intval($prefs[$key]) :
-					$value;
+				if ($prefs[$key] && $prefs[$key] == 'on'){
+					$this->options[$key] = true;
+				}
+				else if (isset($prefs[$key])){
+					$this->options[$key] = intval($prefs[$key]);
+				}
 			}
 		}
 	}
@@ -651,7 +654,7 @@ Class CSSCompression
 	 */ 
 	protected function runCompressionMethods(){
 		// Lowercase selectors for combining
-		if ($this->options['lowercase-selectors']) 	$this->lowercaseSelectors();
+		if ($this->options['lowercase-selectors']) $this->lowercaseSelectors();
 
 		// If order isn't important, run comination functions before and after compressions to catch all instances
 		// Since this creates another addition of looping, keep it seperate from compressions where order is important
@@ -913,24 +916,31 @@ Class CSSCompression
 			unset($storage['font-size'], $storage['line-height']);
 		}
 
-		// Run font checks and get replacement str
-		$replace = $this->searchDefinitions('font', $storage, array('font-style', 'font-variant', 'font-weight', 'size/height', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-style', 'font-variant', 'font-weight', 'font-size', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-style', 'font-variant', 'size/height', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-style', 'font-variant', 'font-size', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-style', 'font-weight', 'size/height', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-style', 'font-weight', 'font-size', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-variant', 'font-weight', 'size/height', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-variant', 'font-weight', 'font-size', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-weight', 'size/height', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-weight', 'font-size', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-variant', 'size/height', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-variant', 'font-size', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-style', 'size/height', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-style', 'font-size', 'font-family'));
+		// Setup property groupings
+		$fonts = array(
+			array('font-style', 'font-variant', 'font-weight', 'size/height', 'font-family'),
+			array('font-style', 'font-variant', 'font-weight', 'font-size', 'font-family'),
+			array('font-style', 'font-variant', 'size/height', 'font-family'),
+			array('font-style', 'font-variant', 'font-size', 'font-family'),
+			array('font-style', 'font-weight', 'size/height', 'font-family'),
+			array('font-style', 'font-weight', 'font-size', 'font-family'),
+			array('font-variant', 'font-weight', 'size/height', 'font-family'),
+			array('font-variant', 'font-weight', 'font-size', 'font-family'),
+			array('font-weight', 'size/height', 'font-family'),
+			array('font-weight', 'font-size', 'font-family'),
+			array('font-variant', 'size/height', 'font-family'),
+			array('font-variant', 'font-size', 'font-family'),
+			array('font-style', 'size/height', 'font-family'),
+			array('font-style', 'font-size', 'font-family'),
+			array('size/height', 'font-family'),
+			array('font-size', 'font-family'),
+		);
 
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('size/height', 'font-family'));
-		if (!$replace) $replace = $this->searchDefinitions('font', $storage, array('font-size', 'font-family'));
+		// Loop through each property check and see if they can be replaced
+		foreach ($fonts as $props){
+			if ($replace = $this->searchDefinitions('font', $storage, $props))
+				break;
+		}
 
 		// If replacement string found, run it on all options
 		if ($replace){
@@ -958,26 +968,34 @@ Class CSSCompression
 			$storage[$matches[1][$i]] = $matches[2][$i];
 		}
 
+		// List of background props to check
+		$backgrounds = array(
+			// With color
+			array('color', 'image', 'repeat', 'attachment', 'position'),
+			array('color', 'image', 'attachment', 'position'),
+			array('color', 'image', 'repeat', 'position'),
+			array('color', 'image', 'repeat', 'attachment'),
+			array('color', 'image', 'repeat'),
+			array('color', 'image', 'attachment'),
+			array('color', 'image', 'position'),
+			array('color', 'image'),
+			// Without Color
+			array('image', 'attachment', 'position'),
+			array('image', 'repeat', 'position'),
+			array('image', 'repeat', 'attachment'),
+			array('image', 'repeat'),
+			array('image', 'attachment'),
+			array('image', 'position'),
+			array('image'),
+			// Just Color
+			array('color'),
+		);
+
 		// Run background checks and get replacement str
-		// With color
-		$replace = $this->searchDefinitions('background', $storage, array('color', 'image', 'repeat', 'attachment', 'position'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('color', 'image', 'attachment', 'position'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('color', 'image', 'repeat', 'position'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('color', 'image', 'repeat', 'attachment'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('color', 'image', 'repeat'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('color', 'image', 'attachment'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('color', 'image', 'position'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('color', 'image'));
-		// Without Color
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('image', 'attachment', 'position'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('image', 'repeat', 'position'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('image', 'repeat', 'attachment'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('image', 'repeat'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('image', 'attachment'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('image', 'position'));
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('image'));
-		// Just Color
-		if (!$replace) $replace = $this->searchDefinitions('background', $storage, array('color'));
+		foreach ($backgrounds as $props){
+			if ($replace = $this->searchDefinitions('background', $storage, $props))
+				break;
+		}
 
 		// If replacement string found, run it on all options
 		if ($replace){
@@ -1002,14 +1020,22 @@ Class CSSCompression
 		for ($i=0; $i<count($matches[1]); $i++)
 			$storage[$matches[1][$i]] = $matches[2][$i];
 
-		// Run search patterns for replacement string
-		$replace = $this->searchDefinitions('list-style', $storage, array('type', 'position', 'image'));
-		if (!$replace) $replace = $this->searchDefinitions('list-style', $storage, array('type', 'position'));
-		if (!$replace) $replace = $this->searchDefinitions('list-style', $storage, array('type', 'image'));
-		if (!$replace) $replace = $this->searchDefinitions('list-style', $storage, array('position', 'image'));
-		if (!$replace) $replace = $this->searchDefinitions('list-style', $storage, array('type'));
-		if (!$replace) $replace = $this->searchDefinitions('list-style', $storage, array('position'));
-		if (!$replace) $replace = $this->searchDefinitions('list-style', $storage, array('image'));
+		// List os list-style props to check against
+		$lists = array(
+			array('type', 'position', 'image'),
+			array('type', 'position'),
+			array('type', 'image'),
+			array('position', 'image'),
+			array('type'),
+			array('position'),
+			array('image'),
+		);
+
+		// Run background checks and get replacement str
+		foreach ($lists as $props){
+			if ($replace = $this->searchDefinitions('list-style', $storage, $props))
+				break;
+		}
 
 		// If replacement string found, run it on all options
 		if ($replace){
@@ -1219,4 +1245,5 @@ Class CSSCompression
 		return round($size,2) . $ext[$c];
 	}
 };
+
 ?>
