@@ -60,6 +60,8 @@ Class CSSCompression
 
 	/**
 	 * The Singleton access method (for those that want it)
+	 *
+	 * @params none.
 	 */
 	private static $instance;
 	public static function getInstance(){
@@ -229,6 +231,9 @@ Class CSSCompression
 			foreach ($this->options as $key => $value){
 				if ($prefs[$key] && $prefs[$key] == 'on'){
 					$this->options[$key] = true;
+				}
+				else if ($prefs[$key] && $prefs[$key] == 'off'){
+					$this->options[$key] = false;
 				}
 				else if (isset($prefs[$key])){
 					$this->options[$key] = intval($prefs[$key]);

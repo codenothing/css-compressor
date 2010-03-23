@@ -52,7 +52,7 @@ div.options {
 <script type='text/javascript'>
 var checkbox1, checkbox2;
 function forceOrder(el){
-	if (checkbox1 === undefined){
+	if ( checkbox1 === undefined ){
 		checkbox1 = document.getElementById('orderimportant1');
 		checkbox2 = document.getElementById('orderimportant2');
 	}
