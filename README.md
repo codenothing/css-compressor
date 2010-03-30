@@ -1,4 +1,4 @@
-CSS Compressor
+[CSS Compressor](http://www.codenothing.com/archives/php/css-compressor/)
 ========================
 
 PHP Based CSS Compressor.
@@ -14,6 +14,6 @@ Credits
 --------
 [Corey Hart](http://www.codenothing.com) - Creator
 
-[Martin Zvarík](http://www.teplaky.net/) for pointing out the url and emtpy definition bug.
+[Martin Zvarík](http://www.teplaky.net/) - Pointed out the url and emtpy definition bug.
 
-[Phil DeJarnett](http://www.overzealous.com/) for pointing out splitting(and numerous other) problems
+[Phil DeJarnett](http://www.overzealous.com/) - Pointed out splitting(and numerous other) problems
