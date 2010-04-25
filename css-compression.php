@@ -3,10 +3,6 @@
  * CSS Compressor [VERSION]
  * [DATE]
  * Corey Hart @ http://www.codenothing.com
- *
- * ## Credits ##
- * Martin Zvarík @ http://www.teplaky.net/ for pointing out the url and emtpy definition bug.
- * Phil DeJarnett @ http://www.overzealous.com/ for pointing out splitting(and numerous other) problems
  */ 
 
 // Define path to vars directory
@@ -65,8 +61,9 @@ Class CSSCompression
 	 */
 	private static $instance;
 	public static function getInstance(){
-		if (! self::$instance)
+		if ( ! self::$instance ) {
 			self::$instance = new self;
+		}
 
 		return self::$instance;
 	}
@@ -77,14 +74,15 @@ Class CSSCompression
 	 * @param (string) css: CSS to compress on initialization if needed
 	 * @param (array) prefs: Array of preferences to override the defaults
 	 */ 
-	public function __construct($css = '', $prefs = array()){
+	public function __construct( $css = '', $prefs = array() ) {
 		// Setup the options
 		$this->resetOptions();
-		$this->mergeOptions($prefs);
+		$this->mergeOptions( $prefs );
 
 		// Automatically compress css if passed
-		if ($css && $css != '')
-			$this->compress($css);
+		if ( $css && $css != '' ) {
+			$this->compress( $css );
+		}
 	}
 
 	/**
@@ -95,12 +93,12 @@ Class CSSCompression
 	 * 	-Passing option will return the current full options array
 	 * 	-Passing anything else returns that current value in the options array or NULL
 	 */ 
-	public function __get($name){
-		if ($name === 'stats' || $name === 'media' || $name === 'css' || $name === 'option'){
+	public function __get( $name ) {
+		if ( $name === 'stats' || $name === 'media' || $name === 'css' || $name === 'option' ) {
 			return $this->$name;
 		}
-		else if (isset($this->options[$name])){
-			return $this->options[$name];
+		else if ( isset( $this->options[ $name ] ) ) {
+			return $this->options[ $name ];
 		}
 		else {
 			return NULL;
@@ -113,14 +111,14 @@ Class CSSCompression
 	 * @params (string) name: Key name of the option you want to set
 	 * @params (any) value: Value of the option you want to set
 	 */ 
-	public function __set($name, $value){
+	public function __set( $name, $value ) {
 		// Allow for passing array of options to merge into current ones
-		if ($name === 'option' && is_array($value)){
-			$this->mergeOptions($value);
+		if ( $name === 'option' && is_array( $value ) ) {
+			$this->mergeOptions( $value );
 			return $this->options;
 		} else {
-			$this->options[$name] = $value;
-			return $this->options[$name];
+			$this->options[ $name ] = $value;
+			return $this->options[ $name ];
 		}
 	}
 
@@ -129,8 +127,8 @@ Class CSSCompression
 	 *
 	 * @param (boolean) clear: When true, options array is cleared
 	 */ 
-	public function resetOptions($clear = false){
-		if ($clear){
+	public function resetOptions( $clear = false ) {
+		if ( $clear ) {
 			$this->options = array();
 			return true;
 		}
@@ -226,17 +224,17 @@ Class CSSCompression
 	 *
 	 * @param (array) prefs: Array of preferences to merge into options
 	 */ 
-	protected function mergeOptions($prefs = array()){
-		if ($prefs && is_array($prefs) && count($prefs)){
-			foreach ($this->options as $key => $value){
-				if ($prefs[$key] && $prefs[$key] == 'on'){
-					$this->options[$key] = true;
+	protected function mergeOptions( $prefs = array() ) {
+		if ( $prefs && is_array( $prefs ) && count( $prefs ) ) {
+			foreach ( $this->options as $key => $value ) {
+				if ( $prefs[ $key ] && $prefs[ $key ] == 'on' ) {
+					$this->options[ $key ] = true;
 				}
-				else if ($prefs[$key] && $prefs[$key] == 'off'){
-					$this->options[$key] = false;
+				else if ( $prefs[ $key ] && $prefs[ $key ] == 'off' ) {
+					$this->options[ $key ] = false;
 				}
-				else if (isset($prefs[$key])){
-					$this->options[$key] = intval($prefs[$key]);
+				else if ( isset( $prefs[ $key ] ) ) {
+					$this->options[ $key ] = intval( $prefs[ $key ] );
 				}
 			}
 		}
@@ -247,9 +245,9 @@ Class CSSCompression
 	 *
 	 * @param (string) css: CSS Contents
 	 */ 
-	public function compress($css){
+	public function compress( $css ) {
 		// Start the timer
-		$initialTime = array_sum(explode(' ', microtime()));
+		$initialTime = array_sum( explode( ' ', microtime() ) );
 
 		// Flush out variables
 		$this->flush();
@@ -261,17 +259,17 @@ Class CSSCompression
 
 		// Store all intial data
 		$this->stats['before']['time'] = $initialTime;
-		$this->stats['before']['size'] = strlen($this->css);
-		$this->stats['before']['selectors'] = count($this->selectors);
+		$this->stats['before']['size'] = strlen( $this->css );
+		$this->stats['before']['selectors'] = count( $this->selectors );
 
 		// Run Compression Methods
 		$this->runCompressionMethods();
 
 		// Format css to users preference
-		$this->css = $this->readability($this->import_str, $this->options['readability']);
+		$this->css = $this->readability( $this->import_str, $this->options['readability'] );
 
 		// Add media string with comments to compress seperately
-		if ($this->media_str){
+		if ( $this->media_str ) {
 			$this->media = true;
 			$this->css = "/** Media Types are not compressed with this script, cut out and compress each section seperately **/"
 				."\n$this->media_str\n\n/** The rest of your CSS File **/\n$this->css";
@@ -331,15 +329,16 @@ Class CSSCompression
 		);
 
 		// Run replacements
-		$this->css = trim(preg_replace($search, $replace, $this->css));
+		$this->css = trim( preg_replace( $search, $replace, $this->css ) );
 
 		// Escape out possible splitter characters within urls
-		$search = array(':', ';', ' ');
-		$replace = array("\\:", "\\;", "\\ ");
-		preg_match_all("/url\((.*?)\)/", $this->css, $matches, PREG_OFFSET_CAPTURE);
-		for ($i=0, $imax=count($matches[0]); $i<$imax; $i++){
-			$value = 'url(' . str_replace($search, $replace, $matches[1][$i][0]) . ')';
-			$this->css = substr_replace($this->css, $value, $matches[0][$i][1], strlen($matches[0][$i][0]));
+		$search = array( ':', ';', ' ' );
+		$replace = array( "\\:", "\\;", "\\ " );
+		preg_match_all( "/url\((.*?)\)/", $this->css, $matches, PREG_OFFSET_CAPTURE );
+
+		for ( $i=0, $imax=count( $matches[0] ); $i < $imax; $i++ ) {
+			$value = 'url(' . str_replace( $search, $replace, $matches[1][$i][0] ) . ')';
+			$this->css = substr_replace( $this->css, $value, $matches[0][$i][1], strlen( $matches[0][$i][0] ) );
 		}
 	}
 
@@ -350,34 +349,36 @@ Class CSSCompression
 	 */ 
 	protected function setup(){
 		// Seperate the element from the elements details
-		$css = explode("\n", $this->css);
-		foreach ($css as $details){
-			$details = trim($details);
+		$css = explode( "\n", $this->css );
+		foreach ( $css as $details ) {
+			$details = trim( $details );
 			// Determine whether your looking at the details or element
-			if ($this->media && $details == '}'){
+			if ( $this->media && $details == '}' ) {
 				$this->media_str .= "}\n";
 				$this->media = false;
 			}
-			else if ($this->media){
+			else if ( $this->media ) {
 				$this->media_str .= $details;
 			}
-			else if (strpos($details, '{') === 0){
-				unset($storage);
-				$details = substr($details, 1, strlen($details)-2);
-				$details = preg_split($this->r_semicolon, $details);
-				foreach($details as $line){
-					if (preg_match("/^(url|@import)/i", $line)){
+			else if ( strpos( $details, '{') === 0 ) {
+				unset( $storage );
+				$details = substr( $details, 1, strlen( $details ) - 2 );
+				$details = preg_split( $this->r_semicolon, $details );
+
+				foreach ( $details as $line ) {
+					if ( preg_match( "/^(url|@import)/i", $line ) ) {
 						$storage .= $line.";";
 						continue;
 					}
-					list ($property, $value) = preg_split($this->r_colon, $line, 2);
+					list ( $property, $value ) = preg_split( $this->r_colon, $line, 2 );
 
 					// Fail safe, remove unknown tag/elements
-					if (!isset($property) || !isset($value))
+					if ( ! isset( $property ) || ! isset( $value ) ) {
 						continue;
+					}
 
 					// Run the tag/element through each compression
-					list ($property, $value) = $this->runSpecialCompressions($property, $value);
+					list ( $property, $value ) = $this->runSpecialCompressions( $property, $value );
 
 					// Add counter to before stats
 					$this->stats['before']['props']++;
@@ -386,29 +387,29 @@ Class CSSCompression
 					$storage .= "$property:$value;";
 				}
 				// Store as the last known selector
-				$this->details[$SEL_COUNTER] = $storage;
+				$this->details[ $SEL_COUNTER ] = $storage;
 			}
-			else if (strpos($details, '@import') === 0){
+			else if ( strpos( $details, '@import' ) === 0 ) {
 				// Seperate out each import string
-				$arr = preg_split($this->r_semicolon, $details);
+				$arr = preg_split( $this->r_semicolon, $details );
 
 				// Add to selector counter for details storage
 				$SEL_COUNTER++;
 				// Store the last entry as the selector
-				$this->selectors[$SEL_COUNTER] = trim($arr[count($arr)-1]);
+				$this->selectors[ $SEL_COUNTER ] = trim( $arr[ count( $arr ) - 1 ] );
 
 				// Clear out the last entry(the actual selector) and add to the import string
-				unset($arr[count($arr)-1]);
-				$this->import_str .= trim(implode(';', $arr)).';';
+				unset( $arr[ count( $arr ) - 1 ] );
+				$this->import_str .= trim( implode( ';', $arr ) ) . ';';
 			}
-			else if (strpos($details, '@media') === 0){
+			else if ( strpos( $details, '@media' ) === 0 ){
 				$this->media = true;
 				$this->media_str .= $details;
 			}
-			else if ($details){
+			else if ( $details ) {
 				// Add to selector counter for details storage
 				$SEL_COUNTER++;
-				$this->selectors[$SEL_COUNTER] = $details;
+				$this->selectors[ $SEL_COUNTER ] = $details;
 			}
 		}
 	}
@@ -419,34 +420,36 @@ Class CSSCompression
 	 * @param (string) prop: CSS Property
 	 * @param (string) val: Value of CSS Property
 	 */ 
-	protected function runSpecialCompressions($prop, $val){
+	protected function runSpecialCompressions( $prop, $val ) {
 		// Properties should always be lowercase
-		$prop = strtolower($prop);
+		$prop = strtolower( $prop );
 
 		// Remove uneeded side definitions if possible
-		if ($this->options['directional-compress'] && preg_match("/^(margin|padding)/i", $prop)){
-			$val = $this->sidesDirectional($val);
+		if ( $this->options['directional-compress'] && preg_match( "/^(margin|padding)/i", $prop ) ) {
+			$val = $this->sidesDirectional( $val );
 		}
 
 		// Font-weight converter
-		if ($this->options['fontweight2num'] && $prop === 'font-weight'){
-			$val = $this->fontweightConversion($val);
+		if ( $this->options['fontweight2num'] && $prop === 'font-weight' ) {
+			$val = $this->fontweightConversion( $val );
 		}
 
 		// Remove uneeded decimals/units
-		if ($this->options['format-units']){
-			$val = $this->removeDecimal($val);
-			$val = $this->removeUnits($val);
+		if ( $this->options['format-units'] ) {
+			$val = $this->removeDecimal( $val );
+			$val = $this->removeUnits( $val );
 		}
 
 		// Seperate out by multi-values if possible
-		$arr = preg_split($this->r_space, $val);
-		foreach ($arr as $k=>$v)
-			$arr[$k] = $this->runColorChanges($v);
-		$val = trim(implode(' ', $arr));
+		$parts = preg_split( $this->r_space, $val );
+		foreach ( $parts as $k => $v ) {
+			$parts[ $k ] = $this->runColorChanges( $v );
+		}
+
+		$val = trim( implode( ' ', $parts ) );
 
 		// Return for list retrival
-		return array($prop, $val);
+		return array( $prop, $val );
 	}
 
 	/**
@@ -454,16 +457,18 @@ Class CSSCompression
 	 *
 	 * @param (string) val: font-weight prop value
 	 */ 
-	protected function fontweightConversion($val){
+	protected function fontweightConversion( $val ) {
 		// Holds font weight conversions
 		static $fontweight2num;
-		if (! $fontweight2num)
-			include(CSSC_VARS_DIR . 'fontweight2num.php');
+		if ( ! $fontweight2num ) {
+			include( CSSC_VARS_DIR . 'fontweight2num.php' );
+		}
 
 		// All font-weights are lower-case
-		$low = strtolower($val);
-		if (isset($fontweight2num[$low]))
-			$val = $fontweight2num[$low];
+		$low = strtolower( $val );
+		if ( isset( $fontweight2num[ $low ] ) ) {
+			$val = $fontweight2num[ $low ];
+		}
 
 		// Return converted value
 		return $val;
@@ -474,65 +479,68 @@ Class CSSCompression
 	 *
 	 * @param (string) val: Value of CSS Property
 	 */ 
-	protected function sidesDirectional($val){
+	protected function sidesDirectional( $val ) {
 		// Check if side definitions already reduced down to a single definition
-		if (strpos($val, ' ') === false){
+		if ( strpos( $val, ' ' ) === false ) {
 			// Redundent, but just in case
-			if ($this->options['format-units']){
-				$val = $this->removeDecimal($val);
-				$val = $this->removeUnits($val);
+			if ( $this->options['format-units'] ) {
+				$val = $this->removeDecimal( $val );
+				$val = $this->removeUnits( $val );
 			}
 			return $val;
 		}
 
 		// Split up each definiton
-		$direction = preg_split($this->r_space, $val);
+		$direction = preg_split( $this->r_space, $val );
 
 		// Zero out and remove units if possible
-		if ($this->options['format-units']){
-			foreach ($direction as &$v)
-				$v = $this->removeDecimal($this->removeUnits($v));
+		if ( $this->options['format-units'] ) {
+			foreach ( $direction as &$v ) {
+				$v = $this->removeDecimal( $this->removeUnits( $v ) );
+			}
 		}
 
 		// 4 Direction reduction
-		$count = count($direction);
-		if ($count == 4){
-			if ($direction[0] == $direction[1] && $direction[2] == $direction[3] && $direction[0] == $direction[3]){
+		$count = count( $direction );
+		if ( $count == 4 ) {
+			if ( $direction[0] == $direction[1] && $direction[2] == $direction[3] && $direction[0] == $direction[3] ) {
 				// All 4 sides are the same, combine into 1 definition
 				$val = $direction[0];
 			}
-			else if ($direction[0] == $direction[2] && $direction[1] == $direction[3]){
+			else if ( $direction[0] == $direction[2] && $direction[1] == $direction[3] ) {
 				// top-bottom/left-right are the same, reduce definition
-				$val = $direction[0].' '.$direction[1];
+				$val = $direction[0] . ' ' . $direction[1];
 			}
-			else{
+			else {
 				// No reduction found, return in initial form
-				$val = implode(' ', $direction);
+				$val = implode( ' ', $direction );
 			}
 		}
 		// 3 Direction reduction
-		else if ($count == 3){
+		else if ( $count == 3 ) {
 			// There can only be compression if the top(first) and bottom(last) are the same
-			if ($direction[0] == $direction[2]){
+			if ( $direction[0] == $direction[2] ) {
 				$val = $direction[0] . ' ' . $direction[1];
-			}else{
+			}
+			else {
 				// No reduction found, return in initial form
-				$val = implode(' ', $direction);
+				$val = implode( ' ', $direction );
 			}
 		}
 		// 2 Direction reduction
-		else if ($count == 2){
-			if ($direction[0] == $direction[1]){
+		else if ( $count == 2 ){
+			if ( $direction[0] == $direction[1] ) {
 				// Both directions are the same, combine into single definition
 				$val = $direction[0];
-			}else{
+			}
+			else {
 				// No reduction found, return in initial form
-				$val = implode(' ', $direction);
+				$val = implode( ' ', $direction );
 			}
 		}
 		// No reduction found, return in initial form
 		else{
-			$val = implode(' ', $direction);
+			$val = implode( ' ', $direction );
 		}
 
 		// Return the value of the property
@@ -544,14 +552,15 @@ Class CSSCompression
 	 *
 	 * @param (string) str: Unit found
 	 */ 
-	protected function removeDecimal($str){
+	protected function removeDecimal( $str ) {
 		// Find all instances of .0 and remove them
 		$pattern = "/^(\d+\.0)(\%|[a-z]{2})/i";
-		preg_match_all($pattern, $str, $matches);
-		for ($i=0; $i<count($matches[1]); $i++){
+		preg_match_all( $pattern, $str, $matches );
+
+		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 			$search = $matches[0][$i];
-			$replace = intval($matches[1][$i]).$matches[2][$i];
-			$str = str_ireplace($search, $replace, $str);
+			$replace = intval( $matches[1][$i] ) . $matches[2][$i];
+			$str = str_ireplace( $search, $replace, $str );
 		}
 		return $str;
 	}
@@ -561,15 +570,15 @@ Class CSSCompression
 	 *
 	 * @param (string) str: Unit string
 	 */ 
-	protected function removeUnits($str){
+	protected function removeUnits( $str ) {
 		// Find all instants of 0 size and remove suffix
 		$pattern = "/^(\d)(\%|[a-z]{2})/i";
-		preg_match_all($pattern, $str, $matches);
-		for ($i=0; $i<count($matches[1]); $i++){
-			if (intval($matches[1][$i]) == 0){
+		preg_match_all( $pattern, $str, $matches );
+		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
+			if ( intval( $matches[1][$i] ) == 0 ) {
 				$search = $matches[0][$i];
 				$replace = '0';
-				$str = str_ireplace($search, $replace, $str);
+				$str = str_ireplace( $search, $replace, $str );
 			}
 		}
 		return $str;
@@ -581,39 +590,52 @@ Class CSSCompression
 	 *
 	 * @param (string) val: Color to be parsed
 	 */ 
-	protected function runColorChanges($val){
+	protected function runColorChanges( $val ) {
 		// These vars are pulled in externally
 		static $long2hex, $hex2short;
 
 		// Transfer rgb colors to hex codes
-		if ($this->options['color-rgb2hex']){
+		if ( $this->options['color-rgb2hex'] ) {
 			$pattern = "/rgb\((\d{1,3}\%?(,\d{1,3}\%?,\d{1,3}\%?)?)\)/i";
-			preg_match_all($pattern, $val, $matches);
-			for ($i=0; $i<count($matches[1]); $i++){
-				unset($new, $str);
+			preg_match_all( $pattern, $val, $matches );
+
+			for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 				$hex = '0123456789ABCDEF';
-				$str = explode(',', $matches[1][$i]);
+				$str = explode( ',', $matches[1][$i] );
+				$new = '';
+
 				// Incase rgb was defined with single val
-				if (!$str) $str = array($matches[1][$i]);
-				foreach($str as $x){
-					$x = strpos($x, '%') !== false ? intval((intval($x)/100)*255) : intval($x);
-					if ($x > 255) $x = 255;
-					if ($x < 0) $x = 0;
-					$new .= $hex[($x-$x%16)/16];
-					$new .= $hex[$x%16];
+				if ( ! $str ) {
+					$str = array( $matches[1][$i] );
+				}
+
+				foreach ( $str as $x ) {
+					$x = strpos( $x, '%' ) !== false ? intval( ( intval( $x ) / 100 ) * 255 ) : intval( $x );
+					if ( $x > 255 ) {
+						$x = 255;
+					}
+					if ( $x < 0 ) {
+						$x = 0;
+					}
+					$new .= $hex[ ( $x - $x % 16 ) / 16 ];
+					$new .= $hex[ $x % 16 ];
 				}
 				// Repeat hex code to complete 6 digit hex requirement for single definitions
-				if (count($str) == 1) $new .= $new.$new;
+				if ( count( $str ) == 1 ) {
+					$new .= $new . $new;
+				}
+
 				// Replace within string
-				$val = str_ireplace($matches[0][$i], "#$new", $val);
+				$val = str_ireplace( $matches[0][$i], "#$new", $val );
 			}
 		}
 
 		// Convert long color names to hex codes
-		if ($this->options['color-long2hex']){
+		if ( $this->options['color-long2hex'] ) {
 			// Static so file isn't included with every loop
-			if (!$long2hex)
-				include(CSSC_VARS_DIR . 'long2hex-colors.php');
+			if ( ! $long2hex ) {
+				include( CSSC_VARS_DIR . 'long2hex-colors.php' );
+			}
 
 			// Colornames are all lowercase
 			$low = strtolower($val);
@@ -628,22 +650,23 @@ Class CSSCompression
 				include(CSSC_VARS_DIR . 'hex2short-colors.php');
 
 			// Hex codes are all lowercase
-			$low = strtolower($val);
-			if (isset($hex2short[$low]))
-				$val = $hex2short[$low];
+			$low = strtolower( $val );
+			if ( isset( $hex2short[ $low ] ) ) {
+				$val = $hex2short[ $low ];
+			}
 		}
 
 		// Convert large hex codes to small codes
-		if ($this->options['color-hex2shorthex']){
+		if ( $this->options['color-hex2shorthex'] ) {
 			$pattern = "/#([0-9a-f]{6})/i";
-			preg_match_all($pattern, $val, $matches);
-			for ($i=0; $i<count($matches[1]); $i++){
+			preg_match_all( $pattern, $val, $matches );
+			for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 				// Use PHP's string array
 				$hex = $matches[1][$i];
-				if ($hex[0] == $hex[1] && $hex[2] == $hex[3] && $hex[4] == $hex[5]){
+				if ( $hex[0] == $hex[1] && $hex[2] == $hex[3] && $hex[4] == $hex[5] ) {
 					$search = $matches[0][$i];
-					$replace = '#'.$hex[0].$hex[2].$hex[4];
-					$val = str_ireplace($search, $replace, $val);
+					$replace = '#' . $hex[0] . $hex[2] . $hex[4];
+					$val = str_ireplace( $search, $replace, $val );
 				}
 			}
 		}
@@ -658,48 +681,59 @@ Class CSSCompression
 	 * @params none
 	 */ 
 	protected function runCompressionMethods(){
+		echo "Running special compressions<br>";
 		// Lowercase selectors for combining
-		if ($this->options['lowercase-selectors']) $this->lowercaseSelectors();
+		if ( $this->options['lowercase-selectors'] ) {
+			$this->lowercaseSelectors();
+		}
 
 		// If order isn't important, run comination functions before and after compressions to catch all instances
 		// Since this creates another addition of looping, keep it seperate from compressions where order is important
-		if ($this->options['multiple-selectors'] && $this->options['multiple-details']){
+		if ( $this->options['multiple-selectors'] && $this->options['multiple-details'] ) {
 			$this->combineMultiplyDefinedSelectors();
 			$this->combineMultiplyDefinedDetails();
-			foreach ($this->details as &$value){
-				if ($this->options['csw-combine'])		$value = $this->combineCSWproperties($value);
-				if ($this->options['auralcp-combine'])		$value = $this->combineAuralCuePause($value);
-				if ($this->options['mp-combine']) 		$value = $this->combineMPproperties($value);
-				if ($this->options['border-combine']) 		$value = $this->combineBorderDefinitions($value);
-				if ($this->options['font-combine']) 		$value = $this->combineFontDefinitions($value);
-				if ($this->options['background-combine']) 	$value = $this->combineBackgroundDefinitions($value);
-				if ($this->options['list-combine']) 		$value = $this->combineListProperties($value);
+
+			foreach ( $this->details as &$value ) {
+				echo "Looping through details first start<br>";
+				if ($this->options['csw-combine'])		$value = $this->combineCSWproperties( $value );
+				if ($this->options['auralcp-combine'])		$value = $this->combineAuralCuePause( $value );
+				if ($this->options['mp-combine']) 		$value = $this->combineMPproperties( $value );
+				if ($this->options['border-combine']) 		$value = $this->combineBorderDefinitions( $value );
+				if ($this->options['font-combine']) 		$value = $this->combineFontDefinitions( $value );
+				if ($this->options['background-combine']) 	$value = $this->combineBackgroundDefinitions($value );
+				if ($this->options['list-combine']) 		$value = $this->combineListProperties($value );
 			}
+
 			$this->combineMultiplyDefinedSelectors();
 			$this->combineMultiplyDefinedDetails();
-			if ($this->options['rm-multi-define']){
-				foreach ($this->details as &$value){
-					$value = $this->removeMultipleDefinitions($value);
-					$value = $this->removeEscapedURLs($value);
+
+			if ( $this->options['rm-multi-define'] ) {
+				foreach ( $this->details as &$value ) {
+					$value = $this->removeMultipleDefinitions( $value );
+					$value = $this->removeEscapedURLs( $value );
 				}
 			}
 		}
 		// For when order is important, reason above
-		else{
-			foreach ($this->details as &$value){
-				if ($this->options['csw-combine'])		$value = $this->combineCSWproperties($value);
-				if ($this->options['auralcp-combine'])		$value = $this->combineAuralCuePause($value);
-				if ($this->options['mp-combine']) 		$value = $this->combineMPproperties($value);
-				if ($this->options['border-combine']) 		$value = $this->combineBorderDefinitions($value);
-				if ($this->options['font-combine']) 		$value = $this->combineFontDefinitions($value);
-				if ($this->options['background-combine']) 	$value = $this->combineBackgroundDefinitions($value);
-				if ($this->options['list-combine']) 		$value = $this->combineListProperties($value);
-				if ($this->options['rm-multi-define']) 		$value = $this->removeMultipleDefinitions($value);
-				$value = $this->removeEscapedURLs($value);
+		else {
+			foreach ( $this->details as &$value ) {
+				echo "Looping through second start<br>";
+				if ($this->options['csw-combine'])		$value = $this->combineCSWproperties( $value );
+				if ($this->options['auralcp-combine'])		$value = $this->combineAuralCuePause( $value );
+				if ($this->options['mp-combine']) 		$value = $this->combineMPproperties( $value );
+				if ($this->options['border-combine']) 		$value = $this->combineBorderDefinitions( $value );
+				if ($this->options['font-combine']) 		$value = $this->combineFontDefinitions( $value );
+				if ($this->options['background-combine']) 	$value = $this->combineBackgroundDefinitions( $value );
+				if ($this->options['list-combine']) 		$value = $this->combineListProperties( $value );
+				if ($this->options['rm-multi-define']) 		$value = $this->removeMultipleDefinitions( $value );
+				$value = $this->removeEscapedURLs( $value );
 			}
 		}
+
 		// Kill the last semicolon
-		if ($this->options['unnecessary-semicolons']) $this->removeUnnecessarySemicolon();
+		if ( $this->options['unnecessary-semicolons'] ) {
+			$this->removeUnnecessarySemicolon();
+		}
 	}
 
 	/**
@@ -708,12 +742,12 @@ Class CSSCompression
 	 * @params none
 	 */ 
 	protected function lowercaseSelectors(){
-		foreach ($this->selectors as &$selector){
-			preg_match_all("/([^a-zA-Z])?([a-zA-Z]+)/i", $selector, $matches, PREG_OFFSET_CAPTURE);
-			for ($i=0,$imax=count($matches[0]); $i<$imax; $i++){
-				if ($matches[1][$i][0] !== '.' && $matches[1][$i][0] !== '#'){
+		foreach ( $this->selectors as &$selector ) {
+			preg_match_all( "/([^a-zA-Z])?([a-zA-Z]+)/i", $selector, $matches, PREG_OFFSET_CAPTURE );
+			for ( $i = 0, $imax = count( $matches[0] ); $i < $imax; $i++ ) {
+				if ( $matches[1][$i][0] !== '.' && $matches[1][$i][0] !== '#' ) {
 					$match = $matches[2][$i];
-					$selector = substr_replace($selector, strtolower($match[0]), $match[1], strlen($match[0]));
+					$selector = substr_replace( $selector, strtolower( $match[0] ), $match[1], strlen( $match[0] ) );
 				}
 			}
 		}
@@ -726,14 +760,20 @@ Class CSSCompression
 	 * @params none
 	 */ 
 	protected function combineMultiplyDefinedSelectors(){
-		$max = array_pop(array_keys($this->selectors))+1;
-		for ($i=0; $i<$max; $i++){
-			if (!$this->selectors[$i]) continue;
-			for ($k=$i+1; $k<$max; $k++){
-				if (!$this->selectors[$k]) continue;
-				if ($this->selectors[$i] == $this->selectors[$k]){
-					$this->details[$i] .= $this->details[$k];
-					unset($this->selectors[$k], $this->details[$k]);
+		$max = array_pop( array_keys( $this->selectors ) ) + 1;
+		for ( $i = 0; $i < $max; $i++ ) {
+			if ( ! isset( $this->selectors[ $i ] ) ) {
+				continue;
+			}
+
+			for ( $k = $i + 1; $k < $max; $k++ ) {
+				if ( ! isset( $this->selectors[ $k ] ) ) {
+					continue;
+				}
+
+				if ( $this->selectors[ $i ] == $this->selectors[ $k ] ) {
+					$this->details[ $i ] .= $this->details[ $k ];
+					unset( $this->selectors[ $k ], $this->details[ $k ] );
 				}
 			}
 		}
@@ -746,18 +786,25 @@ Class CSSCompression
 	 * @params none
 	 */ 
 	protected function combineMultiplyDefinedDetails(){
-		$max = array_pop(array_keys($this->selectors))+1;
-		for ($i=0; $i<$max; $i++){
-			if (!$this->selectors[$i]) continue;
-			$arr = preg_split($this->r_semicolon, $this->details[$i]);
-			for ($k=$i+1; $k<$max; $k++){
-				if (!$this->selectors[$k]) continue;
-				$match = preg_split($this->r_semicolon, $this->details[$k]);
-				$x = array_diff($arr, $match);
-				$y = array_diff($match, $arr);
-				if (count($x) < 1 && count($y) < 1){
-					$this->selectors[$i] .= ','.$this->selectors[$k];
-					unset($this->details[$k], $this->selectors[$k]);
+		$max = array_pop( array_keys( $this->selectors ) ) + 1;
+		for ( $i = 0; $i < $max; $i++ ) {
+			if ( ! isset( $this->selectors[ $i ] ) ) {
+				continue;
+			}
+
+			$arr = preg_split( $this->r_semicolon, $this->details[ $i ] );
+			for ( $k = $i + 1; $k < $max; $k++ ) {
+				if ( ! isset( $this->selectors[ $k ] ) ) {
+					continue;
+				}
+
+				$match = preg_split( $this->r_semicolon, $this->details[ $k ] );
+				$x = array_diff( $arr, $match );
+				$y = array_diff( $match, $arr );
+
+				if ( count( $x ) < 1 && count( $y ) < 1 ) {
+					$this->selectors[ $i ] .= ',' . $this->selectors[ $k ];
+					unset( $this->details[ $k ], $this->selectors[ $k ] );
 				}
 			}
 		}
@@ -768,23 +815,32 @@ Class CSSCompression
 	 *
 	 * @param (string) val: CSS Selector Properties
 	 */ 
-	protected function combineCSWproperties($val){
+	protected function combineCSWproperties( $val ) {
 		$storage = array();
 		$pattern = "/(border|outline)-(color|style|width):(.*?);/is";
-		preg_match_all($pattern, $val, $matches);
-		for ($i=0; $i<count($matches[1]); $i++){
-			$storage[strtolower($matches[1][$i])][strtolower($matches[2][$i])] = $matches[3][$i];
+		preg_match_all( $pattern, $val, $matches );
+
+		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
+			$a = strtolower( $matches[ 1 ][ $i ] );
+			$b = strtolower( $matches[ 2 ][ $i ] );
+
+			if ( ! isset( $storage[ $a ] ) ) {
+				$storage[ $a ] = array();
+			}
+
+			$storage[ $a ][ $b ] = $matches[ 3 ][ $i ];
 		}
 
 		// Go through each tag for possible combination
-		foreach($storage as $tag => $arr){
+		foreach ( $storage as $tag => $arr ) {
 			// Make sure all 3 are defined and they aren't directionals
-			if (count($arr) == 3 && !$this->checkUncombinables($arr)){
+			if ( count( $arr ) == 3 && ! $this->checkUncombinables( $arr ) ) {
 				// String to replace each instance with
-				$replace = "$tag:".$arr['width'].' '.$arr['style'].' '.$arr['color'];
+				$replace = "$tag:" . $arr['width'] . ' ' . $arr['style'] . ' ' . $arr['color'];
 				// Replace every instance, as multiple declarations removal will correct it
-				foreach ($arr as $x=>$y)
-					$val = str_ireplace("$tag-$x:$y", $replace, $val);
+				foreach ( $arr as $x => $y ) {
+					$val = str_ireplace( "$tag-$x:$y", $replace, $val );
+				}
 			}
 		}
 
@@ -797,22 +853,31 @@ Class CSSCompression
 	 *
 	 * @param (string) val: CSS Selector Properties
 	 */ 
-	protected function combineAuralCuePause($val){
+	protected function combineAuralCuePause( $val ) {
 		$storage = array();
 		$pattern = "/(cue|pause)-(before|after):(.*?);/i";
-		preg_match_all($pattern, $val, $matches);
-		for ($i=0; $i<count($matches[1]); $i++){
-			$storage[strtolower($matches[1][$i])][strtolower($matches[2][$i])] = $matches[3][$i];
+		preg_match_all( $pattern, $val, $matches );
+
+		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
+			$a = strtolower( $matches[ 1 ][ $i ] );
+			$b = strtolower( $matches[ 2 ][ $i ] );
+
+			if ( ! isset( $storage[ $a ] ) ) {
+				$storage[ $a ] = array();
+			}
+
+			$storage[ $a ][ $b ] = $matches[ 3 ][ $i ];
 		}
 
 		// Go through each tag for possible combination
-		foreach($storage as $tag => $arr){
-			if (count($arr) == 2 && !$this->checkUncombinables($arr)){
+		foreach ( $storage as $tag => $arr ) {
+			if ( count( $arr ) == 2 && ! $this->checkUncombinables( $arr ) ) {
 				// String to replace each instance with
-				$replace = "$tag:".$arr['before'].' '.$arr['after'];
+				$replace = "$tag:" . $arr['before'] . ' ' . $arr['after'];
 				// Replace every instance, as multiple declarations removal will correct it
-				foreach ($arr as $x=>$y)
-					$val = str_ireplace("$tag-$x:$y", $replace, $val);
+				foreach ( $arr as $x => $y ) {
+					$val = str_ireplace( "$tag-$x:$y", $replace, $val );
+				}
 			}
 		}
 
@@ -826,44 +891,53 @@ Class CSSCompression
 	 *
 	 * @param (string) val: CSS Selector Properties
 	 */ 
-	protected function combineMPproperties($val){
+	protected function combineMPproperties( $val ) {
 		$storage = array();
 		$pattern = "/(margin|padding)-(top|right|bottom|left):(.*?);/i";
-		preg_match_all($pattern, $val, $matches);
-		for ($i=0; $i<count($matches[1]); $i++){
-			if (!isset($storage[$matches[1][$i]])) $storage[$matches[1][$i]] = array($matches[2][$i] => $matches[3][$i]);
+		preg_match_all( $pattern, $val, $matches );
+
+		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++){
+			if ( ! isset( $storage[ $matches[1][$i] ] ) ) {
+				$storage[ $matches[1][$i] ] = array( $matches[2][$i] => $matches[3][$i] );
+			}
+
 			// Override double written properties
 			$storage[$matches[1][$i]][$matches[2][$i]] = $matches[3][$i];
 		}
 
 		// Go through each tag for possible combination
-		foreach($storage as $tag => $arr){
+		foreach ( $storage as $tag => $arr ) {
 			// Drop capitols
-			$tag = strtolower($tag);
+			$tag = strtolower( $tag );
+
 			// Only combine if all 4 definitions are found
-			if (count($arr) == 4 && !$this->checkUncombinables($arr)){
+			if ( count( $arr ) == 4 && ! $this->checkUncombinables( $arr ) ) {
 				// If all definitions are the same, combine into single definition
-				if ($arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['left']){
+				if ( $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['left'] ) {
 					// String to replace each instance with
-					$replace = "$tag:".$arr['top'];
+					$replace = "$tag:" . $arr['top'];
+
 					// Replace every instance, as multiple declarations removal will correct it
-					foreach ($arr as $a=>$b)
-						$val = str_ireplace("$tag-$a:$b", $replace, $val);
+					foreach ( $arr as $a => $b ) {
+						$val = str_ireplace( "$tag-$a:$b", $replace, $val );
+					}
 				}
 				// If opposites are the same, combine into single definition
-				else if ($arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right']){
+				else if ( $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] ) {
 					// String to replace each instance with
-					$replace = "$tag:".$arr['top'].' '.$arr['left'];
+					$replace = "$tag:" . $arr['top'] . ' ' . $arr['left'];
 					// Replace every instance, as multiple declarations removal will correct it
-					foreach ($arr as $a=>$b)
-						$val = str_ireplace("$tag-$a:$b", $replace, $val);
+					foreach ( $arr as $a => $b ) {
+						$val = str_ireplace( "$tag-$a:$b", $replace, $val );
+					}
 				}
 				else{
 					// String to replace each instance with
-					$replace = "$tag:".$arr['top'].' '.$arr['right'].' '.$arr['bottom'].' '.$arr['left'];
+					$replace = "$tag:" . $arr['top'] . ' ' . $arr['right'] . ' ' . $arr['bottom'] . ' ' . $arr['left'];
 					// Replace every instance, as multiple declarations removal will correct it
-					foreach ($arr as $a=>$b)
-						$val = str_ireplace("$tag-$a:$b", $replace, $val);
+					foreach ( $arr as $a => $b ) {
+						$val = str_ireplace( "$tag-$a:$b", $replace, $val );
+					}
 				}
 			}
 		}
@@ -877,23 +951,32 @@ Class CSSCompression
 	 *
 	 * @param (string) val: CSS Selector Properties
 	 */
-	protected function combineBorderDefinitions($val){
+	protected function combineBorderDefinitions( $val ) {
 		$storage = array();
 		$pattern = "/(border)-(top|right|bottom|left):(.*?);/i";
-		preg_match_all($pattern, $val, $matches);
-		for ($i=0; $i<count($matches[1]); $i++){
-			if (!isset($storage[$matches[1][$i]])) $storage[$matches[1][$i]] = array($matches[2][$i] => $matches[3][$i]);
-			// Override double written properties
-			$storage[$matches[1][$i]][$matches[2][$i]] = $matches[3][$i];
+		preg_match_all( $pattern, $val, $matches );
+
+		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
+			$a = $matches[1][$i];
+			$b = $matches[2][$i];
+
+			if ( ! isset( $storage[ $a ] ) ) {
+				$storage[ $a ] = array(  $b => $matches[ 3 ][ $i ] );
+			}
+			else {
+				$storage[ $a ][ $b ] = $matches[ 3 ][ $i ];
+			}
 		}
 
-		foreach ($storage as $tag => $arr){
-			if (count($arr) == 4 && $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['right']){
+		foreach ( $storage as $tag => $arr ) {
+			if ( count( $arr ) == 4 && $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['right'] ) {
 				// String to replace each instance with
-				$replace = "$tag:".$arr['top'];
+				$replace = "$tag:" . $arr['top'];
+
 				// Replace every instance, as multiple declarations removal will correct it
-				foreach ($arr as $a=>$b)
-					$val = str_ireplace("$tag-$a:$b", $replace, $val);
+				foreach ( $arr as $a => $b ) {
+					$val = str_ireplace( "$tag-$a:$b", $replace, $val );
+				}
 			}
 		}
 
@@ -906,53 +989,57 @@ Class CSSCompression
 	 *
 	 * @param (string) val: CSS Selector Properties
 	 */ 
-	protected function combineFontDefinitions($val){
+	protected function combineFontDefinitions( $val ) {
 		$storage = array();
 		$pattern = "/(font|line)-(style|variant|weight|size|height|family):(.*?);/i";
-		preg_match_all($pattern, $val, $matches);
-		for ($i=0; $i<count($matches[1]); $i++){
+		preg_match_all( $pattern, $val, $matches );
+
+		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 			// Store each property in it's full state
-			$storage[$matches[1][$i].'-'.$matches[2][$i]] = $matches[3][$i];
+			$storage[ $matches[1][$i] . '-' . $matches[2][$i] ] = $matches[3][$i];
 		}
 
 		// Combine font-size & line-height if possible
-		if (isset($storage['font-size']) && isset($storage['line-height'])){
-			$storage['size/height'] = $storage['font-size'].'/'.$storage['line-height'];
-			unset($storage['font-size'], $storage['line-height']);
+		if ( isset( $storage['font-size'] ) && isset( $storage['line-height'] ) ) {
+			$storage['size/height'] = $storage['font-size'] . '/' . $storage['line-height'];
+			unset( $storage['font-size'], $storage['line-height'] );
 		}
 
 		// Setup property groupings
 		$fonts = array(
-			array('font-style', 'font-variant', 'font-weight', 'size/height', 'font-family'),
-			array('font-style', 'font-variant', 'font-weight', 'font-size', 'font-family'),
-			array('font-style', 'font-variant', 'size/height', 'font-family'),
-			array('font-style', 'font-variant', 'font-size', 'font-family'),
-			array('font-style', 'font-weight', 'size/height', 'font-family'),
-			array('font-style', 'font-weight', 'font-size', 'font-family'),
-			array('font-variant', 'font-weight', 'size/height', 'font-family'),
-			array('font-variant', 'font-weight', 'font-size', 'font-family'),
-			array('font-weight', 'size/height', 'font-family'),
-			array('font-weight', 'font-size', 'font-family'),
-			array('font-variant', 'size/height', 'font-family'),
-			array('font-variant', 'font-size', 'font-family'),
-			array('font-style', 'size/height', 'font-family'),
-			array('font-style', 'font-size', 'font-family'),
-			array('size/height', 'font-family'),
-			array('font-size', 'font-family'),
+			array( 'font-style', 'font-variant', 'font-weight', 'size/height', 'font-family' ),
+			array( 'font-style', 'font-variant', 'font-weight', 'font-size', 'font-family' ),
+			array( 'font-style', 'font-variant', 'size/height', 'font-family' ),
+			array( 'font-style', 'font-variant', 'font-size', 'font-family' ),
+			array( 'font-style', 'font-weight', 'size/height', 'font-family' ),
+			array( 'font-style', 'font-weight', 'font-size', 'font-family' ),
+			array( 'font-variant', 'font-weight', 'size/height', 'font-family' ),
+			array( 'font-variant', 'font-weight', 'font-size', 'font-family' ),
+			array( 'font-weight', 'size/height', 'font-family' ),
+			array( 'font-weight', 'font-size', 'font-family' ),
+			array( 'font-variant', 'size/height', 'font-family' ),
+			array( 'font-variant', 'font-size', 'font-family' ),
+			array( 'font-style', 'size/height', 'font-family' ),
+			array( 'font-style', 'font-size', 'font-family' ),
+			array( 'size/height', 'font-family' ),
+			array( 'font-size', 'font-family' ),
 		);
 
 		// Loop through each property check and see if they can be replaced
-		foreach ($fonts as $props){
-			if ($replace = $this->searchDefinitions('font', $storage, $props))
+		foreach ( $fonts as $props ) {
+			if ( $replace = $this->searchDefinitions( 'font', $storage, $props ) ) {
 				break;
+			}
 		}
 
 		// If replacement string found, run it on all options
-		if ($replace){
-			for ($i=0; $i<count($matches[1]); $i++)
-				if (! isset($storage['line-height']) || 
-					(isset($storage['line-height']) && stripos($matches[0][$i], 'line-height') !== 0))
-						$val = str_ireplace($matches[0][$i], $replace, $val);
+		if ( $replace ) {
+			for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
+				if ( ! isset( $storage['line-height'] ) || 
+					( isset( $storage['line-height'] ) && stripos( $matches[0][$i], 'line-height') !== 0 ) ) {
+						$val = str_ireplace( $matches[0][$i], $replace, $val );
+				}
+			}
 		}
 
 		// Return converted val
@@ -964,48 +1051,51 @@ Class CSSCompression
 	 *
 	 * @param (string) val: CSS Selector Properties
 	 */ 
-	protected function combineBackgroundDefinitions($val){
+	protected function combineBackgroundDefinitions( $val ) {
 		$storage = array();
 		$pattern = "/background-(color|image|repeat|attachment|position):(.*?);/i";
-		preg_match_all($pattern, $val, $matches);
-		for ($i=0; $i<count($matches[1]); $i++){
+		preg_match_all( $pattern, $val, $matches );
+
+		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 			// Store each property in it's full state
-			$storage[$matches[1][$i]] = $matches[2][$i];
+			$storage[ $matches[1][$i] ] = $matches[2][$i];
 		}
 
 		// List of background props to check
 		$backgrounds = array(
 			// With color
-			array('color', 'image', 'repeat', 'attachment', 'position'),
-			array('color', 'image', 'attachment', 'position'),
-			array('color', 'image', 'repeat', 'position'),
-			array('color', 'image', 'repeat', 'attachment'),
-			array('color', 'image', 'repeat'),
-			array('color', 'image', 'attachment'),
-			array('color', 'image', 'position'),
-			array('color', 'image'),
+			array( 'color', 'image', 'repeat', 'attachment', 'position' ),
+			array( 'color', 'image', 'attachment', 'position' ),
+			array( 'color', 'image', 'repeat', 'position' ),
+			array( 'color', 'image', 'repeat', 'attachment' ),
+			array( 'color', 'image', 'repeat' ),
+			array( 'color', 'image', 'attachment' ),
+			array( 'color', 'image', 'position' ),
+			array( 'color', 'image' ),
 			// Without Color
-			array('image', 'attachment', 'position'),
-			array('image', 'repeat', 'position'),
-			array('image', 'repeat', 'attachment'),
-			array('image', 'repeat'),
-			array('image', 'attachment'),
-			array('image', 'position'),
-			array('image'),
+			array( 'image', 'attachment', 'position' ),
+			array( 'image', 'repeat', 'position' ),
+			array( 'image', 'repeat', 'attachment' ),
+			array( 'image', 'repeat' ),
+			array( 'image', 'attachment' ),
+			array( 'image', 'position' ),
+			array( 'image' ),
 			// Just Color
-			array('color'),
+			array( 'color' ),
 		);
 
 		// Run background checks and get replacement str
-		foreach ($backgrounds as $props){
-			if ($replace = $this->searchDefinitions('background', $storage, $props))
+		foreach ( $backgrounds as $props ) {
+			if ( $replace = $this->searchDefinitions( 'background', $storage, $props ) ) {
 				break;
+			}
 		}
 
 		// If replacement string found, run it on all options
-		if ($replace){
-			for ($i=0; $i<count($matches[1]); $i++)
-				$val = str_ireplace($matches[0][$i], $replace, $val);
+		if ( $replace ) {
+			for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
+				$val = str_ireplace( $matches[0][$i], $replace, $val );
+			}
 		}
 
 		// Return converted val
@@ -1017,35 +1107,39 @@ Class CSSCompression
 	 *
 	 * @param (string) val: CSS Selector Properties
 	 */ 
-	protected function combineListProperties($val){
+	protected function combineListProperties( $val ) {
 		$storage = array();
 		$pattern = "/list-style-(type|position|image):(.*?);/i";
-		preg_match_all($pattern, $val, $matches);
+		preg_match_all( $pattern, $val, $matches );
+
 		// Store secondhand prop
-		for ($i=0; $i<count($matches[1]); $i++)
-			$storage[$matches[1][$i]] = $matches[2][$i];
+		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
+			$storage[ $matches[1][$i] ] = $matches[2][$i];
+		}
 
 		// List os list-style props to check against
 		$lists = array(
-			array('type', 'position', 'image'),
-			array('type', 'position'),
-			array('type', 'image'),
-			array('position', 'image'),
-			array('type'),
-			array('position'),
-			array('image'),
+			array( 'type', 'position', 'image' ),
+			array( 'type', 'position' ),
+			array( 'type', 'image' ),
+			array( 'position', 'image' ),
+			array( 'type' ),
+			array( 'position' ),
+			array( 'image' ),
 		);
 
 		// Run background checks and get replacement str
-		foreach ($lists as $props){
-			if ($replace = $this->searchDefinitions('list-style', $storage, $props))
+		foreach ( $lists as $props ) {
+			if ( $replace = $this->searchDefinitions( 'list-style', $storage, $props ) ) {
 				break;
+			}
 		}
 
 		// If replacement string found, run it on all options
-		if ($replace){
-			for ($i=0; $i<count($matches[1]); $i++)
-				$val = str_ireplace($matches[0][$i], $replace, $val);
+		if ( $replace ) {
+			for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
+				$val = str_ireplace( $matches[0][$i], $replace, $val );
+			}
 		}
 
 		// Return converted val
@@ -1058,14 +1152,17 @@ Class CSSCompression
 	 *
 	 * @param (array/string) obj: Array/String of definitions to be checked
 	 */ 
-	protected function checkUncombinables($obj){
-		if (is_array($obj)){
-			foreach ($obj as $item)
-				if (preg_match("/inherit|\!important|\s/i", $item))
+	protected function checkUncombinables( $obj ) {
+		if ( is_array( $obj ) ) {
+			foreach ( $obj as $item ) {
+				if ( preg_match( "/inherit|\!important|\s/i", $item ) ) {
 					return true;
+				}
+			}
 			return false;
-		}else{
-			return preg_match("/inherit|\!important|\s/i", $obj);
+		}
+		else {
+			return preg_match( "/inherit|\!important|\s/i", $obj );
 		}
 	}
 
@@ -1077,17 +1174,20 @@ Class CSSCompression
 	 * @param (array) storage: Array of definitions found
 	 * @param (array) search: Array of definitions requred
 	 */ 
-	protected function searchDefinitions($prop, $storage, $search){
+	protected function searchDefinitions( $prop, $storage, $search ) {
 		// Return storage & search don't match
-		if (count($storage) != count($search))
+		if ( count( $storage ) != count( $search ) ) {
 			return false;
-		$str = "$prop:";
-		foreach ($search as $value){
-			if (!isset($storage[$value]) || $this->checkUncombinables($storage[$value]))
-				return false;
-			$str .= $storage[$value].' ';
 		}
-		return trim($str).';';
+
+		$str = "$prop:";
+		foreach ( $search as $value ) {
+			if ( ! isset( $storage[ $value ] ) || $this->checkUncombinables( $storage[ $value ] ) ) {
+				return false;
+			}
+			$str .= $storage[ $value ] . ' ';
+		}
+		return trim( $str ) . ';';
 	}
 
 	/**
@@ -1095,19 +1195,22 @@ Class CSSCompression
 	 *
 	 * @param (string) val: CSS Selector Properties
 	 */ 
-	protected function removeMultipleDefinitions($val = ''){
+	protected function removeMultipleDefinitions( $val = '' ) {
 		$storage = array();
-		$arr = preg_split($this->r_semicolon, $val);
-		foreach($arr as $x){
-			if ($x){
-				list($a, $b) = preg_split($this->r_colon, $x, 2);
-				$storage[$a] = $b;
+		$arr = preg_split( $this->r_semicolon, $val );
+
+		foreach ( $arr as $x ) {
+			if ( $x ) {
+				list( $a, $b ) = preg_split( $this->r_colon, $x, 2 );
+				$storage[ $a ] = $b;
 			}
 		}
-		if ($storage){
-			unset($val);
-			foreach($storage as $x=>$y)
+
+		if ( $storage ) {
+			$val = '';
+			foreach ( $storage as $x => $y ) {
 				$val .= "$x:$y;";
+			}
 		}
 
 		// Return converted val
@@ -1120,12 +1223,13 @@ Class CSSCompression
 	 * @params none
 	 */ 
 	protected function removeEscapedURLs($str){
-		$search = array("\\:", "\\;", "\\ ");
-		$replace = array(':', ';', ' ');
-		preg_match_all("/url\((.*?)\)/", $str, $matches, PREG_OFFSET_CAPTURE);
-		for ($i=0, $imax=count($matches[0]); $i<$imax; $i++){
-			$value = 'url(' . str_replace($search, $replace, $matches[1][$i][0]) . ')';
-			$str = substr_replace($str, $value, $matches[0][$i][1], strlen($matches[0][$i][0]));
+		$search = array( "\\:", "\\;", "\\ " );
+		$replace = array( ':', ';', ' ' );
+		preg_match_all( "/url\((.*?)\)/", $str, $matches, PREG_OFFSET_CAPTURE );
+
+		for ( $i = 0, $imax = count( $matches[0] ); $i < $imax; $i++ ) {
+			$value = 'url(' . str_replace( $search, $replace, $matches[1][$i][0] ) . ')';
+			$str = substr_replace( $str, $value, $matches[0][$i][1], strlen( $matches[0][$i][0] ) );
 		}
 
 		// Return unescaped string
@@ -1138,8 +1242,9 @@ Class CSSCompression
 	 * @params none
 	 */ 
 	protected function removeUnnecessarySemicolon(){
-		foreach ($this->details as &$value)
-			$value = preg_replace("/;$/", '', $value);
+		foreach ( $this->details as &$value ) {
+			$value = preg_replace( "/;$/", '', $value );
+		}
 	}
 
 	/**
@@ -1149,19 +1254,22 @@ Class CSSCompression
 	 */ 
 	protected function runFinalStatistics(){
 		// Selectors and props
-		$this->stats['after']['selectors'] = count($this->selectors);
-		foreach ($this->details as $item){
-			$props = preg_split($this->r_semicolon, $item);
+		$this->stats['after']['selectors'] = count( $this->selectors );
+		foreach ( $this->details as $item ) {
+			$props = preg_split( $this->r_semicolon, $item );
+
 			// Make sure count is true
-			foreach ($props as $k=>$v)
-				if (!isset($v) || $v == '') 
-					unset($props[$k]);
-			$this->stats['after']['props'] += count($props);
+			foreach ( $props as $k => $v ) {
+				if ( ! isset( $v ) || $v == '' ) {
+					unset( $props[ $k ] );
+				}
+			}
+			$this->stats['after']['props'] += count( $props );
 		}
 
 		// Final count for stats
-		$this->stats['after']['size'] = strlen($this->css);
-		$this->stats['after']['time'] = array_sum(explode(' ', microtime()));
+		$this->stats['after']['size'] = strlen( $this->css );
+		$this->stats['after']['time'] = array_sum( explode( ' ', microtime() ) );
 	}
 
 	/**
@@ -1169,53 +1277,72 @@ Class CSSCompression
 	 *
 	 * @param (string) import: CSS Import property removed at beginning
 	 */ 
-	protected function readability($import = ''){
+	protected function readability( $import = '' ) {
 		$css = '';
-		if ($this->options['readability'] == self::READ_MAX){
-			$css = str_replace(';', ";\n", $import);
-			if ($import) $css .= "\n";
-			foreach ($this->selectors as $k=>$v){
-				if (! $this->details[$k] || trim($this->details[$k]) == '')
+		if ( $this->options['readability'] == self::READ_MAX ) {
+			$css = str_replace( ';', ";\n", $import );
+			if ( $import ) {
+				$css .= "\n";
+			}
+
+			foreach ( $this->selectors as $k => $v ) {
+				if ( ! $this->details[ $k ] || trim( $this->details[ $k ] ) == '' ) {
 					continue;
-				$v = str_replace('>', ' > ', $v);
-				$v = str_replace('+', ' + ', $v);
-				$v = str_replace(',', ', ', $v);
+				}
+
+				$v = str_replace( '>', ' > ', $v );
+				$v = str_replace( '+', ' + ', $v );
+				$v = str_replace( ',', ', ', $v );
 				$css .= "$v {\n";
-				$arr = preg_split($this->r_semicolon, $this->details[$k]);
-				foreach ($arr as $item){
-					if (!$item) continue;
-					list ($prop, $val) = preg_split($this->r_colon, $item, 2);
+				$arr = preg_split( $this->r_semicolon, $this->details[ $k ] );
+
+				foreach ( $arr as $item ) {
+					if ( ! $item ) {
+						continue;
+					}
+
+					list( $prop, $val ) = preg_split( $this->r_colon, $item, 2 );
 					$css .= "\t$prop: $val;\n";
 				}
+
 				// Last semicolon isn't necessay, so don't keep it if possible
-				if ($this->options['unnecessary-semicolons']) $css = preg_replace("/;\n$/", "\n", $css);
+				if ( $this->options['unnecessary-semicolons'] ) {
+					$css = preg_replace( "/;\n$/", "\n", $css );
+				}
+
 				$css .= "}\n\n";
 			}
 		}
-		else if ($this->options['readability'] == self::READ_MED){
-			$css = str_replace(';', ";\n", $import);
-			foreach ($this->selectors as $k=>$v)
-				if ($this->details[$k] && $this->details[$k] != '')
-					$css .= "$v {\n\t".$this->details[$k]."\n}\n";
+		else if ( $this->options['readability'] == self::READ_MED ) {
+			$css = str_replace( ';', ";\n", $import );
+			foreach ( $this->selectors as $k => $v ) {
+				if ( $this->details[ $k ] && $this->details[ $k ] != '' ) {
+					$css .= "$v {\n\t" . $this->details[ $k ] . "\n}\n";
+				}
+			}
 		}
-		else if ($this->options['readability'] == self::READ_MIN){
-			$css = str_replace(';', ";\n", $import);
-			foreach ($this->selectors as $k=>$v)
-				if ($this->details[$k] && $this->details[$k] != '')
-					$css .= "$v{".$this->details[$k]."}\n";
+		else if ( $this->options['readability'] == self::READ_MIN ) {
+			$css = str_replace( ';', ";\n", $import );
+			foreach ( $this->selectors as $k => $v ) {
+				if ( $this->details[ $k ] && $this->details[ $k ] != '' ) {
+					$css .= "$v{" . $this->details[ $k ] . "}\n";
+				}
+			}
 		}
-		else if ($this->options['readability'] == self::READ_NONE){
+		else if ( $this->options['readability'] == self::READ_NONE ) {
 			$css = $import;
-			foreach ($this->selectors as $k=>$v)
-				if ($this->details[$k] && $this->details[$k] != '')
-					$css .= trim("$v{".$this->details[$k]."}");
+			foreach ( $this->selectors as $k => $v ) {
+				if ( $this->details[ $k ] && $this->details[ $k ] != '' ) {
+					$css .= trim( "$v{" . $this->details[ $k ] . "}" );
+				}
+			}
 		}
 		else {
 			$css = 'Invalid Readability Value';
 		}
 
 		// Return formatted script
-		return trim($css);
+		return trim( $css );
 	}
 
 	/**
@@ -1230,13 +1357,13 @@ Class CSSCompression
 
 		// Calc sizes for template
 		$size = array(
-			'before' => $this->displaySizes($before['size']),
-			'after' => $this->displaySizes($after['size']),
-			'final' => $this->displaySizes($before['size']-$after['size']),
+			'before' => $this->displaySizes( $before['size'] ),
+			'after' => $this->displaySizes( $after['size'] ),
+			'final' => $this->displaySizes( $before['size'] - $after['size'] ),
 		);
 
 		// Stats Template
-		include(CSSC_VARS_DIR . 'stats.php');
+		include( CSSC_VARS_DIR . 'stats.php' );
 	}
 
 	/**
@@ -1244,10 +1371,12 @@ Class CSSCompression
 	 *
 	 * @param (int) size: File size in Bytes
 	 */ 
-	protected function displaySizes($size = 0){
-		$ext = array('B', 'K', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
-		for($c=0; $size>1024; $c++) $size /= 1024;
-		return round($size,2) . $ext[$c];
+	protected function displaySizes( $size = 0 ) {
+		$ext = array( 'B', 'K', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
+		for( $c = 0; $size > 1024; $c++ ) {
+			$size /= 1024;
+		}
+		return round( $size, 2 ) . $ext[ $c ];
 	}
 };
 

@@ -1,4 +1,4 @@
-[CSS Compressor](http://www.codenothing.com/archives/php/css-compressor/)
+[CSS Compressor](http://www.codenothing.com/css-compressor/)
 ========================
 
 PHP Based CSS Compressor.
@@ -7,7 +7,7 @@ PHP Based CSS Compressor.
 Usage
 -----
 
-	$CSSC = new CSSCompressor($css, $options);
+	$CSSC = new CSSCompressor( $css, $options );
 	echo $CSSC->css;
 
 Credits

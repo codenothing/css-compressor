@@ -125,8 +125,14 @@ Class CSScompressionTestUnit Extends CSSCompression
 		$this->combineMultiplyDefinedSelectors();
 		include(AFTER . 'combineMultiplyDefinedSelectors.php');
 		$max = array_pop(array_keys($this->selectors))+1;
-		for ($i=0; $i<$max; $i++){
-			$this->mark('Selector Combination', $i, ($this->selectors[$i] === $selectors[$i] && $this->details[$i] === $details[$i]));
+		for ( $i = 0; $i < $max; $i++ ) {
+			if ( isset( $this->selectors[ $i ] ) && isset( $this->details[ $i ] ) ) {
+				$this->mark(
+					'Selector Combination', 
+					$i, 
+					( $this->selectors[ $i ] === $selectors[ $i ] && $this->details[ $i ] === $details[ $i ] )
+				);
+			}
 		}
 	}
 
@@ -143,7 +149,13 @@ Class CSScompressionTestUnit Extends CSSCompression
 		include(AFTER . 'combineMultiplyDefinedDetails.php');
 		$max = array_pop(array_keys($this->selectors))+1;
 		for ($i=0; $i<$max; $i++){
-			$this->mark('Selector Combination', $i, ($this->selectors[$i] === $selectors[$i] && $this->details[$i] === $details[$i]));
+			if ( isset( $this->selectors[ $i ] ) && isset( $this->details[ $i ] ) ) {
+				$this->mark(
+					'Selector Combination',
+					$i,
+					( $this->selectors[ $i ] === $selectors[ $i ] && $this->details[ $i ] === $details[ $i ] )
+				);
+			}
 		}
 	}
 
