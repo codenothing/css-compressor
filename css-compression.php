@@ -77,11 +77,13 @@ Class CSSCompression
 	public function __construct( $css = '', $prefs = array() ) {
 		// Setup the options
 		$this->resetOptions();
-		$this->mergeOptions( $prefs );
 
 		// Automatically compress css if passed
 		if ( $css && $css != '' ) {
-			$this->compress( $css );
+			$this->compress( $css, $prefs );
+		}
+		else if ( $prefs ) {
+			$this->mergeOptions( $prefs );
 		}
 	}
 
@@ -245,9 +247,13 @@ Class CSSCompression
 	 *
 	 * @param (string) css: CSS Contents
 	 */ 
-	public function compress( $css ) {
+	public function compress( $css, $prefs = array() ) {
 		// Start the timer
 		$initialTime = array_sum( explode( ' ', microtime() ) );
+
+		if ( $prefs ) {
+			$this->mergeOptions( $prefs );
+		}
 
 		// Flush out variables
 		$this->flush();
@@ -271,8 +277,8 @@ Class CSSCompression
 		// Add media string with comments to compress seperately
 		if ( $this->media_str ) {
 			$this->media = true;
-			$this->css = "/** Media Types are not compressed with this script, cut out and compress each section seperately **/"
-				."\n$this->media_str\n\n/** The rest of your CSS File **/\n$this->css";
+			$this->css = "/** Media Types are not compressed with this script, cut out and compress each section seperately **/\n"
+				. $this->media_str . "\n\n/** The rest of your CSS File **/\n" . $this->css;
 		}
 
 		// Run final statistics before sending back the css
@@ -305,7 +311,7 @@ Class CSSCompression
 			1 => "/(\/\*|\<\!\-\-)(.*?)(\*\/|\-\-\>)/s", // Remove all comments
 			2 => "/(\s+)?([,{};:>\+])(\s+)?/s", // Remove un-needed spaces around special characters
 			3 => "/url\(['\"](.*?)['\"]\)/s", // Remove quotes from urls
-			4 => "/;{2,}/is", // Remove unecessary semi-colons
+			4 => "/;{2,}/", // Remove unecessary semi-colons
 			5 => "/\s+/s", // Compress all spaces into single space
 			// Leave section open for additional entries
 
@@ -681,7 +687,6 @@ Class CSSCompression
 	 * @params none
 	 */ 
 	protected function runCompressionMethods(){
-		echo "Running special compressions<br>";
 		// Lowercase selectors for combining
 		if ( $this->options['lowercase-selectors'] ) {
 			$this->lowercaseSelectors();
@@ -694,7 +699,6 @@ Class CSSCompression
 			$this->combineMultiplyDefinedDetails();
 
 			foreach ( $this->details as &$value ) {
-				echo "Looping through details first start<br>";
 				if ($this->options['csw-combine'])		$value = $this->combineCSWproperties( $value );
 				if ($this->options['auralcp-combine'])		$value = $this->combineAuralCuePause( $value );
 				if ($this->options['mp-combine']) 		$value = $this->combineMPproperties( $value );
@@ -717,7 +721,6 @@ Class CSSCompression
 		// For when order is important, reason above
 		else {
 			foreach ( $this->details as &$value ) {
-				echo "Looping through second start<br>";
 				if ($this->options['csw-combine'])		$value = $this->combineCSWproperties( $value );
 				if ($this->options['auralcp-combine'])		$value = $this->combineAuralCuePause( $value );
 				if ($this->options['mp-combine']) 		$value = $this->combineMPproperties( $value );
