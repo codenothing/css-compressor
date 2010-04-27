@@ -691,16 +691,18 @@ Class CSSCompression
 			}
 
 			// Colornames are all lowercase
-			$low = strtolower($val);
-			if (isset($long2hex[$low]))
-				$val = $long2hex[$low];
+			$low = strtolower( $val );
+			if ( isset( $long2hex[ $low ] ) ) {
+				$val = $long2hex[ $low ];
+			}
 		}
 
 		// Convert 6 digit hex codes to short color names
 		if ($this->options['color-hex2shortcolor']){
 			// Static so files isn't included with every loop
-			if (!$hex2short)
-				include(CSSC_VARS_DIR . 'hex2short-colors.php');
+			if ( ! $hex2short ) {
+				include( CSSC_VARS_DIR . 'hex2short-colors.php' );
+			}
 
 			// Hex codes are all lowercase
 			$low = strtolower( $val );
@@ -1421,7 +1423,7 @@ Class CSSCompression
 	 *
 	 * @param (int) size: File size in Bytes
 	 */ 
-	protected function displaySizes( $size = 0 ) {
+	public function displaySizes( $size = 0 ) {
 		$ext = array( 'B', 'K', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
 		for( $c = 0; $size > 1024; $c++ ) {
 			$size /= 1024;

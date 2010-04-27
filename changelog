@@ -1,0 +1,15 @@
+###
+### CSS Compression [VERSION] Change Log
+### [DATE]
+### Corey Hart @ http://www.codenothing.com
+###
+
+# New Features
+- Better options handling
+- Look behind regexs are used to not break urls
+- Singleton access added
+- Exposing byte unit conversion display
+
+# Possible Breaks
+- The compressor no longer self instantiates itself, you must explicity initialize it.
+- Most methods that were never meant to be pulic, have been turned into private/protected based on accessiblity requirements.
