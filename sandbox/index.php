@@ -1,5 +1,9 @@
-<?php include(dirname(__FILE__).'/../css-compression.php') ?>
-<?php include(dirname(__FILE__).'/unit.php') ?>
+<?php
+$root = dirname(__FILE__);
+include( $root . '/../css-compression.php' );
+include( $root . '/sandbox.php' );
+include( $root . '/unit.php' );
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -42,7 +46,7 @@ Corey Hart @ http://www.codenothing.com
 	<th>Entry</th>
 	<th>Result</th>
 </tr>
-<?php new CSScompressionTestUnit; ?>
+<?php new CSScompressionTestUnit( $sandbox ); ?>
 </table>
 
 

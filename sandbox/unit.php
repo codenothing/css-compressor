@@ -6,8 +6,9 @@
  */
 
 // Before/After directories
-define('BEFORE', dirname(__FILE__).'/files/before/');
-define('AFTER', dirname(__FILE__).'/files/after/');
+// $root is borrowed from index.php
+define('BEFORE', $root . '/files/before/');
+define('AFTER', $root . '/files/after/');
 
 
 Class CSScompressionTestUnit Extends CSSCompression
@@ -16,18 +17,28 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * Class Variables
 	 *
 	 * @param (int) errors: Number of errors found
-	 */ 
+	 * @param (array) sandbox: Array containing test suite
+	 * @param (string) results: Result of all tests string for table
+	 */
 	private $errors = 0;
+	private $sandbox = array();
+	private $results = '';
 
 	/**
-	 * Constructor - runs the class
+	 * Constructor - runs the test suite
 	 *
 	 * @params none
 	 */ 
-	public function __construct(){
+	public function __construct( $sandbox ) {
 		parent::__construct('');
+
+		// Reset the local class vars
+		$this->sandbox = $sandbox;
+		$this->errors = 0;
+		$this->results = '';
+
 		$this->setOptions();
-		$this->mark('Start Test', 0, $this->errors == 0);
+		$this->mark( 'Start Test', 0, true );
 		$this->initialTrimTest();
 		$this->lineTesting();
 		$this->testSemicolon();
@@ -41,8 +52,9 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function setOptions(){
-		foreach ($this->options as $key => $value)
-			$this->options[$key] = true;
+		foreach ( $this->options as $key => $value ) {
+			$this->options[ $key ] = true;
+		}
 	}
 
 	/**
@@ -52,10 +64,10 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function initialTrimTest(){
-		$this->css = file_get_contents(BEFORE . 'initialTrim.css');
-		$after = file_get_contents(AFTER . 'initialTrim.css');
+		$this->css = file_get_contents( BEFORE . 'initialTrim.css' );
+		$after = file_get_contents( AFTER . 'initialTrim.css' );
 		$this->initialTrim();
-		$this->mark('initialTrim.css', 'all', trim($this->css) == trim($after));
+		$this->mark( 'initialTrim.css', 'all', trim( $this->css ) == trim( $after ) );
 	}
 
 	/**
@@ -66,28 +78,30 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function lineTesting(){
-		include('line-testing.php');
-		foreach ($testarr as $fn => $tests){
+		foreach ( $this->sandbox as $fn => $tests ) {
 			$i = 0;
-			foreach ($tests as $before => $after){
-				if ($fn == 'runSpecialCompressions'){
-					list ($prop, $val) = explode(':', $before);
-					list ($prop, $val) = $this->runSpecialCompressions($prop, $val);
-					$passed = ("$prop:$val"==$after);
-				}else if ($fn == 'lowercaseSelectors'){
-					$this->selectors = array($before);
+			foreach ( $tests as $before => $after ) {
+				if ( $fn == 'runSpecialCompressions' ) {
+					list ( $prop, $val ) = explode( ':', $before );
+					list ( $prop, $val ) = $this->runSpecialCompressions( $prop, $val );
+					$passed = ( "$prop:$val" == $after );
+				}
+				else if ( $fn == 'lowercaseSelectors' ) {
+					$this->selectors = array( $before );
 					$this->$fn();
-					$passed = ($this->selectors[0] == $after);
-				}else if ($fn == 'removeUnnecessarySemicolon'){
-					$this->details = array($before);
+					$passed = ( $this->selectors[0] == $after );
+				}
+				else if ( $fn == 'removeUnnecessarySemicolon' ) {
+					$this->details = array( $before );
 					$this->$fn();
-					$passed = ($this->details[0] == $after);
-				}else{
+					$passed = ( $this->details[0] == $after );
+				}
+				else{
 					// Each function replaces all instances with compressed version of prop, so
 					// add the remove multiply definitions for easier testing
-					$passed = ($this->$fn($before) == $after);
+					$passed = ( $this->$fn( $before ) == $after );
 				}
-				$this->mark($fn, $i++, $passed);
+				$this->mark( $fn, $i++, $passed );
 			}
 		}
 	}
@@ -102,14 +116,16 @@ Class CSScompressionTestUnit Extends CSSCompression
 			'color:blue;',
 			'color:blue;font-size:12pt;',
 		);
+
 		$after = array(
 			'color:blue',
 			'color:blue;font-size:12pt',
 		);
+
 		$this->removeUnnecessarySemicolon();
-		$max = array_pop(array_keys($this->details))+1;
-		for ($i=0; $i<$max; $i++){
-			$this->mark('Unnecessary Semicolons', $i, ($this->details[$i] === $after[$i]));
+		$max = array_pop( array_keys( $this->details ) ) + 1;
+		for ( $i = 0; $i < $max; $i++ ) {
+			$this->mark( 'Unnecessary Semicolons', $i, ( $this->details[ $i ] === $after[ $i ] ) );
 		}
 	}
 
@@ -119,12 +135,12 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function testSelectorCombination(){
-		include(BEFORE . 'combineMultiplyDefinedSelectors.php');
+		include( BEFORE . 'combineMultiplyDefinedSelectors.php' );
 		$this->selectors = $selectors;
 		$this->details = $details;
 		$this->combineMultiplyDefinedSelectors();
-		include(AFTER . 'combineMultiplyDefinedSelectors.php');
-		$max = array_pop(array_keys($this->selectors))+1;
+		include( AFTER . 'combineMultiplyDefinedSelectors.php' );
+		$max = array_pop( array_keys( $this->selectors ) ) + 1;
 		for ( $i = 0; $i < $max; $i++ ) {
 			if ( isset( $this->selectors[ $i ] ) && isset( $this->details[ $i ] ) ) {
 				$this->mark(
@@ -142,13 +158,13 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function testDetailCombination(){
-		include(BEFORE . 'combineMultiplyDefinedDetails.php');
+		include( BEFORE . 'combineMultiplyDefinedDetails.php' );
 		$this->selectors = $selectors;
 		$this->details = $details;
 		$this->combineMultiplyDefinedDetails();
-		include(AFTER . 'combineMultiplyDefinedDetails.php');
-		$max = array_pop(array_keys($this->selectors))+1;
-		for ($i=0; $i<$max; $i++){
+		include( AFTER . 'combineMultiplyDefinedDetails.php' );
+		$max = array_pop( array_keys( $this->selectors ) ) + 1;
+		for ( $i = 0; $i < $max; $i++ ) {
 			if ( isset( $this->selectors[ $i ] ) && isset( $this->details[ $i ] ) ) {
 				$this->mark(
 					'Selector Combination',
@@ -166,14 +182,16 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @param (string) entry: Entry of test array
 	 * @param (boolean) result: Result of test matching
 	 */ 
-	private function mark($method, $entry, $result){
-		if ($result){
+	private function mark( $method, $entry, $result ) {
+		if ( $result ) {
 			$result = "<b style='color:green;'>Passed</b>";
-		}else{
+		}
+		else{
 			$this->errors++;
 			$result = "<b style='color:red;'>Failed</b>";
 		}
-		echo "<tr><td>$method</td><td>$entry</td><td>$result</td></tr>";
+
+		$this->results .= "<tr><td>$method</td><td>$entry</td><td>$result</td></tr>";
 	}
 
 	/**
@@ -182,8 +200,9 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	public function __destruct(){
-		$this->mark('<b>Total Errors</b>', '<b>'.$this->errors.'</b>', $this->errors == 0);
+		$this->mark( '<b>Total Errors</b>', '<b>'.$this->errors.'</b>', $this->errors == 0 );
+		echo $this->results;
 	}
-}
+};
 
 ?>

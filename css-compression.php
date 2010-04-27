@@ -90,10 +90,11 @@ Class CSSCompression
 	/**
 	 * Only allow access to stats/css/media/options
 	 *
+	 *	- Passing stats/media/css returns the current value of that class var
+	 *	- Passing option will return the current full options array
+	 *	- Passing anything else returns that current value in the options array or NULL
+	 *
 	 * @param (string) name: Name of variable that you want to access
-	 * 	-Passing stats/media/css returns the current value of that class var
-	 * 	-Passing option will return the current full options array
-	 * 	-Passing anything else returns that current value in the options array or NULL
 	 */ 
 	public function __get( $name ) {
 		if ( $name === 'stats' || $name === 'media' || $name === 'css' || $name === 'option' ) {
@@ -121,6 +122,28 @@ Class CSSCompression
 		} else {
 			$this->options[ $name ] = $value;
 			return $this->options[ $name ];
+		}
+	}
+
+	/**
+	 * Maintainable access to the options array
+	 *
+	 *	- Passing no arguments returns the entire options array
+	 *	- Passing a single name argument returns the value for the option
+	 * 	- Passing both a name and value, sets the value to the name key, and returns the value
+	 *
+	 * @param (string) name: The key name of the option
+	 * @param (any) value: Value to set the option
+	 */
+	public function option( $name = '', $value = '' ) {
+		if ( $name == '' ) {
+			return $this->options;
+		}
+		else if ( $value == '' ) {
+			return $this->options[ $name ];
+		}
+		else {
+			return $this->options[ $name ] = $value;
 		}
 	}
 
@@ -229,13 +252,16 @@ Class CSSCompression
 	protected function mergeOptions( $prefs = array() ) {
 		if ( $prefs && is_array( $prefs ) && count( $prefs ) ) {
 			foreach ( $this->options as $key => $value ) {
-				if ( $prefs[ $key ] && $prefs[ $key ] == 'on' ) {
+				if ( ! isset( $prefs[ $key ] ) ) {
+					continue;
+				}
+				else if ( $prefs[ $key ] && $prefs[ $key ] == 'on' ) {
 					$this->options[ $key ] = true;
 				}
 				else if ( $prefs[ $key ] && $prefs[ $key ] == 'off' ) {
 					$this->options[ $key ] = false;
 				}
-				else if ( isset( $prefs[ $key ] ) ) {
+				else {
 					$this->options[ $key ] = intval( $prefs[ $key ] );
 				}
 			}
@@ -296,7 +322,14 @@ Class CSSCompression
 	protected function flush(){
 		$this->selectors = array();
 		$this->details = array();
-		$this->stats = array();
+		$this->stats = array(
+			'before' => array(
+				'props' => 0
+			), 
+			'after' => array(
+				'props' => 0
+			),
+		);
 		$this->media = false;
 	}
 
@@ -356,6 +389,8 @@ Class CSSCompression
 	protected function setup(){
 		// Seperate the element from the elements details
 		$css = explode( "\n", $this->css );
+		$SEL_COUNTER = 0;
+
 		foreach ( $css as $details ) {
 			$details = trim( $details );
 			// Determine whether your looking at the details or element
@@ -367,16 +402,28 @@ Class CSSCompression
 				$this->media_str .= $details;
 			}
 			else if ( strpos( $details, '{') === 0 ) {
-				unset( $storage );
 				$details = substr( $details, 1, strlen( $details ) - 2 );
 				$details = preg_split( $this->r_semicolon, $details );
+				$parts = array();
+				$storage = '';
 
 				foreach ( $details as $line ) {
 					if ( preg_match( "/^(url|@import)/i", $line ) ) {
 						$storage .= $line.";";
 						continue;
 					}
-					list ( $property, $value ) = preg_split( $this->r_colon, $line, 2 );
+
+					// Grab the property and its value
+					unset( $property, $value );
+					$parts = preg_split( $this->r_colon, $line, 2 );
+
+					if ( isset( $parts[0] ) && $parts[0] != '' ) {
+						$property = $parts[0];
+					}
+
+					if ( isset( $parts[1] ) && $parts[1] != '' ) {
+						$value = $parts[1];
+					}
 
 					// Fail safe, remove unknown tag/elements
 					if ( ! isset( $property ) || ! isset( $value ) ) {

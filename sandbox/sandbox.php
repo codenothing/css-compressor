@@ -8,7 +8,7 @@
  * on all methods possible.
  */
 
-$testarr = array(
+$sandbox = array(
 	// runSpecialCompressions method
 	// This test runs simple tests, as there are more extensive tests below, this
 	// is just to make sure the central function works as expected

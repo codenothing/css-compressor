@@ -1,0 +1,52 @@
+body {
+	font-size: 10pt;
+}
+
+table{
+	width: 100%;
+	font-size: 9pt;
+}
+
+h2{
+	margin: 2px;
+}
+
+input[type='checkbox'] {
+	font-size: 8pt;
+}
+
+label {
+	display: block;
+	padding: 5px 2px;
+}
+
+label.odd {
+	background: #EEEDED;
+}
+
+label.order-important {
+	background: #DADAE7;
+	border: 1px solid #ADC6F0;
+	padding: 5px;
+}
+
+textarea{
+	width: 98%;
+	height: 450px;
+	font-size: 8pt;
+}
+
+div.options {
+	height: 425px;
+	overflow: auto;
+	border-left: 1px solid #ADC6F0;
+	border-bottom: 1px solid #ADC6F0;
+}
+
+#results {
+	width: 1000px;
+	background: #E8DCFF;
+	margin: 20px 40px;
+	padding: 20px;
+	border: 1px solid #989898;
+}

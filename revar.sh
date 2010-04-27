@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Version/Date
-version=1.1
+version=2.0
 today=`date "+%B %d, %Y"`
 
 # Date Changer
