@@ -7,7 +7,7 @@ include( $root . '/unit.php' );
 <!DOCTYPE html>
 <html>
 <head>
-	<title>CSS Compressor [VERSION] - Test Suite</title>
+	<title>CSS Compressor 2.0 - Test Suite</title>
 <style type='text/css'>
 body {
 	font-size: 10pt;
@@ -31,12 +31,12 @@ pre {
 <body>
 
 <!--
-CSS Compressor [VERSION] - Test Suite
-[DATE]
+CSS Compressor 2.0 - Test Suite
+May 01, 2010
 Corey Hart @ http://www.codenothing.com
 -->
 
-<h1>CSS Compressor [VERSION] - Test Suite</h1>
+<h1>CSS Compressor 2.0 - Test Suite</h1>
 
 <table bgcolor='#989898' cellspacing='1' cellpadding='3' style='border:1px solid #989898;'>
 <tr>

@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>CSS Compressor [VERSION]</title>
+	<title>CSS Compressor 2.0</title>
 	<link rel='stylesheet' type='text/css' href='styles.css' />
 	<script src='js.js'></script>
 </head>
 <body>
 
 <!--
-CSS Compressor [VERSION]
-[DATE]
+CSS Compressor 2.0
+May 01, 2010
 Corey Hart @ http://www.codenothing.com
 -->
 
-<h2>CSS Compressor [VERSION]</h2>
+<h2>CSS Compressor 2.0</h2>
 
 
 <?php

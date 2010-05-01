@@ -1,7 +1,7 @@
 <?php
 /**
- * CSS Compressor [VERSION] - Test Suite
- * [DATE]
+ * CSS Compressor 2.0 - Test Suite
+ * May 01, 2010
  * Corey Hart @ http://www.codenothing.com
  */
 

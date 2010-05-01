@@ -1,7 +1,7 @@
 <!--
 
-CSS Compressor [VERSION] - Stats Template
-[DATE]
+CSS Compressor 2.0 - Stats Template
+May 01, 2010
 Corey Hart @ http://www.codenothing.com
 
 -->
