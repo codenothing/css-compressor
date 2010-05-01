@@ -11,5 +11,5 @@
 - Exposing byte unit conversion display
 
 # Possible Breaks
-- The compressor no longer self instantiates itself, you must explicity initialize it.
-- Most methods that were never meant to be pulic, have been turned into private/protected based on accessiblity requirements.
+- The compressor no longer self instantiates itself, you must explicitly initialize it.
+- Most methods that were never meant to be public, have been turned into private/protected based on accessibility requirements.
