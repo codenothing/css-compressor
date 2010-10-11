@@ -6,7 +6,7 @@
  */ 
 
 // Define path to vars directory
-define('CSSC_VARS_DIR', dirname(__FILE__).'/vars/');
+define( 'CSSC_VARS_DIR', dirname(__FILE__) . '/vars/' );
 
 
 Class CSSCompression
@@ -79,10 +79,10 @@ Class CSSCompression
 		$this->resetOptions();
 
 		// Automatically compress css if passed
-		if ( $css && $css != '' ) {
+		if ( $css && $css !== '' ) {
 			$this->compress( $css, $prefs );
 		}
-		else if ( $prefs ) {
+		else if ( count( $prefs ) ) {
 			$this->mergeOptions( $prefs );
 		}
 	}
@@ -90,9 +90,9 @@ Class CSSCompression
 	/**
 	 * Only allow access to stats/css/media/options
 	 *
-	 *	- Passing stats/media/css returns the current value of that class var
-	 *	- Passing option will return the current full options array
-	 *	- Passing anything else returns that current value in the options array or NULL
+	 *	- Getting stats/media/css returns the current value of that class var
+	 *	- Getting option will return the current full options array
+	 *	- Getting anything else returns that current value in the options array or NULL
 	 *
 	 * @param (string) name: Name of variable that you want to access
 	 */ 
@@ -131,15 +131,19 @@ Class CSSCompression
 	 *	- Passing no arguments returns the entire options array
 	 *	- Passing a single name argument returns the value for the option
 	 * 	- Passing both a name and value, sets the value to the name key, and returns the value
+	 *	- Passing an array will merge the options with the array passed, for object like extension
 	 *
-	 * @param (string) name: The key name of the option
+	 * @param (string|array) name: The key name of the option
 	 * @param (any) value: Value to set the option
 	 */
-	public function option( $name = '', $value = '' ) {
-		if ( $name == '' ) {
+	public function option( $name = NULL, $value = NULL ) {
+		if ( $name === NULL ) {
 			return $this->options;
 		}
-		else if ( $value == '' ) {
+		else if ( is_array( $name ) ) {
+			return $this->mergeOptions( $name );
+		}
+		else if ( $value === NULL ) {
 			return $this->options[ $name ];
 		}
 		else {
@@ -266,6 +270,8 @@ Class CSSCompression
 				}
 			}
 		}
+
+		return $this->options;
 	}
 
 	/**
