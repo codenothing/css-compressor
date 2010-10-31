@@ -184,14 +184,12 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 */ 
 	private function mark( $method, $entry, $result ) {
 		if ( $result ) {
-			$result = "<b style='color:green;'>Passed</b>";
+			echo Color::green( "Passed: ${method}[$entry]" ) . "\r\n";
 		}
 		else{
 			$this->errors++;
-			$result = "<b style='color:red;'>Failed</b>";
+			echo Color::red( "Failed: ${method}[$entry]" ) . "\r\n";
 		}
-
-		$this->results .= "<tr><td>$method</td><td>$entry</td><td>$result</td></tr>";
 	}
 
 	/**
@@ -200,8 +198,13 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	public function __destruct(){
-		$this->mark( '<b>Total Errors</b>', '<b>'.$this->errors.'</b>', $this->errors == 0 );
-		echo $this->results;
+		if ( $this->errors > 0 ) {
+			$final = Color::boldred( "Test Failed: " . $this->errors . " total errors." );
+		}
+		else {
+			$final = Color::boldgreen( "All Tests Passed" );
+		}
+		echo "\r\n\r\n$final\r\n\r\n";
 	}
 };
 
