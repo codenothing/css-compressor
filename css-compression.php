@@ -1430,11 +1430,12 @@ Class CSSCompression
 	 * @param (int) size: File size in Bytes
 	 */ 
 	public function displaySizes( $size = 0 ) {
+		$orig = "(${size}B)";
 		$ext = array( 'B', 'K', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
 		for( $c = 0; $size > 1024; $c++ ) {
 			$size /= 1024;
 		}
-		return round( $size, 2 ) . $ext[ $c ];
+		return round( $size, 2 ) . $ext[ $c ] . $orig;
 	}
 };
 
