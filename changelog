@@ -5,11 +5,6 @@
 ###
 
 # New Features
-- Better options handling
-- Look behind regexs are used to not break urls
-- Singleton access added
-- Exposing byte unit conversion display
+- Configuration Modes
 
 # Possible Breaks
-- The compressor no longer self instantiates itself, you must explicitly initialize it.
-- Most methods that were never meant to be public, have been turned into private/protected based on accessibility requirements.
