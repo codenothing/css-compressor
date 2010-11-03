@@ -7,8 +7,10 @@
 
 // Before/After directories
 // $root is borrowed from index.php
-define('BEFORE', $root . '/files/before/');
-define('AFTER', $root . '/files/after/');
+define('SPECIAL_BEFORE', $root . '/special/before/');
+define('SPECIAL_AFTER', $root . '/special/after/');
+define('BEFORE', $root . '/sheets/before/');
+define('AFTER', $root . '/sheets/after/');
 
 
 Class CSScompressionTestUnit Extends CSSCompression
@@ -44,6 +46,10 @@ Class CSScompressionTestUnit Extends CSSCompression
 		$this->testSemicolon();
 		$this->testSelectorCombination();
 		$this->testDetailCombination();
+
+		// Full sheet tests (security checks)
+		//$this->setOptions();
+		//$this->testSheets();
 	}
 
 	/**
@@ -55,6 +61,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 		foreach ( $this->options as $key => $value ) {
 			$this->options[ $key ] = true;
 		}
+		$this->options[ 'readability' ] = self::READ_NONE;
 	}
 
 	/**
@@ -64,8 +71,8 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function initialTrimTest(){
-		$this->css = file_get_contents( BEFORE . 'initialTrim.css' );
-		$after = file_get_contents( AFTER . 'initialTrim.css' );
+		$this->css = file_get_contents( SPECIAL_BEFORE . 'initialTrim.css' );
+		$after = file_get_contents( SPECIAL_AFTER . 'initialTrim.css' );
 		$this->initialTrim();
 		$this->mark( 'initialTrim.css', 'all', trim( $this->css ) == trim( $after ) );
 	}
@@ -79,8 +86,10 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 */ 
 	private function lineTesting(){
 		foreach ( $this->sandbox as $fn => $tests ) {
-			$i = 0;
-			foreach ( $tests as $before => $after ) {
+			foreach ( $tests as $entry => $set ) {
+				$before = $set[0];
+				$after = $set[1];
+
 				if ( $fn == 'runSpecialCompressions' ) {
 					list ( $prop, $val ) = explode( ':', $before );
 					list ( $prop, $val ) = $this->runSpecialCompressions( $prop, $val );
@@ -101,7 +110,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 					// add the remove multiply definitions for easier testing
 					$passed = ( $this->$fn( $before ) == $after );
 				}
-				$this->mark( $fn, $i++, $passed );
+				$this->mark( $fn, $entry, $passed );
 			}
 		}
 	}
@@ -135,11 +144,11 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function testSelectorCombination(){
-		include( BEFORE . 'combineMultiplyDefinedSelectors.php' );
+		include( SPECIAL_BEFORE . 'combineMultiplyDefinedSelectors.php' );
 		$this->selectors = $selectors;
 		$this->details = $details;
 		$this->combineMultiplyDefinedSelectors();
-		include( AFTER . 'combineMultiplyDefinedSelectors.php' );
+		include( SPECIAL_AFTER . 'combineMultiplyDefinedSelectors.php' );
 		$max = array_pop( array_keys( $this->selectors ) ) + 1;
 		for ( $i = 0; $i < $max; $i++ ) {
 			if ( isset( $this->selectors[ $i ] ) && isset( $this->details[ $i ] ) ) {
@@ -158,11 +167,11 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function testDetailCombination(){
-		include( BEFORE . 'combineMultiplyDefinedDetails.php' );
+		include( SPECIAL_BEFORE . 'combineMultiplyDefinedDetails.php' );
 		$this->selectors = $selectors;
 		$this->details = $details;
 		$this->combineMultiplyDefinedDetails();
-		include( AFTER . 'combineMultiplyDefinedDetails.php' );
+		include( SPECIAL_AFTER . 'combineMultiplyDefinedDetails.php' );
 		$max = array_pop( array_keys( $this->selectors ) ) + 1;
 		for ( $i = 0; $i < $max; $i++ ) {
 			if ( isset( $this->selectors[ $i ] ) && isset( $this->details[ $i ] ) ) {
@@ -171,6 +180,27 @@ Class CSScompressionTestUnit Extends CSSCompression
 					$i,
 					( $this->selectors[ $i ] === $selectors[ $i ] && $this->details[ $i ] === $details[ $i ] )
 				);
+			}
+		}
+	}
+
+	/**
+	 * Run all test sheets through full compressor to see outcome
+	 *
+	 * @params none
+	 */
+	private function testSheets(){
+		$handle = opendir( BEFORE );
+
+		while ( ( $file = readdir( $handle ) ) !== false ) {
+			if ( preg_match( "/\.css$/", $file ) ) {
+				$before = trim( file_get_contents( BEFORE . $file ) );
+				$after = trim( file_get_contents( AFTER . $file ) );
+
+				echo $after . "\n\n";
+				echo $this->compress( $before );
+				$this->mark( $file, "full", $this->compress( $before ) === $after );
+				break;
 			}
 		}
 	}
