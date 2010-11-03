@@ -3,9 +3,10 @@
 # [DATE]
 # Corey Hart @ http://www.codenothing.com
 #
-SH = sh
-PHP = php
-
+.PHONY: benchmark test
 
 test:
-	@$(PHP) unit/start.php
+	@php unit/start.php
+
+benchmark:
+	@php benchmark/run.php

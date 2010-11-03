@@ -1,2 +1,6 @@
 # Ignore all temporary files 
 *.swp
+
+# Benchmark generated files
+benchmark/dist/
+benchmark/src/csszengarden.com*

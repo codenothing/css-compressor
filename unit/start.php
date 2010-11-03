@@ -7,7 +7,7 @@
 
 // Include compressor and unit tests
 $root = dirname(__FILE__);
-include( $root . '/../css-compression.php' );
+include( $root . '/../src/css-compression.php' );
 include( $root . '/color.php' );
 include( $root . '/sandbox.php' );
 include( $root . '/unit.php' );

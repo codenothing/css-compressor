@@ -3,7 +3,7 @@
 <head>
 	<title>CSS Compressor [VERSION]</title>
 	<link rel='stylesheet' type='text/css' href='styles.css' />
-	<script src='js.js'></script>
+	<script type='text/javascript' src='js.js'></script>
 </head>
 <body>
 
@@ -20,7 +20,7 @@ Corey Hart @ http://www.codenothing.com
 
 if ( isset( $_GET['view'] ) && $_GET['view'] == "compress" ) {
 	// Run compression on passed script
-	require("css-compression.php");
+	require("src/css-compression.php");
 	$CSSC = new CSSCompression( $_POST['css'], $_POST );
 	$height = ( $CSSC->media || $CSSC->readability > CSSCompression::READ_NONE ) ? "400px" : "12px";
 
