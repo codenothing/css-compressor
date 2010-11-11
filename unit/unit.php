@@ -48,8 +48,8 @@ Class CSScompressionTestUnit Extends CSSCompression
 		$this->testDetailCombination();
 
 		// Full sheet tests (security checks)
-		//$this->setOptions();
-		//$this->testSheets();
+		$this->setOptions();
+		$this->testSheets();
 	}
 
 	/**
@@ -196,11 +196,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 			if ( preg_match( "/\.css$/", $file ) ) {
 				$before = trim( file_get_contents( BEFORE . $file ) );
 				$after = trim( file_get_contents( AFTER . $file ) );
-
-				echo $after . "\n\n";
-				echo $this->compress( $before );
 				$this->mark( $file, "full", $this->compress( $before ) === $after );
-				break;
 			}
 		}
 	}

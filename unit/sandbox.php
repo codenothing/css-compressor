@@ -48,11 +48,11 @@ $sandbox = array(
 		),
 		'RGB: numeric' => array(
 			'color:rgb(145,123,16)',
-			'color:#917B10',
+			'color:#917b10',
 		),
 		'RGB: percentage' => array(
 			'color:rgb(50%,50%,50%)',
-			'color:#7F7F7F',
+			'color:#7f7f7f',
 		),
 
 		// Long name to hex conversions
@@ -71,6 +71,32 @@ $sandbox = array(
 		'Longhex to Shorthex' => array(
 			'color:#aa6600',
 			'color:#a60',
+		),
+
+		// None value
+		'none value: background' => array(
+			'background:none',
+			'background:0'
+		),
+		'none value: border' => array(
+			'border:none',
+			'border:0'
+		),
+		'none value: border-top' => array(
+			'border-top:none',
+			'border-top:0'
+		),
+		'none value: border-left' => array(
+			'border-left:none',
+			'border-left:0'
+		),
+		'none value: border-right' => array(
+			'border-right:none',
+			'border-right:0'
+		),
+		'none value: border-top' => array(
+			'border-top:none',
+			'border-top:0'
 		),
 	),
 
@@ -170,11 +196,11 @@ $sandbox = array(
 		),
 		'RGB: numeric' => array(
 			'rgb(145,123,16)',
-			'#917B10',
+			'#917b10',
 		),
 		'RGB: percentage' => array(
 			'rgb(50%,50%,50%)',
-			'#7F7F7F',
+			'#7f7f7f',
 		),
 		// Long name to hex conversions
 		'Color2hex: aliceblue' => array(
@@ -210,6 +236,11 @@ $sandbox = array(
 		'Long to short hex: #772213' => array(
 			'#772213',
 			'#772213',
+		),
+		// Casing
+		'Upper case to lower: #7F9D0A' => array(
+			'#7F9D0A',
+			'#7f9d0a'
 		),
 	),
 

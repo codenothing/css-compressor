@@ -556,6 +556,11 @@ Class CSSCompression
 			$val = $this->removeUnits( $val );
 		}
 
+		// Convert none vals to 0
+		if ( preg_match( "/^(border|background)/i", $prop ) && $val == 'none' ) {
+			$val = 0;
+		}
+
 		// Seperate out by multi-values if possible
 		$parts = preg_split( $this->r_space, $val );
 		foreach ( $parts as $k => $v ) {
@@ -787,6 +792,11 @@ Class CSSCompression
 					$val = str_ireplace( $search, $replace, $val );
 				}
 			}
+		}
+
+		// Ensure all hex codes are lowercase
+		if ( preg_match( "/#([0-9a-f]{6})/i", $val ) ) {
+			$val = strtolower( $val );
 		}
 
 		// Return transformed value
