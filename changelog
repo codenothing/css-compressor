@@ -6,5 +6,11 @@
 
 # New Features
 - Configuration Modes
+- pseduo-space, add space after pseduo selectors for ie6
+- removing leading 0 of a decimal, 0.633px -> .633px
+
+# Enhancements
+- Now handling all '@' prefixes (charsets,media,imports,font-family,etc..)
+
 
 # Possible Breaks

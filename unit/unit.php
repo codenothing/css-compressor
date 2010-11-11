@@ -19,10 +19,12 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * Class Variables
 	 *
 	 * @param (int) errors: Number of errors found
+	 * @param (int) passes: Number of tests passed
 	 * @param (array) sandbox: Array containing test suite
 	 * @param (string) results: Result of all tests string for table
 	 */
 	private $errors = 0;
+	private $passes = 0;
 	private $sandbox = array();
 	private $results = '';
 
@@ -80,7 +82,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 	/**
 	 * Uses a test-array contain CSSC methods and various
 	 * tests to run on each function. Takes special note to
-	 * runSpecialCompressions() & lowercaseSelectors() methods
+	 * individuals() & removeUnnecessarySemicolon() methods
 	 *
 	 * @params none
 	 */ 
@@ -90,15 +92,10 @@ Class CSScompressionTestUnit Extends CSSCompression
 				$before = $set[0];
 				$after = $set[1];
 
-				if ( $fn == 'runSpecialCompressions' ) {
+				if ( $fn == 'individuals' ) {
 					list ( $prop, $val ) = explode( ':', $before );
-					list ( $prop, $val ) = $this->runSpecialCompressions( $prop, $val );
+					list ( $prop, $val ) = $this->individuals( $prop, $val );
 					$passed = ( "$prop:$val" == $after );
-				}
-				else if ( $fn == 'lowercaseSelectors' ) {
-					$this->selectors = array( $before );
-					$this->$fn();
-					$passed = ( $this->selectors[0] == $after );
 				}
 				else if ( $fn == 'removeUnnecessarySemicolon' ) {
 					$this->details = array( $before );
@@ -210,6 +207,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 */ 
 	private function mark( $method, $entry, $result ) {
 		if ( $result ) {
+			$this->passes++;
 			echo Color::green( "Passed: ${method}[$entry]" ) . "\r\n";
 		}
 		else{
@@ -228,7 +226,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 			$final = Color::boldred( "Test Failed: " . $this->errors . " total errors." );
 		}
 		else {
-			$final = Color::boldgreen( "All Tests Passed" );
+			$final = Color::boldgreen( "All " . $this->passes . " Tests Passed" );
 		}
 		echo "\r\n\r\n$final\r\n\r\n";
 	}

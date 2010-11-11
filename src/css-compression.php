@@ -229,6 +229,10 @@ Class CSSCompression
 			// (BODY -> body)
 			'lowercase-selectors' => true,
 
+			// Add space after pseduo selectors, for ie6
+			// (a:first-child{ -> a:first-child {)
+			'pseduo-space' => false,
+
 			// Compresses single defined multi-directional properties
 			// (margin: 15px 25px 15px 25px -> margin:15px 25px)
 			'directional-compress' => true,
@@ -480,10 +484,12 @@ Class CSSCompression
 					unset( $property, $value );
 					$parts = preg_split( $this->r_colon, $line, 2 );
 
+					// Property
 					if ( isset( $parts[0] ) && $parts[0] != '' ) {
 						$property = $parts[0];
 					}
 
+					// Value
 					if ( isset( $parts[1] ) && $parts[1] != '' ) {
 						$value = $parts[1];
 					}
@@ -494,7 +500,7 @@ Class CSSCompression
 					}
 
 					// Run the tag/element through each compression
-					list ( $property, $value ) = $this->runSpecialCompressions( $property, $value );
+					list ( $property, $value ) = $this->individuals( $property, $value );
 
 					// Add counter to before stats
 					$this->stats['before']['props']++;
@@ -518,7 +524,7 @@ Class CSSCompression
 				unset( $arr[ count( $arr ) - 1 ] );
 				$this->import_str .= trim( implode( ';', $arr ) ) . ';';
 			}
-			else if ( strpos( $details, '@media' ) === 0 ){
+			else if ( strpos( $details, '@' ) === 0 ){
 				$this->media = true;
 				$this->media_str .= $details;
 			}
@@ -536,7 +542,7 @@ Class CSSCompression
 	 * @param (string) prop: CSS Property
 	 * @param (string) val: Value of CSS Property
 	 */ 
-	protected function runSpecialCompressions( $prop, $val ) {
+	protected function individuals( $prop, $val ) {
 		// Properties should always be lowercase
 		$prop = strtolower( $prop );
 
@@ -550,24 +556,34 @@ Class CSSCompression
 			$val = $this->fontweightConversion( $val );
 		}
 
-		// Remove uneeded decimals/units
-		if ( $this->options['format-units'] ) {
-			$val = $this->removeDecimal( $val );
-			$val = $this->removeUnits( $val );
+		// Split up each definiton
+		$parts = preg_split( $this->r_space, $val );
+		foreach ( $parts as &$v ) {
+			if ( ! $v || $v == '' ) {
+				continue;
+			}
+
+			// Remove uneeded decimals/units
+			if ( $this->options['format-units'] ) {
+				$v = $this->removeDecimal( $v );
+				$v = $this->removeUnits( $v );
+				$v = $this->removeZeroes( $v );
+			}
+
+			// Color compression
+			$v = $this->runColorChanges( $v );
 		}
+		$val = trim( implode( ' ', $parts ) );
 
 		// Convert none vals to 0
 		if ( preg_match( "/^(border|background)/i", $prop ) && $val == 'none' ) {
 			$val = 0;
 		}
 
-		// Seperate out by multi-values if possible
-		$parts = preg_split( $this->r_space, $val );
-		foreach ( $parts as $k => $v ) {
-			$parts[ $k ] = $this->runColorChanges( $v );
+		// Thank you ms for this nasty conversion
+		if ( preg_match( "/filter/", $prop ) ) {
+			$val = preg_replace( "/PROGID:DXImageTransform.Microsoft.Alpha\(Opacity=(80)\)/i", "alpha(opacity=$1)", $val );
 		}
-
-		$val = trim( implode( ' ', $parts ) );
 
 		// Return for list retrival
 		return array( $prop, $val );
@@ -677,7 +693,6 @@ Class CSSCompression
 		// Find all instances of .0 and remove them
 		$pattern = "/^(\d+\.0)(\%|[a-z]{2})/i";
 		preg_match_all( $pattern, $str, $matches );
-
 		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 			$search = $matches[0][$i];
 			$replace = intval( $matches[1][$i] ) . $matches[2][$i];
@@ -701,6 +716,24 @@ Class CSSCompression
 				$replace = '0';
 				$str = str_ireplace( $search, $replace, $str );
 			}
+		}
+		return $str;
+	}
+
+
+	/**
+	 * Removes leading zero in decimals, ie 0.33px => .33px
+	 *
+	 * @param (string) str: Unit string
+	 */
+	protected function removeZeroes( $str ) {
+		// Find all instances of 0.n and remove them
+		$pattern = "/^0(\.\d+)(\%|[a-z]{2})?/i";
+		preg_match_all( $pattern, $str, $matches );
+		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
+			$search = $matches[0][$i];
+			$replace = $matches[1][$i] . $matches[2][$i];
+			$str = str_ireplace( $search, $replace, $str );
 		}
 		return $str;
 	}
@@ -809,9 +842,17 @@ Class CSSCompression
 	 * @params none
 	 */ 
 	protected function runCompressionMethods(){
-		// Lowercase selectors for combining
-		if ( $this->options['lowercase-selectors'] ) {
-			$this->lowercaseSelectors();
+		// Selector specific optimizations
+		foreach ( $this->selectors as &$selector ) {
+			// Lowercase selectors for combining
+			if ( $this->options['lowercase-selectors'] ) {
+				$selector = $this->lowercaseSelectors( $selector );
+			}
+
+			// Add space after pseduo selectors (so ie6 doesn't complain)
+			if ( $this->options['pseduo-space'] ) {
+				$selector = $this->pseduoSpace( $selector );
+			}
 		}
 
 		// If order isn't important, run comination functions before and after compressions to catch all instances
@@ -864,18 +905,27 @@ Class CSSCompression
 	/**
 	 * Converts selectors like BODY => body, DIV => div
 	 *
-	 * @params none
+	 * @param (string) selector: CSS Selector
 	 */ 
-	protected function lowercaseSelectors(){
-		foreach ( $this->selectors as &$selector ) {
-			preg_match_all( "/([^a-zA-Z])?([a-zA-Z]+)/i", $selector, $matches, PREG_OFFSET_CAPTURE );
-			for ( $i = 0, $imax = count( $matches[0] ); $i < $imax; $i++ ) {
-				if ( $matches[1][$i][0] !== '.' && $matches[1][$i][0] !== '#' ) {
-					$match = $matches[2][$i];
-					$selector = substr_replace( $selector, strtolower( $match[0] ), $match[1], strlen( $match[0] ) );
-				}
+	protected function lowercaseSelectors( $selector ) {
+		preg_match_all( "/([^a-zA-Z])?([a-zA-Z]+)/i", $selector, $matches, PREG_OFFSET_CAPTURE );
+		for ( $i = 0, $imax = count( $matches[0] ); $i < $imax; $i++ ) {
+			if ( $matches[1][$i][0] !== '.' && $matches[1][$i][0] !== '#' ) {
+				$match = $matches[2][$i];
+				$selector = substr_replace( $selector, strtolower( $match[0] ), $match[1], strlen( $match[0] ) );
 			}
 		}
+
+		return $selector;
+	}
+
+	/**
+	 * Adds space after pseduo selector for ie6 like a:first-child{ => a:first-child {
+	 *
+	 * @param (string) selector: CSS Selector
+	 */ 
+	protected function pseduoSpace( $selector ) {
+		return preg_replace( "/(\:[a-z-]+)/i", "$1 ", $selector );
 	}
 
 	/**

@@ -9,10 +9,10 @@
  */
 
 $sandbox = array(
-	// runSpecialCompressions method
+	// individuals method
 	// This test runs simple tests, as there are more extensive tests below, this
 	// is just to make sure the central function works as expected
-	'runSpecialCompressions' => array(
+	'individuals' => array(
 		// Directionals/Unit compression
 		'Directionals: 4 to 1' => array(
 			'margin:10.0px 10px 10px 10px',
@@ -23,8 +23,8 @@ $sandbox = array(
 			'padding:10px 15px',
 		),
 		'Directionals: 3 to 2' => array(
-			'padding:10px 15px 10.0px',
-			'padding:10px 15px',
+			'padding:10px 0.15px 10.0px',
+			'padding:10px .15px',
 		),
 
 		// Font-Weight compressions
@@ -39,6 +39,16 @@ $sandbox = array(
 		'Weight: heavy' => array(
 			'font-weight:heavy',
 			'font-weight:heavy',
+		),
+
+		// Decimal conversions
+		'Decimals: 0.8' => array(
+			'opacity:0.8',
+			'opacity:.8'
+		),
+		'Decimals: Any 0.2983' => array(
+			'any:0.2983',
+			'any:.2983'
 		),
 
 		// RGB Conversions (Spaces are removed by inital trim)
@@ -131,7 +141,8 @@ $sandbox = array(
 			'8in 7in',
 		),
 		'1 to 1' => array(
-			'10cm' => '10cm',
+			'10cm',
+			'10cm',
 		),
 	),
 
@@ -269,6 +280,26 @@ $sandbox = array(
 		'id' => array(
 			'BODY#BODY>DIV.CLASS * A#ID>P.CLASS',
 			'body#BODY>div.CLASS * a#ID>p.CLASS',
+		),
+	),
+
+	// pseduoSpace
+	'pseduoSpace' => array(
+		'first-child comma' => array(
+			'a:first-child,a,b',
+			'a:first-child ,a,b'
+		),
+		'first-child tree' => array(
+			'a:first-child>a',
+			'a:first-child >a'
+		),
+		'first-child adds' => array(
+			'a:first-child+a',
+			'a:first-child +a'
+		),
+		'first-child brace' => array(
+			'a:first-child{',
+			'a:first-child {'
 		),
 	),
 
