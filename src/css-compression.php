@@ -5,10 +5,6 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 
-// Define path to vars directory
-define( 'CSSC_VARS_DIR', dirname(__FILE__) . '/vars/' );
-
-
 Class CSSCompression
 {
 	/**
@@ -50,7 +46,7 @@ Class CSSCompression
 	 *
 	 * @mode safe: Keeps selector and detail order, and prevents hex to shortname conversion
 	 * @mode medium: Prevents hex to shortname conversion
-	 * @small: Full compression
+	 * @mode small: Full compression
 	 */
 	public static $modes = array(
 		'safe' => array(
@@ -76,6 +72,25 @@ Class CSSCompression
 	const READ_MED = 2;
 	const READ_MIN = 1;
 	const READ_NONE = 0;
+
+
+	/**
+	 * Conversion helpers. Mainly for json stored objects
+	 *
+	 * @fontweight2num: Font-weight to number conversions
+	 * @hex2short: Hex code to short color name conversions
+	 * @long2hex: Long color name to hex code conversions
+	 */
+	protected static $helpers = array(
+		'fontweight2num' => array(
+			"lighter" => 100,
+			"normal" => 400,
+			"bold" => 700,
+			"bolder" => 900,
+		),
+		'hex2short' => array(),
+		'long2hex' => array(),
+	);
 
 	/**
 	 * The Singleton access method (for those that want it)
@@ -111,7 +126,7 @@ Class CSSCompression
 	}
 
 	/**
-	 * Only allow access to stats/css/media/options
+	 * Only allow access to stats/css/media/options/_mode
 	 *
 	 *	- Getting stats/media/css returns the current value of that class var
 	 *	- Getting option will return the current full options array
@@ -120,7 +135,7 @@ Class CSSCompression
 	 * @param (string) name: Name of variable that you want to access
 	 */ 
 	public function __get( $name ) {
-		if ( $name === 'stats' || $name === 'media' || $name === 'css' || $name === 'option' || $name == '_mode' ) {
+		if ( $name === 'stats' || $name === 'media' || $name === 'css' || $name === 'options' || $name == '_mode' ) {
 			return $this->$name;
 		}
 		else if ( isset( $this->options[ $name ] ) ) {
@@ -276,10 +291,6 @@ Class CSSCompression
 			// Removes the last semicolon of a property set
 			// ({margin: 2px; color: blue;} -> {margin: 2px; color: blue})
 			'unnecessary-semicolons' => true,
-
-			// Removes multiply defined properties
-			// STRONGLY SUGGESTED TO KEEP THIS TRUE
-			'rm-multi-define' => true,
 
 			// Readibility of Compressed Output, Defaults to none
 			'readability' => self::READ_NONE,
@@ -589,16 +600,10 @@ Class CSSCompression
 	 * @param (string) val: font-weight prop value
 	 */ 
 	protected function fontweightConversion( $val ) {
-		// Holds font weight conversions
-		static $fontweight2num;
-		if ( ! $fontweight2num ) {
-			include( CSSC_VARS_DIR . 'fontweight2num.php' );
-		}
-
 		// All font-weights are lower-case
 		$low = strtolower( $val );
-		if ( isset( $fontweight2num[ $low ] ) ) {
-			$val = $fontweight2num[ $low ];
+		if ( isset( self::$helpers['fontweight2num'][ $low ] ) ) {
+			$val = self::$helpers['fontweight2num'][ $low ];
 		}
 
 		// Return converted value
@@ -739,9 +744,6 @@ Class CSSCompression
 	 * @param (string) val: Color to be parsed
 	 */ 
 	protected function runColorChanges( $val ) {
-		// These vars are pulled in externally
-		static $long2hex, $hex2short;
-
 		// Transfer rgb colors to hex codes
 		if ( $this->options['color-rgb2hex'] ) {
 			$pattern = "/rgb\((\d{1,3}\%?(,\d{1,3}\%?,\d{1,3}\%?)?)\)/i";
@@ -781,28 +783,28 @@ Class CSSCompression
 		// Convert long color names to hex codes
 		if ( $this->options['color-long2hex'] ) {
 			// Static so file isn't included with every loop
-			if ( ! $long2hex ) {
-				include( CSSC_VARS_DIR . 'long2hex-colors.php' );
+			if ( ! self::$helpers['long2hex'] ) {
+				self::$helpers['long2hex'] = json_decode( file_get_contents( dirname(__FILE__) . '/long2hex-colors.json' ), true );
 			}
 
 			// Colornames are all lowercase
 			$low = strtolower( $val );
-			if ( isset( $long2hex[ $low ] ) ) {
-				$val = $long2hex[ $low ];
+			if ( isset( self::$helpers['long2hex'][ $low ] ) ) {
+				$val = self::$helpers['long2hex'][ $low ];
 			}
 		}
 
 		// Convert 6 digit hex codes to short color names
-		if ($this->options['color-hex2shortcolor']){
+		if ( $this->options['color-hex2shortcolor'] ) {
 			// Static so files isn't included with every loop
-			if ( ! $hex2short ) {
-				include( CSSC_VARS_DIR . 'hex2short-colors.php' );
+			if ( ! self::$helpers['hex2short'] ) {
+				self::$helpers['hex2short'] = json_decode( file_get_contents( dirname(__FILE__) . '/hex2short-colors.json' ), true );
 			}
 
 			// Hex codes are all lowercase
 			$low = strtolower( $val );
-			if ( isset( $hex2short[ $low ] ) ) {
-				$val = $hex2short[ $low ];
+			if ( isset( self::$helpers['hex2short'][ $low ] ) ) {
+				$val = self::$helpers['hex2short'][ $low ];
 			}
 		}
 
@@ -849,6 +851,17 @@ Class CSSCompression
 			}
 		}
 
+		// List of options and their corresponding handlers
+		$methods = array(
+			'csw-combine' => 'combineCSWproperties',
+			'auralcp-combine' => 'combineAuralCuePause',
+			'mp-combine' => 'combineMPproperties',
+			'border-combine' => 'combineBorderDefinitions',
+			'font-combine' => 'combineFontDefinitions',
+			'background-combine' => 'combineBackgroundDefinitions',
+			'list-combine' => 'combineListProperties',
+		);
+
 		// If order isn't important, run comination functions before and after compressions to catch all instances
 		// Since this creates another addition of looping, keep it seperate from compressions where order is important
 		if ( $this->options['multiple-selectors'] && $this->options['multiple-details'] ) {
@@ -856,20 +869,19 @@ Class CSSCompression
 			$this->combineMultiplyDefinedDetails();
 
 			foreach ( $this->details as &$value ) {
-				if ($this->options['csw-combine'])		$value = $this->combineCSWproperties( $value );
-				if ($this->options['auralcp-combine'])		$value = $this->combineAuralCuePause( $value );
-				if ($this->options['mp-combine']) 		$value = $this->combineMPproperties( $value );
-				if ($this->options['border-combine']) 		$value = $this->combineBorderDefinitions( $value );
-				if ($this->options['font-combine']) 		$value = $this->combineFontDefinitions( $value );
-				if ($this->options['background-combine']) 	$value = $this->combineBackgroundDefinitions($value );
-				if ($this->options['list-combine']) 		$value = $this->combineListProperties($value );
+				foreach ( $methods as $option => $fn ) {
+					if ( $this->options[ $option ] ) {
+						$value = $this->$fn( $value );
+					}
+				}
+				$value = $this->removeMultipleDefinitions( $value );
 			}
 
 			$this->combineMultiplyDefinedSelectors();
 			$this->combineMultiplyDefinedDetails();
 
 			foreach ( $this->details as &$value ) {
-				if ( $this->options['rm-multi-define'] ) 	$value = $this->removeMultipleDefinitions( $value );
+				$value = $this->removeMultipleDefinitions( $value );
 				$value = $this->removeEscapedURLs( $value );
 				$value = $this->removeUnnecessarySemicolon( $value );
 			}
@@ -877,14 +889,12 @@ Class CSSCompression
 		// For when order is important, reason above
 		else {
 			foreach ( $this->details as &$value ) {
-				if ($this->options['csw-combine'])		$value = $this->combineCSWproperties( $value );
-				if ($this->options['auralcp-combine'])		$value = $this->combineAuralCuePause( $value );
-				if ($this->options['mp-combine']) 		$value = $this->combineMPproperties( $value );
-				if ($this->options['border-combine']) 		$value = $this->combineBorderDefinitions( $value );
-				if ($this->options['font-combine']) 		$value = $this->combineFontDefinitions( $value );
-				if ($this->options['background-combine']) 	$value = $this->combineBackgroundDefinitions( $value );
-				if ($this->options['list-combine']) 		$value = $this->combineListProperties( $value );
-				if ($this->options['rm-multi-define']) 		$value = $this->removeMultipleDefinitions( $value );
+				foreach ( $methods as $option => $fn ) {
+					if ( $this->options[ $option ] ) {
+						$value = $this->$fn( $value );
+					}
+				}
+				$value = $this->removeMultipleDefinitions( $value );
 				$value = $this->removeEscapedURLs( $value );
 				$value = $this->removeUnnecessarySemicolon( $value );
 			}

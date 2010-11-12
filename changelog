@@ -13,6 +13,8 @@
 # Enhancements
 - Now handling all '@' prefixes (charsets,media,imports,font-family,etc..)
 - Removed sketchy include method in unit testing, all selectors/details defined inside function
+- Helper conversion definitions(long2hex, hex2short) are now in JSON based files.
 
 
 # Possible Breaks
+- Removing 'rm-multi-define' option, compression is worthless without it.

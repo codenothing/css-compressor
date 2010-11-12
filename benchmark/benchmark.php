@@ -65,7 +65,9 @@ Class CompressionBenchmark
 		}
 		echo "\n\n";
 
-		file_put_contents( $this->root . 'dist/results.json', json_encode( array( 'files' => $this->files ) ) );
+
+		// Store results into json object
+		file_put_contents( $this->root . 'dist/results.json', json_encode( array( 'files' => $this->files, 'averages' => $this->averages ) ) );
 	}
 
 	private function compress( $file = '', $css = '', $instance ) {
