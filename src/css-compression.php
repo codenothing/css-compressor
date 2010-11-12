@@ -409,7 +409,7 @@ Class CSSCompression
 		// Regex
 		$search = array(
 			1 => "/(\/\*|\<\!\-\-)(.*?)(\*\/|\-\-\>)/s", // Remove all comments
-			2 => "/(\s+)?([,{};:>\+])(\s+)?/s", // Remove un-needed spaces around special characters
+			2 => "/(\s+)?([,{};>\+])(\s+)?/s", // Remove un-needed spaces around special characters
 			3 => "/url\(['\"](.*?)['\"]\)/s", // Remove quotes from urls
 			4 => "/;{2,}/", // Remove unecessary semi-colons
 			5 => "/\s+/s", // Compress all spaces into single space
@@ -485,12 +485,12 @@ Class CSSCompression
 					$parts = preg_split( $this->r_colon, $line, 2 );
 
 					// Property
-					if ( isset( $parts[0] ) && $parts[0] != '' ) {
-						$property = $parts[0];
+					if ( isset( $parts[ 0 ] ) && ( $parts[ 0 ] = trim( $parts[ 0 ] ) ) != '' ) {
+						$property = $parts[ 0 ];
 					}
 
 					// Value
-					if ( isset( $parts[1] ) && $parts[1] != '' ) {
+					if ( isset( $parts[ 1 ] ) && ( $parts[ 1 ] = trim( $parts[ 1 ] ) ) != '' ) {
 						$value = $parts[1];
 					}
 
@@ -511,7 +511,7 @@ Class CSSCompression
 				// Store as the last known selector
 				$this->details[ $SEL_COUNTER ] = $storage;
 			}
-			else if ( strpos( $details, '@import' ) === 0 ) {
+			else if ( strpos( $details, '@import' ) === 0 || strpos( $details, '@charset' ) === 0 ) {
 				// Seperate out each import string
 				$arr = preg_split( $this->r_semicolon, $details );
 
