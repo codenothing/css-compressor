@@ -9,4 +9,4 @@ test:
 	@php unit/start.php
 
 benchmark:
-	@php benchmark/run.php
+	@php benchmark/benchmark.php

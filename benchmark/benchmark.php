@@ -5,6 +5,7 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 require( dirname(__FILE__) . '/../src/css-compression.php');
+require( dirname(__FILE__) . '/../unit/color.php');
 
 
 Class CompressionBenchmark
@@ -20,6 +21,7 @@ Class CompressionBenchmark
 		// Create the basice mode instances
 		foreach( CSSCompression::$modes as $mode => $config ) {
 			$this->instances[ $mode ] = new CSSCompression( NULL, $mode );
+			$this->averages[ $mode ] = array();
 		}
 
 		// Make the dist
@@ -36,9 +38,15 @@ Class CompressionBenchmark
 		$handle = opendir( $this->root . 'src/');
 		while( ( $file = readdir( $handle ) ) !== false ) {
 			if ( preg_match( "/\.css$/", $file ) ) {
-				$css = file_get_contents( $this->root . 'src/' . $file );
 				$result = '';
+				$css = file_get_contents( $this->root . 'src/' . $file );
 
+				// Some files might not exist when pulled from zengarden
+				if ( ! $css || $css == '' ) {
+					continue;
+				}
+
+				// Do each instance
 				foreach( $this->instances as $mode => $instance ) {
 					$result .= "\t" . $this->compress( $file, $css, $instance );
 				}
@@ -47,6 +55,15 @@ Class CompressionBenchmark
 				echo $file . $result . "\n";
 			}
 		}
+
+		// Final Averages
+		echo "Average Savings:";
+		foreach( $this->instances as $mode => $instance ) {
+			$bytes = intval( $this->averages[ $mode ]['size-after'] / count( $this->files ) );
+			$perc = number_format( $this->averages[ $mode ]['size-after'] / $this->averages[ $mode ]['size-before'] * 100, 2 );
+			echo "\t\t$mode: " . Color::green( $bytes ) . "[" . Color::blue( $perc . "%" ) . "]";
+		}
+		echo "\n\n";
 
 		file_put_contents( $this->root . 'dist/results.json', json_encode( array( 'files' => $this->files ) ) );
 	}
@@ -66,10 +83,16 @@ Class CompressionBenchmark
 		// Store compression results
 		$this->files[ $file ][ $instance->_mode ] = $instance->stats;
 
+		// Log basic result for averages
+		$this->averages[ $instance->_mode ]['size-before'] += $before['size'];
+		$this->averages[ $instance->_mode ]['size-after'] += $after['size'];
+		$this->averages[ $instance->_mode ]['time'] += $after['time'] - $before['time'];
+
+		// Return formatted string result
 		return $instance->_mode . ': '
-			. $after['size']
-			. '(' . ( $after['size'] - $before['size'] ) . ')'
-			. '[' . number_format( $after['size'] / $before['size'] * 100, 2 ) . '%] ';
+			. Color::yellow( $after['size'] )
+			. '(' . Color::green( $after['size'] - $before['size'] ) . ')'
+			. '[' . Color::blue( number_format( $after['size'] / $before['size'] * 100, 2 )  . '%' ) . '] ';
 	}
 };
 

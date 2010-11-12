@@ -1,8 +1,8 @@
-###
-### CSS Compression [VERSION] Change Log
-### [DATE]
-### Corey Hart @ http://www.codenothing.com
-###
+#
+# CSS Compression [VERSION] Change Log
+# [DATE]
+# Corey Hart @ http://www.codenothing.com
+#
 
 # New Features
 - Configuration Modes
@@ -12,6 +12,7 @@
 
 # Enhancements
 - Now handling all '@' prefixes (charsets,media,imports,font-family,etc..)
+- Removed sketchy include method in unit testing, all selectors/details defined inside function
 
 
 # Possible Breaks

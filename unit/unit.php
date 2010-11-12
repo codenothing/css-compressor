@@ -42,10 +42,8 @@ Class CSScompressionTestUnit Extends CSSCompression
 		$this->results = '';
 
 		$this->setOptions();
-		$this->mark( 'Start Test', 0, true );
 		$this->initialTrimTest();
 		$this->lineTesting();
-		$this->testSemicolon();
 		$this->testSelectorCombination();
 		$this->testDetailCombination();
 
@@ -82,7 +80,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 	/**
 	 * Uses a test-array contain CSSC methods and various
 	 * tests to run on each function. Takes special note to
-	 * individuals() & removeUnnecessarySemicolon() methods
+	 * individuals()  methods
 	 *
 	 * @params none
 	 */ 
@@ -97,11 +95,6 @@ Class CSScompressionTestUnit Extends CSSCompression
 					list ( $prop, $val ) = $this->individuals( $prop, $val );
 					$passed = ( "$prop:$val" == $after );
 				}
-				else if ( $fn == 'removeUnnecessarySemicolon' ) {
-					$this->details = array( $before );
-					$this->$fn();
-					$passed = ( $this->details[0] == $after );
-				}
 				else{
 					// Each function replaces all instances with compressed version of prop, so
 					// add the remove multiply definitions for easier testing
@@ -113,39 +106,48 @@ Class CSScompressionTestUnit Extends CSSCompression
 	}
 
 	/**
-	 * Runs unit testing on ending semicolon removal
-	 *
-	 * @params none
-	 */ 
-	private function testSemicolon(){
-		$this->details = array(
-			'color:blue;',
-			'color:blue;font-size:12pt;',
-		);
-
-		$after = array(
-			'color:blue',
-			'color:blue;font-size:12pt',
-		);
-
-		$this->removeUnnecessarySemicolon();
-		$max = array_pop( array_keys( $this->details ) ) + 1;
-		for ( $i = 0; $i < $max; $i++ ) {
-			$this->mark( 'Unnecessary Semicolons', $i, ( $this->details[ $i ] === $after[ $i ] ) );
-		}
-	}
-
-	/**
 	 * Runs unit testing on the selector combination
 	 *
 	 * @params none
 	 */ 
 	private function testSelectorCombination(){
-		include( SPECIAL_BEFORE . 'combineMultiplyDefinedSelectors.php' );
-		$this->selectors = $selectors;
-		$this->details = $details;
+		// Before
+		$this->selectors = array(
+			0 => '#id div.class',
+			1 => '#secondary .oops',
+			3 => '#today p.boss',
+			4 => '#id div.class',
+			8 => '#today p.boss',
+			15 => '#id div.class',
+			16 => '#id div.class',
+			17 => '#secondary .oops',
+		);
+		$this->details = array(
+			0 => 'test1;',
+			1 => 'test2;',
+			3 => 'test3;',
+			4 => 'test4;',
+			8 => 'test5;',
+			15 => 'test6;',
+			16 => 'test7;',
+			17 => 'test8;',
+		);
+
+		// After
+		$selectors = array(
+			0 => '#id div.class',
+			1 => '#secondary .oops',
+			3 => '#today p.boss',
+		);
+
+		$details = array(
+			0 => 'test1;test4;test6;test7;',
+			1 => 'test2;test8;',
+			3 => 'test3;test5;',
+		);
+
+		// Run compression
 		$this->combineMultiplyDefinedSelectors();
-		include( SPECIAL_AFTER . 'combineMultiplyDefinedSelectors.php' );
 		$max = array_pop( array_keys( $this->selectors ) ) + 1;
 		for ( $i = 0; $i < $max; $i++ ) {
 			if ( isset( $this->selectors[ $i ] ) && isset( $this->details[ $i ] ) ) {
@@ -164,16 +166,50 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function testDetailCombination(){
-		include( SPECIAL_BEFORE . 'combineMultiplyDefinedDetails.php' );
-		$this->selectors = $selectors;
-		$this->details = $details;
+		// Before
+		$this->selectors = array(
+			0 => '#id div.class',
+			1 => '#secondary .oops',
+			3 => '#today p.boss',
+			4 => '#id div.class',
+			8 => '#today p.boss',
+			15 => '#id div.class',
+			16 => '#id div.class',
+			17 => '#secondary .oops',
+		);
+		$this->details = array(
+			0 => 'color:red;font-size:12pt;font-weight:bold;',
+			1 => 'margin-left:10px;margin-top:20px;',
+			3 => 'font-size:12pt;font-weight:bold;color:red;',
+			4 => 'background:white;',
+			8 => 'border:1px solid black;border-radius:20px;',
+			15 => 'margin-top:20px;margin-left:10px;',
+			16 => 'font-weight:bold;color:red;font-size:12pt;',
+			17 => 'border-radius:20px;border:1px solid black;',
+		);
+
+		// After
+		$selectors = array(
+			0 => '#id div.class,#today p.boss,#id div.class',
+			1 => '#secondary .oops,#id div.class',
+			4 => '#id div.class',
+			8 => '#today p.boss,#secondary .oops',
+		);
+
+		$details = array(
+			0 => 'color:red;font-size:12pt;font-weight:bold;',
+			1 => 'margin-left:10px;margin-top:20px;',
+			4 => 'background:white;',
+			8 => 'border:1px solid black;border-radius:20px;',
+		);
+
+		// Run compression
 		$this->combineMultiplyDefinedDetails();
-		include( SPECIAL_AFTER . 'combineMultiplyDefinedDetails.php' );
 		$max = array_pop( array_keys( $this->selectors ) ) + 1;
 		for ( $i = 0; $i < $max; $i++ ) {
 			if ( isset( $this->selectors[ $i ] ) && isset( $this->details[ $i ] ) ) {
 				$this->mark(
-					'Selector Combination',
+					'Detail Combination',
 					$i,
 					( $this->selectors[ $i ] === $selectors[ $i ] && $this->details[ $i ] === $details[ $i ] )
 				);

@@ -9,4 +9,8 @@ do
 	fi
 
 	curl "http://csszengarden.com/$file/$file.css" -o "csszengarden.com.$file.css"
+	if cat "csszengarden.com.$file.css" | grep -q "<title>404 Not Found</title>"
+	then
+		rm "csszengarden.com.$file.css"
+	fi
 done

@@ -868,11 +868,10 @@ Class CSSCompression
 			$this->combineMultiplyDefinedSelectors();
 			$this->combineMultiplyDefinedDetails();
 
-			if ( $this->options['rm-multi-define'] ) {
-				foreach ( $this->details as &$value ) {
-					$value = $this->removeMultipleDefinitions( $value );
-					$value = $this->removeEscapedURLs( $value );
-				}
+			foreach ( $this->details as &$value ) {
+				if ( $this->options['rm-multi-define'] ) 	$value = $this->removeMultipleDefinitions( $value );
+				$value = $this->removeEscapedURLs( $value );
+				$value = $this->removeUnnecessarySemicolon( $value );
 			}
 		}
 		// For when order is important, reason above
@@ -887,12 +886,8 @@ Class CSSCompression
 				if ($this->options['list-combine']) 		$value = $this->combineListProperties( $value );
 				if ($this->options['rm-multi-define']) 		$value = $this->removeMultipleDefinitions( $value );
 				$value = $this->removeEscapedURLs( $value );
+				$value = $this->removeUnnecessarySemicolon( $value );
 			}
-		}
-
-		// Kill the last semicolon
-		if ( $this->options['unnecessary-semicolons'] ) {
-			$this->removeUnnecessarySemicolon();
 		}
 	}
 
@@ -1410,10 +1405,8 @@ Class CSSCompression
 	 *
 	 * @params none
 	 */ 
-	protected function removeUnnecessarySemicolon(){
-		foreach ( $this->details as &$value ) {
-			$value = preg_replace( "/;$/", '', $value );
-		}
+	protected function removeUnnecessarySemicolon( $value ) {
+		return preg_replace( "/;$/", '', $value );
 	}
 
 	/**
