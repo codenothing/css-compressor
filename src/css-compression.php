@@ -337,26 +337,20 @@ Class CSSCompression
 	 * @param (string) css: CSS Contents
 	 */ 
 	public function compress( $css, $prefs = array() ) {
-		// Start the timer
-		$initialTime = array_sum( explode( ' ', microtime() ) );
-		$initialSize = strlen( $css );
-
-		// Options
-		if ( $prefs ) {
-			$this->mergeOptions( $prefs );
-		}
-
 		// Flush out variables
 		$this->flush();
 		$this->css = $css;
+		$this->mergeOptions( $prefs );
+
+		// Start the timer
+		$this->stats['before']['time'] = array_sum( explode( ' ', microtime() ) );
+		$this->stats['before']['size'] = strlen( $css );
 
 		// Send body through initial trimings and setup for compression methods
 		$this->initialTrim();
 		$this->setup();
 
 		// Store all intial data
-		$this->stats['before']['time'] = $initialTime;
-		$this->stats['before']['size'] = $initialSize;
 		$this->stats['before']['selectors'] = count( $this->selectors );
 
 		// Run Compression Methods
@@ -973,7 +967,7 @@ Class CSSCompression
 					continue;
 				}
 
-				$match = preg_split( $this->r_semicolon, $this->details[ $k ] );
+				$match = preg_split( $this->r_semicolon, isset( $this->details[ $k ] ) ? $this->details[ $k ] : '' );
 				$x = array_diff( $arr, $match );
 				$y = array_diff( $match, $arr );
 

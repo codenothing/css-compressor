@@ -224,11 +224,14 @@ Class CSScompressionTestUnit Extends CSSCompression
 	public function __destruct(){
 		if ( $this->errors > 0 ) {
 			$final = Color::boldred( "Test Failed: " . $this->errors . " total errors." );
+			$exit = 1;
 		}
 		else {
 			$final = Color::boldgreen( "All " . $this->passes . " Tests Passed" );
+			$exit = 0;
 		}
 		echo "\r\n\r\n$final\r\n\r\n";
+		exit( $exit );
 	}
 };
 

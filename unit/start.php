@@ -4,6 +4,7 @@
  * [DATE]
  * Corey Hart @ http://www.codenothing.com
  */
+error_reporting( E_ALL );
 
 // Include compressor and unit tests
 $root = dirname(__FILE__);
