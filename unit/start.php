@@ -10,10 +10,9 @@ error_reporting( E_ALL );
 $root = dirname(__FILE__);
 include( $root . '/../src/css-compression.php' );
 include( $root . '/color.php' );
-include( $root . '/sandbox.php' );
 include( $root . '/unit.php' );
 
 // Unit Testing is on autorun
-new CSScompressionTestUnit( $sandbox );
+new CSScompressionTestUnit();
 
 ?>

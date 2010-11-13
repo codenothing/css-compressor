@@ -36,11 +36,11 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 *
 	 * @params none
 	 */ 
-	public function __construct( $sandbox ) {
+	public function __construct(){
 		parent::__construct('');
 
 		// Reset the local class vars
-		$this->sandbox = $sandbox;
+		$this->sandbox = $this->getSandbox();
 		$this->errors = 0;
 		$this->results = '';
 
@@ -71,6 +71,55 @@ Class CSScompressionTestUnit Extends CSSCompression
 	}
 
 	/**
+	 * Get the sandbox json spec, strip the comments, and convert into an array
+	 *
+	 * @params none
+	 */
+	private function getSandbox(){
+		// Strip comments
+		$file = preg_replace(
+			array( "/\/\*(.*?)\*\//s", "/\t+\/\/.*/" ),
+			array( '', '' ),
+			file_get_contents( dirname(__FILE__) . '/sandbox.json' )
+		);
+
+		// Decode json
+		$json = json_decode( $file, true );
+
+		// Check for errors
+		if ( $json === NULL ) {
+			// JSON Errors, taken directly from http://php.net/manual/en/function.json-last-error.php
+			switch( json_last_error() ) {
+				case JSON_ERROR_NONE:
+					echo Color::boldred( 'JSON Error - No error has occurred' );
+					break;
+				case JSON_ERROR_DEPTH:
+					echo Color::boldred( 'JSON Error - The maximum stack depth has been exceeded' );
+					break;
+				case JSON_ERROR_CTRL_CHAR:
+					echo Color::boldred( 'JSON Error - Control character error, possibly incorrectly encoded' );
+					break;
+				case JSON_ERROR_STATE_MISMATCH:
+					echo Color::boldred( 'JSON Error - Invalid or malformed JSON' );
+					break;
+				case JSON_ERROR_SYNTAX:
+					echo Color::boldred( 'JSON Error - Syntax error' );
+					break;
+				case JSON_ERROR_UTF8:
+					echo Color::boldred( 'JSON Error - Malformed UTF-8 characters, possibly incorrectly encoded' );
+					break;
+				default:
+					echo Color::boldred( 'Unknown JSON Error' );
+					break;
+			}
+			exit( 1 );
+		}
+
+		// Good to go
+		return $json;
+	}
+
+	/**
 	 * Runs a test on the initalTrim() method of CSSC, uses
 	 * a before/after system of files to do matching
 	 *
@@ -93,36 +142,53 @@ Class CSScompressionTestUnit Extends CSSCompression
 	private function lineTesting(){
 		foreach ( $this->sandbox as $fn => $tests ) {
 			if ( $fn == 'combineMultiplyDefinedSelectors' || $fn == 'combineMultiplyDefinedDetails' ) {
-				list ( $selectors, $details ) = $this->$fn( $tests['selectors']['before'], $tests['details']['before'] );
-				$max = array_pop( array_keys( $selectors ) ) + 1;
-				for ( $i = 0; $i < $max; $i++ ) {
-					if ( isset( $selectors[ $i ] ) && isset( $details[ $i ] ) ) {
-						$this->mark(
-							$fn,
-							$i,
-							( $selectors[ $i ] === $tests['selectors']['expected'][ $i ] && 
-								$details[ $i ] === $tests['details']['expected'][ $i ] )
-						);
+				list ( $selectors, $details ) = $this->$fn( $tests['selectors']['test'], $tests['details']['test'] );
+
+				// Rekey the arrays
+				$selectors = array_values( $selectors );
+				$details = array_values( $details );
+
+				// Mark the entries
+				for ( $i = 0, $max = count( $selectors ); $i < $max; $i++ ) {
+					if ( isset( $selectors[ $i ] ) && isset( $details[ $i ] ) && 
+						isset( $tests['selectors']['expect'][ $i ] ) &&
+						isset( $tests['details']['expect'][ $i ] ) ) {
+							$this->mark(
+								$fn,
+								$i,
+								( $selectors[ $i ] === $tests['selectors']['expect'][ $i ] && 
+									$details[ $i ] === $tests['details']['expect'][ $i ] )
+							);
+					}
+					else {
+						$this->mark( $fn, $i, false );
 					}
 				}
-				$this->mark( $fn, 'Selectors Counted', count( $selectors ) === count( $tests['selectors']['expected'] ) );
-				$this->mark( $fn, 'Details Counted', count( $details ) === count( $tests['details']['expected'] ) );
+				$this->mark( $fn, 'Selectors Counted', count( $selectors ) === count( $tests['selectors']['expect'] ) );
+				$this->mark( $fn, 'Details Counted', count( $details ) === count( $tests['details']['expect'] ) );
 				continue;
 			}
 
 			foreach ( $tests as $entry => $set ) {
-				$before = $set[0];
-				$after = $set[1];
+				// Some strings are too long and wrap, so
+				// we force them into an array for better
+				// readability
+				if ( is_array( $set['test'] ) ) {
+					$set['test'] = implode( '', $set['test'] );
+				}
+				// Sam with expect
+				if ( is_array( $set['expect'] ) ) {
+					$set['expect'] = implode( '', $set['expect'] );
+				}
 
+				// Inididual tests are run on each prop
 				if ( $fn == 'individuals' ) {
-					list ( $prop, $val ) = explode( ':', $before, 2 );
+					list ( $prop, $val ) = explode( ':', $set['test'], 2 );
 					list ( $prop, $val ) = $this->individuals( $prop, $val );
-					$passed = ( "$prop:$val" == $after );
+					$passed = ( "$prop:$val" == $set['expect'] );
 				}
 				else {
-					// Each function replaces all instances with compressed version of prop, so
-					// add the remove multiply definitions for easier testing
-					$passed = ( $this->$fn( $before ) == $after );
+					$passed = ( $this->$fn( $set['test'] ) == $set['expect'] );
 				}
 				$this->mark( $fn, $entry, $passed );
 			}
