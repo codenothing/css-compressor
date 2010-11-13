@@ -301,6 +301,23 @@ $sandbox = array(
 			'a:first-child{',
 			'a:first-child {'
 		),
+		'first-child empty' => array(
+			'a:first-child',
+			'a:first-child '
+		),
+		'first-child space' => array(
+			'a:first-child b',
+			'a:first-child b'
+		),
+		'multiple' => array(
+			'a:hover>b:hover.test+pre.old:hover',
+			'a:hover >b:hover.test+pre.old:hover ',
+		),
+		'nothing' => array(
+			'a:hover.test',
+			'a:hover.test',
+		),
+		'empty' => array( '', '' ),
 	),
 
 	// combineCSWproperties method

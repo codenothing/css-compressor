@@ -2,6 +2,6 @@
 *.swp
 
 # Benchmark generated files
-benchmark/dist/
-benchmark/src/csszengarden.com*
-benchmark/src/get.sh
+unit/benchmark/dist/
+unit/benchmark/src/csszengarden.com*
+unit/benchmark/src/get.sh

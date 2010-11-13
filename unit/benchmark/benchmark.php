@@ -4,8 +4,8 @@
  * [DATE]
  * Corey Hart @ http://www.codenothing.com
  */ 
-require( dirname(__FILE__) . '/../src/css-compression.php');
-require( dirname(__FILE__) . '/../unit/color.php');
+require( dirname(__FILE__) . '/../../src/css-compression.php');
+require( dirname(__FILE__) . '/../color.php');
 
 
 Class CompressionBenchmark
@@ -37,31 +37,34 @@ Class CompressionBenchmark
 		// Do benchmarks on every css file
 		$handle = opendir( $this->root . 'src/');
 		while( ( $file = readdir( $handle ) ) !== false ) {
-			if ( preg_match( "/\.css$/", $file ) ) {
-				$result = '';
-				$css = file_get_contents( $this->root . 'src/' . $file );
-
-				// Some files might not exist when pulled from zengarden
-				if ( ! $css || $css == '' ) {
-					continue;
-				}
-
-				// Do each instance
-				foreach( $this->instances as $mode => $instance ) {
-					$result .= "\t" . $this->compress( $file, $css, $instance );
-				}
-
-				// Print result to terminal to show progress
-				echo $file . $result . "\n";
+			if ( ! preg_match( "/\.css$/", $file ) ) {
+				continue;
 			}
+
+			// Get content of file
+			$result = '';
+			$css = file_get_contents( $this->root . 'src/' . $file );
+
+			// Some files might not exist when pulled from zengarden
+			if ( ! $css || $css == '' ) {
+				continue;
+			}
+
+			// Do each instance
+			foreach( $this->instances as $mode => $instance ) {
+				$result .= "\t" . $this->compress( $file, $css, $instance );
+			}
+
+			// Print result to terminal to show progress
+			echo $file . "\n" . $result . "\n";
 		}
 
 		// Final Averages
-		echo "Average Savings:";
+		echo "Average Savings:\n";
 		foreach( $this->instances as $mode => $instance ) {
 			$bytes = intval( $this->averages[ $mode ]['size-after'] / count( $this->files ) );
 			$perc = number_format( $this->averages[ $mode ]['size-after'] / $this->averages[ $mode ]['size-before'] * 100, 2 );
-			echo "\t\t$mode: " . Color::green( $bytes ) . "[" . Color::blue( $perc . "%" ) . "]";
+			echo "\t\t$mode: " . Color::green( '-' . $bytes ) . "[" . Color::blue( $perc . "%" ) . "]";
 		}
 		echo "\n\n";
 

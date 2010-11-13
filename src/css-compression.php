@@ -56,8 +56,11 @@ Class CSSCompression
 		),
 		'medium' => array(
 			'color-hex2shortcolor' => false,
+			'pseduo-space' => false
 		),
-		'small' => array(),
+		'small' => array(
+			'pseduo-space' => false
+		),
 	);
 
 	/**
@@ -654,8 +657,12 @@ Class CSSCompression
 		}
 		// 3 Direction reduction
 		else if ( $count == 3 ) {
-			// There can only be compression if the top(first) and bottom(last) are the same
-			if ( $direction[0] == $direction[2] ) {
+			// All directions are the same
+			if ( $direction[0] == $direction[1] && $direction[1] == $direction[2] ) {
+				$val = $direction[0];
+			}
+			// Only top(first) and bottom(last) are the same
+			else if ( $direction[0] == $direction[2] ) {
 				$val = $direction[0] . ' ' . $direction[1];
 			}
 			else {
@@ -924,7 +931,19 @@ Class CSSCompression
 	 * @param (string) selector: CSS Selector
 	 */ 
 	protected function pseduoSpace( $selector ) {
-		return preg_replace( "/(\:[a-z-]+)/i", "$1 ", $selector );
+		$pattern = array(
+			"/(\:[a-z-]+)([^a-z-\.\:\# ])/i",
+			"/  /",
+			"/(\:[a-z-]+)$/i",
+		);
+
+		$replacement = array(
+			"$1 $2",
+			" ",
+			"$1 ",
+		);
+
+		return preg_replace( $pattern, $replacement, $selector );
 	}
 
 	/**
@@ -946,6 +965,12 @@ Class CSSCompression
 				}
 
 				if ( $this->selectors[ $i ] == $this->selectors[ $k ] ) {
+					if ( ! isset( $this->details[ $i ] ) ) {
+						$this->details[ $i ] = '';
+					}
+					if ( ! isset( $this->details[ $k ] ) ) {
+						$this->details[ $k ] = '';
+					}
 					$this->details[ $i ] .= $this->details[ $k ];
 					unset( $this->selectors[ $k ], $this->details[ $k ] );
 				}
@@ -966,7 +991,7 @@ Class CSSCompression
 				continue;
 			}
 
-			$arr = preg_split( $this->r_semicolon, $this->details[ $i ] );
+			$arr = preg_split( $this->r_semicolon, isset( $this->details[ $i ] ) ? $this->details[ $i ] : '' );
 			for ( $k = $i + 1; $k < $max; $k++ ) {
 				if ( ! isset( $this->selectors[ $k ] ) ) {
 					continue;
@@ -1504,7 +1529,7 @@ Class CSSCompression
 		else if ( $this->options['readability'] == self::READ_NONE ) {
 			$css = $import;
 			foreach ( $this->selectors as $k => $v ) {
-				if ( $this->details[ $k ] && $this->details[ $k ] != '' ) {
+				if ( isset( $this->details[ $k ] ) && $this->details[ $k ] != '' ) {
 					$css .= trim( "$v{" . $this->details[ $k ] . "}" );
 				}
 			}

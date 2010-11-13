@@ -11,6 +11,7 @@ define('SPECIAL_BEFORE', $root . '/special/before/');
 define('SPECIAL_AFTER', $root . '/special/after/');
 define('BEFORE', $root . '/sheets/before/');
 define('AFTER', $root . '/sheets/after/');
+define('BENCHMARK', $root . '/benchmark/src/');
 
 
 Class CSScompressionTestUnit Extends CSSCompression
@@ -22,11 +23,13 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @param (int) passes: Number of tests passed
 	 * @param (array) sandbox: Array containing test suite
 	 * @param (string) results: Result of all tests string for table
+	 * @param (array) instances: Array of default instance modes
 	 */
 	private $errors = 0;
 	private $passes = 0;
 	private $sandbox = array();
 	private $results = '';
+	private $instances = array();
 
 	/**
 	 * Constructor - runs the test suite
@@ -50,6 +53,10 @@ Class CSScompressionTestUnit Extends CSSCompression
 		// Full sheet tests (security checks)
 		$this->setOptions();
 		$this->testSheets();
+
+		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'full' ) {
+			$this->testDoubles();
+		}
 	}
 
 	/**
@@ -95,7 +102,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 					list ( $prop, $val ) = $this->individuals( $prop, $val );
 					$passed = ( "$prop:$val" == $after );
 				}
-				else{
+				else {
 					// Each function replaces all instances with compressed version of prop, so
 					// add the remove multiply definitions for easier testing
 					$passed = ( $this->$fn( $before ) == $after );
@@ -230,6 +237,34 @@ Class CSScompressionTestUnit Extends CSSCompression
 				$before = trim( file_get_contents( BEFORE . $file ) );
 				$after = trim( file_get_contents( AFTER . $file ) );
 				$this->mark( $file, "full", $this->compress( $before ) === $after );
+			}
+		}
+	}
+
+	/**
+	 * Run all test sheets through each mode multiple times
+	 * to ensure everything is compressed the first time
+	 *
+	 * @params none
+	 */
+	private function testDoubles(){
+		foreach ( self::$modes as $mode => $options ) {
+			$this->instances[ $mode ] = new CSSCompression( '', $mode );
+		}
+
+		$handle = opendir( BENCHMARK );
+		while ( ( $file = readdir( $handle ) ) !== false ) {
+			if ( preg_match( "/\.css$/", $file ) ) {
+				$before = trim( file_get_contents( BENCHMARK . $file ) );
+				foreach ( $this->instances as $mode => $instance ) {
+					$first = $instance->compress( $before );
+					$a = array( 'selectors' => $instance->selectors, 'details' => $instance->details );
+					$size = $instance->stats['after']['size'];
+					$second = $instance->compress( $first );
+					$b = array( 'selectors' => $instance->selectors, 'details' => $instance->details );
+					$this->mark( 'Double CSS ' . $file, $mode, $first === $second );
+					$this->mark( 'Double Size ' . $file, $mode, $size === $instance->stats['after']['size'] );
+				}
 			}
 		}
 	}
