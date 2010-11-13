@@ -320,6 +320,84 @@ $sandbox = array(
 		'empty' => array( '', '' ),
 	),
 
+	// Special combining based on selectors
+	'combineMultiplyDefinedSelectors' => array(
+		'selectors' => array(
+			'before' => array(
+				0 => '#id div.class',
+				1 => '#secondary .oops',
+				3 => '#today p.boss',
+				4 => '#id div.class',
+				8 => '#today p.boss',
+				15 => '#id div.class',
+				16 => '#id div.class',
+				17 => '#secondary .oops',
+			),
+			'expected' => array(
+				0 => '#id div.class',
+				1 => '#secondary .oops',
+				3 => '#today p.boss',
+			),
+		),
+		'details' => array(
+			'before' => array(
+				0 => 'test1;',
+				1 => 'test2;',
+				3 => 'test3;',
+				4 => 'test4;',
+				8 => 'test5;',
+				15 => 'test6;',
+				16 => 'test7;',
+				17 => 'test8;',
+			),
+			'expected' => array(
+				0 => 'test1;test4;test6;test7;',
+				1 => 'test2;test8;',
+				3 => 'test3;test5;',
+			),
+		),
+	),
+
+	// Special combining based on details
+	'combineMultiplyDefinedDetails' => array(
+		'selectors' => array(
+			'before' => array(
+				0 => '#id div.class',
+				1 => '#secondary .oops',
+				3 => '#today p.boss',
+				4 => '#id div.class',
+				8 => '#today p.boss',
+				15 => '#id div.class',
+				16 => '#id div.class',
+				17 => '#secondary .oops',
+			),
+			'expected' => array(
+				0 => '#id div.class,#today p.boss,#id div.class',
+				1 => '#secondary .oops,#id div.class',
+				4 => '#id div.class',
+				8 => '#today p.boss,#secondary .oops',
+			),
+		),
+		'details' => array(
+			'before' => array(
+				0 => 'color:red;font-size:12pt;font-weight:bold;',
+				1 => 'margin-left:10px;margin-top:20px;',
+				3 => 'font-size:12pt;font-weight:bold;color:red;',
+				4 => 'background:white;',
+				8 => 'border:1px solid black;border-radius:20px;',
+				15 => 'margin-top:20px;margin-left:10px;',
+				16 => 'font-weight:bold;color:red;font-size:12pt;',
+				17 => 'border-radius:20px;border:1px solid black;',
+			),
+			'expected' => array(
+				0 => 'color:red;font-size:12pt;font-weight:bold;',
+				1 => 'margin-left:10px;margin-top:20px;',
+				4 => 'background:white;',
+				8 => 'border:1px solid black;border-radius:20px;',
+			),
+		),
+	),
+
 	// combineCSWproperties method
 	'combineCSWproperties' => array(
 		'border' => array(

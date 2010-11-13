@@ -872,9 +872,6 @@ Class CSSCompression
 		// If order isn't important, run comination functions before and after compressions to catch all instances
 		// Since this creates another addition of looping, keep it seperate from compressions where order is important
 		if ( $this->options['multiple-selectors'] && $this->options['multiple-details'] ) {
-			$this->combineMultiplyDefinedSelectors();
-			$this->combineMultiplyDefinedDetails();
-
 			foreach ( $this->details as &$value ) {
 				foreach ( $methods as $option => $fn ) {
 					if ( $this->options[ $option ] ) {
@@ -884,9 +881,15 @@ Class CSSCompression
 				$value = $this->removeMultipleDefinitions( $value );
 			}
 
-			$this->combineMultiplyDefinedSelectors();
-			$this->combineMultiplyDefinedDetails();
+			// Combining defns based on similar selectors
+			list ( $this->selectors, $this->details ) =
+				$this->combineMultiplyDefinedSelectors( $this->selectors, $this->details );
 
+			// Combining defns based on similar details
+			list ( $this->selectors, $this->details ) =
+				$this->combineMultiplyDefinedDetails( $this->selectors, $this->details );
+
+			// Go through one last time and trim everything
 			foreach ( $this->details as &$value ) {
 				$value = $this->removeMultipleDefinitions( $value );
 				$value = $this->removeEscapedURLs( $value );
@@ -950,63 +953,69 @@ Class CSSCompression
 	 * Combines multiply defined selectors by merging the definitions,
 	 * latter definitions overide definitions at top of file
 	 *
-	 * @params none
+	 * @param (array) selectors: Array of selectors broken down by setup
+	 * @param (array) details: Array of details broken down by setup
 	 */ 
-	protected function combineMultiplyDefinedSelectors(){
-		$max = array_pop( array_keys( $this->selectors ) ) + 1;
+	protected function combineMultiplyDefinedSelectors( $selectors, $details ) {
+		$max = array_pop( array_keys( $selectors ) ) + 1;
 		for ( $i = 0; $i < $max; $i++ ) {
-			if ( ! isset( $this->selectors[ $i ] ) ) {
+			if ( ! isset( $selectors[ $i ] ) ) {
 				continue;
 			}
 
 			for ( $k = $i + 1; $k < $max; $k++ ) {
-				if ( ! isset( $this->selectors[ $k ] ) ) {
+				if ( ! isset( $selectors[ $k ] ) ) {
 					continue;
 				}
 
-				if ( $this->selectors[ $i ] == $this->selectors[ $k ] ) {
-					if ( ! isset( $this->details[ $i ] ) ) {
-						$this->details[ $i ] = '';
+				if ( $selectors[ $i ] == $selectors[ $k ] ) {
+					if ( ! isset( $details[ $i ] ) ) {
+						$details[ $i ] = '';
 					}
-					if ( ! isset( $this->details[ $k ] ) ) {
-						$this->details[ $k ] = '';
+					if ( ! isset( $details[ $k ] ) ) {
+						$details[ $k ] = '';
 					}
-					$this->details[ $i ] .= $this->details[ $k ];
-					unset( $this->selectors[ $k ], $this->details[ $k ] );
+					$details[ $i ] .= $details[ $k ];
+					unset( $selectors[ $k ], $details[ $k ] );
 				}
 			}
 		}
+
+		return array( $selectors, $details );
 	}
 
 	/**
 	 * Combines multiply defined details by merging the selectors
 	 * in comma seperated format
 	 *
-	 * @params none
+	 * @param (array) selectors: Array of selectors broken down by setup
+	 * @param (array) details: Array of details broken down by setup
 	 */ 
-	protected function combineMultiplyDefinedDetails(){
-		$max = array_pop( array_keys( $this->selectors ) ) + 1;
+	protected function combineMultiplyDefinedDetails( $selectors, $details ) {
+		$max = array_pop( array_keys( $selectors ) ) + 1;
 		for ( $i = 0; $i < $max; $i++ ) {
-			if ( ! isset( $this->selectors[ $i ] ) ) {
+			if ( ! isset( $selectors[ $i ] ) ) {
 				continue;
 			}
 
-			$arr = preg_split( $this->r_semicolon, isset( $this->details[ $i ] ) ? $this->details[ $i ] : '' );
+			$arr = preg_split( $this->r_semicolon, isset( $details[ $i ] ) ? $details[ $i ] : '' );
 			for ( $k = $i + 1; $k < $max; $k++ ) {
-				if ( ! isset( $this->selectors[ $k ] ) ) {
+				if ( ! isset( $selectors[ $k ] ) ) {
 					continue;
 				}
 
-				$match = preg_split( $this->r_semicolon, isset( $this->details[ $k ] ) ? $this->details[ $k ] : '' );
+				$match = preg_split( $this->r_semicolon, isset( $details[ $k ] ) ? $details[ $k ] : '' );
 				$x = array_diff( $arr, $match );
 				$y = array_diff( $match, $arr );
 
 				if ( count( $x ) < 1 && count( $y ) < 1 ) {
-					$this->selectors[ $i ] .= ',' . $this->selectors[ $k ];
-					unset( $this->details[ $k ], $this->selectors[ $k ] );
+					$selectors[ $i ] .= ',' . $selectors[ $k ];
+					unset( $details[ $k ], $selectors[ $k ] );
 				}
 			}
 		}
+
+		return array( $selectors, $details );
 	}
 
 	/**
@@ -1349,7 +1358,7 @@ Class CSSCompression
 	 * Helper function to ensure flagged words don't get
 	 * overridden
 	 *
-	 * @param (array/string) obj: Array/String of definitions to be checked
+	 * @param (array|string) obj: Array/String of definitions to be checked
 	 */ 
 	protected function checkUncombinables( $obj ) {
 		if ( is_array( $obj ) ) {

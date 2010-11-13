@@ -44,11 +44,10 @@ Class CSScompressionTestUnit Extends CSSCompression
 		$this->errors = 0;
 		$this->results = '';
 
+		// Run through sandbox tests
 		$this->setOptions();
 		$this->initialTrimTest();
 		$this->lineTesting();
-		$this->testSelectorCombination();
-		$this->testDetailCombination();
 
 		// Full sheet tests (security checks)
 		$this->setOptions();
@@ -93,12 +92,30 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 */ 
 	private function lineTesting(){
 		foreach ( $this->sandbox as $fn => $tests ) {
+			if ( $fn == 'combineMultiplyDefinedSelectors' || $fn == 'combineMultiplyDefinedDetails' ) {
+				list ( $selectors, $details ) = $this->$fn( $tests['selectors']['before'], $tests['details']['before'] );
+				$max = array_pop( array_keys( $selectors ) ) + 1;
+				for ( $i = 0; $i < $max; $i++ ) {
+					if ( isset( $selectors[ $i ] ) && isset( $details[ $i ] ) ) {
+						$this->mark(
+							$fn,
+							$i,
+							( $selectors[ $i ] === $tests['selectors']['expected'][ $i ] && 
+								$details[ $i ] === $tests['details']['expected'][ $i ] )
+						);
+					}
+				}
+				$this->mark( $fn, 'Selectors Counted', count( $selectors ) === count( $tests['selectors']['expected'] ) );
+				$this->mark( $fn, 'Details Counted', count( $details ) === count( $tests['details']['expected'] ) );
+				continue;
+			}
+
 			foreach ( $tests as $entry => $set ) {
 				$before = $set[0];
 				$after = $set[1];
 
 				if ( $fn == 'individuals' ) {
-					list ( $prop, $val ) = explode( ':', $before );
+					list ( $prop, $val ) = explode( ':', $before, 2 );
 					list ( $prop, $val ) = $this->individuals( $prop, $val );
 					$passed = ( "$prop:$val" == $after );
 				}
@@ -108,118 +125,6 @@ Class CSScompressionTestUnit Extends CSSCompression
 					$passed = ( $this->$fn( $before ) == $after );
 				}
 				$this->mark( $fn, $entry, $passed );
-			}
-		}
-	}
-
-	/**
-	 * Runs unit testing on the selector combination
-	 *
-	 * @params none
-	 */ 
-	private function testSelectorCombination(){
-		// Before
-		$this->selectors = array(
-			0 => '#id div.class',
-			1 => '#secondary .oops',
-			3 => '#today p.boss',
-			4 => '#id div.class',
-			8 => '#today p.boss',
-			15 => '#id div.class',
-			16 => '#id div.class',
-			17 => '#secondary .oops',
-		);
-		$this->details = array(
-			0 => 'test1;',
-			1 => 'test2;',
-			3 => 'test3;',
-			4 => 'test4;',
-			8 => 'test5;',
-			15 => 'test6;',
-			16 => 'test7;',
-			17 => 'test8;',
-		);
-
-		// After
-		$selectors = array(
-			0 => '#id div.class',
-			1 => '#secondary .oops',
-			3 => '#today p.boss',
-		);
-
-		$details = array(
-			0 => 'test1;test4;test6;test7;',
-			1 => 'test2;test8;',
-			3 => 'test3;test5;',
-		);
-
-		// Run compression
-		$this->combineMultiplyDefinedSelectors();
-		$max = array_pop( array_keys( $this->selectors ) ) + 1;
-		for ( $i = 0; $i < $max; $i++ ) {
-			if ( isset( $this->selectors[ $i ] ) && isset( $this->details[ $i ] ) ) {
-				$this->mark(
-					'Selector Combination', 
-					$i, 
-					( $this->selectors[ $i ] === $selectors[ $i ] && $this->details[ $i ] === $details[ $i ] )
-				);
-			}
-		}
-	}
-
-	/**
-	 * Runs unit testing on the details combination
-	 *
-	 * @params none
-	 */ 
-	private function testDetailCombination(){
-		// Before
-		$this->selectors = array(
-			0 => '#id div.class',
-			1 => '#secondary .oops',
-			3 => '#today p.boss',
-			4 => '#id div.class',
-			8 => '#today p.boss',
-			15 => '#id div.class',
-			16 => '#id div.class',
-			17 => '#secondary .oops',
-		);
-		$this->details = array(
-			0 => 'color:red;font-size:12pt;font-weight:bold;',
-			1 => 'margin-left:10px;margin-top:20px;',
-			3 => 'font-size:12pt;font-weight:bold;color:red;',
-			4 => 'background:white;',
-			8 => 'border:1px solid black;border-radius:20px;',
-			15 => 'margin-top:20px;margin-left:10px;',
-			16 => 'font-weight:bold;color:red;font-size:12pt;',
-			17 => 'border-radius:20px;border:1px solid black;',
-		);
-
-		// After
-		$selectors = array(
-			0 => '#id div.class,#today p.boss,#id div.class',
-			1 => '#secondary .oops,#id div.class',
-			4 => '#id div.class',
-			8 => '#today p.boss,#secondary .oops',
-		);
-
-		$details = array(
-			0 => 'color:red;font-size:12pt;font-weight:bold;',
-			1 => 'margin-left:10px;margin-top:20px;',
-			4 => 'background:white;',
-			8 => 'border:1px solid black;border-radius:20px;',
-		);
-
-		// Run compression
-		$this->combineMultiplyDefinedDetails();
-		$max = array_pop( array_keys( $this->selectors ) ) + 1;
-		for ( $i = 0; $i < $max; $i++ ) {
-			if ( isset( $this->selectors[ $i ] ) && isset( $this->details[ $i ] ) ) {
-				$this->mark(
-					'Detail Combination',
-					$i,
-					( $this->selectors[ $i ] === $selectors[ $i ] && $this->details[ $i ] === $details[ $i ] )
-				);
 			}
 		}
 	}
