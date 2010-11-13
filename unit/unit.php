@@ -54,7 +54,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 		$this->setOptions();
 		$this->testSheets();
 
-		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'full' ) {
+		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'all' ) {
 			$this->testDoubles();
 		}
 	}

@@ -8,8 +8,8 @@
 test:
 	@php unit/start.php
 
-test-full:
-	@php unit/start.php full
+test-all:
+	@php unit/start.php all
 
 benchmark:
 	@php unit/benchmark/benchmark.php
