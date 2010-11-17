@@ -20,7 +20,7 @@ Corey Hart @ http://www.codenothing.com
 
 if ( isset( $_GET['view'] ) && $_GET['view'] == "compress" ) {
 	// Run compression on passed script
-	require("../src/css-compression.php");
+	require("../src/CSSCompression.inc");
 	$CSSC = new CSSCompression( $_POST['css'], $_POST );
 	$height = ( $CSSC->media || $CSSC->readability > CSSCompression::READ_NONE ) ? "400px" : "12px";
 
