@@ -1,37 +1,50 @@
 <?php
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 
-Class CSSCompression_Color extends CSSCompression_Numeric
+Class CSSCompression_Color
 {
 	/**
-	 * Color regexs for converting into hex codes|short colors
+	 * Color Patterns
 	 *
+	 * @class Control: Compression Controller
+	 * @param (array) options: Reference to options array
 	 * @param (regex) rrgb: Checks for rgb notation
 	 * @param (regex) rhex: Checks for hex code
 	 * @param (regex) rfullhex: Checks for full 6 character hex code
+	 * @static (array) hex2short: Hex code to short color name conversions
+	 * @static (array) long2hex: Long color name to hex code conversions
 	 */
+	private $Control;
+	private $options = array();
 	private $rrgb = "/^rgb\((\d{1,3}\%?(,\d{1,3}\%?,\d{1,3}\%?)?)\)$/i";
 	private $rhex = "/^#([0-9a-f]{3}|[0-9a-f]{6})$/i";
 	private $rfullhex = "/^#([0-9a-f]{6})$/i";
-
-	/**
-	 * Conversion helpers. Needs json conversion.
-	 *
-	 * @hex2short: Hex code to short color name conversions
-	 * @long2hex: Long color name to hex code conversions
-	 */
 	private static $long2hex = array();
 	private static $hex2short = array();
 
 	/**
-	 * We use the constructor to convert the json files
+	 * Stash a reference to the controller on each instantiation
+	 * and install conversion helpers
+	 *
+	 * @param (class) control: CSSCompression Controller
 	 */
-	protected function __construct( $css = NULL, $options = NULL ) {
-		if ( ! self::$long2hex ) {
-			self::$long2hex = CSSCompression::getJSON( 'long2hex-colors.json' );
-			self::$hex2short = CSSCompression::getJSON( 'hex2short-colors.json' );
-		}
+	public function __construct( CSSCompression_Control $control ) {
+		$this->Control = $control;
+		$this->options = &$control->Option->options;
 
-		parent::__construct( $css, $options );
+		if ( ! self::$long2hex ) {
+			if ( ( self::$long2hex = CSSCompression::getJSON( 'long2hex-colors.json' ) ) instanceof Exception ) {
+				throw self::$long2hex;
+			}
+
+			if ( ( self::$hex2short = CSSCompression::getJSON( 'hex2short-colors.json' ) ) instanceof Exception ) {
+				throw self::$hex2short;
+			}
+		}
 	}
 
 	/**
@@ -39,7 +52,7 @@ Class CSSCompression_Color extends CSSCompression_Numeric
 	 *
 	 * @param (string) val: Color to be parsed
 	 */ 
-	protected function color( $val ) {
+	public function color( $val ) {
 		// Converts rgb values to hex codes
 		if ( $this->options['color-rgb2hex'] ) {
 			$val = $this->rgb2hex( $val );

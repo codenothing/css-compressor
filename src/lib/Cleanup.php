@@ -1,26 +1,40 @@
 <?php
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 
-Class CSSCompression_Cleanup extends CSSCompression_Organize
+Class CSSCompression_Cleanup
 {
+
 	/**
 	 * Cleanup patterns
 	 *
-	 * @param (regex) semicolon: Checks for last semit colon in details
-	 * @param (regex) url: Matches url definition
+	 * @class $Control: Compression Controller
+	 * @param (regex) rsemi: Checks for last semit colon in details
+	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
+	 * @param (regex) rcolon: Checks for colon without an escape '\' character before it
+	 * @param (regex) rurl: Matches url definition
 	 * @param (array) escaped: Contains patterns and replacements for espaced characters
 	 */
-	private $semicolon = "/;$/";
-	private $url = "/url\((.*?)\)/";
+	private $Control;
+	private $rsemi = "/;$/";
+	private $rsemicolon = "/(?<!\\\);/";
+	private $rcolon = "/(?<!\\\):/";
+	private $rurl = "/url\((.*?)\)/";
 	private $escaped = array(
 		'patterns'=> array( "\\:", "\\;", "\\ " ),
 		'replacements' => array( ':', ';', ' ' )
 	);
 
 	/**
-	 * Just passes along the initializer
+	 * Stash a reference to the controller on each instantiation
+	 *
+	 * @param (class) control: CSSCompression Controller
 	 */
-	protected function __construct( $css = NULL, $options = NULL ) {
-		parent::__construct( $css, $options );
+	public function __construct( CSSCompression_Control $control ) {
+		$this->Control = $control;
 	}
 
 	/**
@@ -28,12 +42,15 @@ Class CSSCompression_Cleanup extends CSSCompression_Organize
 	 *
 	 * @param (array) selectors: Array of selectors
 	 * @param (array) details: Array of details
+	 * @param (boolean) simple: If true, keeps injections
 	 */
-	protected function cleanup( $selectors, $details ) {
+	public function cleanup( $selectors, $details, $simple = false ) {
 		foreach ( $details as &$value ) {
 			$value = $this->removeMultipleDefinitions( $value );
-			$value = $this->removeEscapedURLs( $value );
-			$value = $this->removeUnnecessarySemicolon( $value );
+			if ( $simple === false ) {
+				$value = $this->removeEscapedURLs( $value );
+				$value = $this->removeUnnecessarySemicolon( $value );
+			}
 		}
 
 		return array( $selectors, $details );
@@ -46,11 +63,11 @@ Class CSSCompression_Cleanup extends CSSCompression_Organize
 	 */ 
 	private function removeMultipleDefinitions( $val = '' ) {
 		$storage = array();
-		$arr = preg_split( $this->r_semicolon, $val );
+		$arr = preg_split( $this->rsemicolon, $val );
 
 		foreach ( $arr as $x ) {
 			if ( $x ) {
-				list( $a, $b ) = preg_split( $this->r_colon, $x, 2 );
+				list( $a, $b ) = preg_split( $this->rcolon, $x, 2 );
 				$storage[ $a ] = $b;
 			}
 		}
@@ -72,7 +89,7 @@ Class CSSCompression_Cleanup extends CSSCompression_Organize
 	 * @params none
 	 */ 
 	private function removeEscapedURLs($str){
-		preg_match_all( $this->url, $str, $matches, PREG_OFFSET_CAPTURE );
+		preg_match_all( $this->rurl, $str, $matches, PREG_OFFSET_CAPTURE );
 
 		for ( $i = 0, $imax = count( $matches[0] ); $i < $imax; $i++ ) {
 			$value = 'url(' . str_replace( $this->escaped['patterns'], $this->escaped['replacements'], $matches[1][$i][0] ) . ')';
@@ -89,9 +106,8 @@ Class CSSCompression_Cleanup extends CSSCompression_Organize
 	 * @params none
 	 */ 
 	private function removeUnnecessarySemicolon( $value ) {
-		return preg_replace( $this->semicolon, '', $value );
+		return preg_replace( $this->rsemi, '', $value );
 	}
-
 };
 
 ?>

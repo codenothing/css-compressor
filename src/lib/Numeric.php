@@ -1,33 +1,43 @@
 <?php
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 
-Class CSSCompression_Numeric extends CSSCompression_Individuals
+Class CSSCompression_Numeric
 {
 	/**
-	 * Numerical regexs for trimming down units
+	 * Numeric Patterns
 	 *
+	 * @class Control: Compression Controller
+	 * @param (array) options: Reference to options
 	 * @param (regex) rdecimal: Checks for zero decimal
 	 * @param (regex) runit: Checks for suffix on 0 unit
 	 * @param (regex) rzero: Checks for preceding 0 to decimal unit
 	 */
+	private $Control;
+	private $options = array();
 	private $rdecimal = "/^(\d+\.0*)(\%|[a-z]{2})$/i";
 	private $runit = "/^0(\%|[a-z]{2})$/i";
 	private $rzero = "/^0(\.\d+)(\%|[a-z]{2})?$/i";
 
-
 	/**
-	 * Just passes along the initializer
+	 * Stash a reference to the controller on each instantiation
+	 *
+	 * @param (class) control: CSSCompression Controller
 	 */
-	protected function __construct( $css = NULL, $options = NULL ) {
-		parent::__construct( $css, $options );
+	public function __construct( CSSCompression_Control $control ) {
+		$this->Control = $control;
+		$this->options = &$control->Option->options;
 	}
-
 
 	/**
 	 * Runs all numeric operations
 	 *
 	 * @param (string) str: Unit string
 	 */
-	protected function numeric( $str ) {
+	public function numeric( $str ) {
 		$str = $this->decimal( $str );
 		$str = $this->units( $str );
 		$str = $this->zeroes( $str );

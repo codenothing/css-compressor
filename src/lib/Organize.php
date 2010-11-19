@@ -1,12 +1,31 @@
 <?php
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 
-Class CSSCompression_Organize extends CSSCompression_Combine
+Class CSSCompression_Organize
 {
 	/**
-	 * Just passes along the initializer
+	 * Organize Patterns
+	 *
+	 * @class Control: Compression Controller
+	 * @param (array) options: Reference to options
+	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
 	 */
-	protected function __construct( $css = NULL, $options = NULL ) {
-		parent::__construct( $css, $options );
+	private $Control;
+	private $options = array();
+	private $rsemicolon = "/(?<!\\\);/";
+
+	/**
+	 * Stash a reference to the controller on each instantiation
+	 *
+	 * @param (class) control: CSSCompression Controller
+	 */
+	public function __construct( CSSCompression_Control $control ) {
+		$this->Control = $control;
+		$this->options = &$control->Option->options;
 	}
 
 	/**
@@ -16,7 +35,7 @@ Class CSSCompression_Organize extends CSSCompression_Combine
 	 * @param (array) selectors: Array of selectors, map directly to details
 	 * @param (array) details: Array of details, map directly to selectors
 	 */
-	protected function organize( $selectors = array(), $details = array() ) {
+	public function organize( $selectors = array(), $details = array() ) {
 		// Combining defns based on similar selectors
 		list ( $selectors, $details ) = $this->reduceSelectors( $selectors, $details );
 
@@ -76,13 +95,13 @@ Class CSSCompression_Organize extends CSSCompression_Combine
 				continue;
 			}
 
-			$arr = preg_split( $this->r_semicolon, isset( $details[ $i ] ) ? $details[ $i ] : '' );
+			$arr = preg_split( $this->rsemicolon, isset( $details[ $i ] ) ? $details[ $i ] : '' );
 			for ( $k = $i + 1; $k < $max; $k++ ) {
 				if ( ! isset( $selectors[ $k ] ) ) {
 					continue;
 				}
 
-				$match = preg_split( $this->r_semicolon, isset( $details[ $k ] ) ? $details[ $k ] : '' );
+				$match = preg_split( $this->rsemicolon, isset( $details[ $k ] ) ? $details[ $k ] : '' );
 				$x = array_diff( $arr, $match );
 				$y = array_diff( $match, $arr );
 

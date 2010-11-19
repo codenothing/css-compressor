@@ -1,13 +1,22 @@
 <?php
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 
 Class CSSCompression_Selectors extends CSSCompression_Color
 {
 	/**
 	 * Selector patterns
 	 *
+	 * @class Control: Compression Controller
+	 * @param (array) options: Reference to options
 	 * @param (regex) lowercase: Looks for element selectors
 	 * @param (array) pseudos: Contains pattterns and replacments to space out pseudo selectors
 	 */
+	private $Control;
+	private $options = array();
 	private $lowercase = "/([^a-zA-Z])?([a-zA-Z]+)/i";
 	private $pseudos = array(
 		'patterns' => array(
@@ -23,10 +32,13 @@ Class CSSCompression_Selectors extends CSSCompression_Color
 	);
 
 	/**
-	 * Just passes along the initializer
+	 * Stash a reference to the controller on each instantiation
+	 *
+	 * @param (class) control: CSSCompression Controller
 	 */
-	protected function __construct( $css = NULL, $options = NULL ) {
-		parent::__construct( $css, $options );
+	public function __construct( CSSCompression_Control $control ) {
+		$this->Control = $control;
+		$this->options = &$control->Option->options;
 	}
 
 	/**
@@ -34,7 +46,7 @@ Class CSSCompression_Selectors extends CSSCompression_Color
 	 *
 	 * @param (array) selectors: Array of selectors
 	 */
-	protected function selectorCompression( $selectors = array() ) {
+	public function selectors( $selectors = array() ) {
 		foreach ( $selectors as &$selector ) {
 			// Lowercase selectors for combining
 			if ( $this->options['lowercase-selectors'] ) {
@@ -75,7 +87,6 @@ Class CSSCompression_Selectors extends CSSCompression_Color
 	private function pseduoSpace( $selector ) {
 		return preg_replace( $this->pseudos['patterns'], $this->pseudos['replacements'], $selector );
 	}
-
 };
 
 ?>

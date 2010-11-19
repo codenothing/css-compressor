@@ -5,13 +5,22 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 
-Class CSSCompression_Option extends CSSCompression_Setup
+Class CSSCompression_Option
 {
 	/**
-	 * Just passes along the initializer
+	 * Option Patterns
+	 *
+	 * @class Control: Compression Controller
 	 */
-	protected function __construct( $css = NULL, $options = NULL ) {
-		parent::__construct( $css, $options );
+	private $Control;
+
+	/**
+	 * Stash a reference to the controller on each instantiation
+	 *
+	 * @param (class) control: CSSCompression Controller
+	 */
+	public function __construct( CSSCompression_Control $control ) {
+		$this->Control = $control;
 	}
 
 	/**
@@ -30,10 +39,10 @@ Class CSSCompression_Option extends CSSCompression_Setup
 			return $this->options;
 		}
 		else if ( is_array( $name ) ) {
-			return $this->mergeOptions( $name );
+			return $this->merge( $name );
 		}
 		else if ( $value === NULL ) {
-			return $this->options[ $name ];
+			return isset( $this->options[ $name ] ) ? $this->options[ $name ] : NULL;
 		}
 		else {
 			return $this->options[ $name ] = $value;
@@ -60,7 +69,7 @@ Class CSSCompression_Option extends CSSCompression_Setup
 	 *
 	 * @param (boolean) clear: When true, options array is cleared
 	 */ 
-	public function resetOptions( $clear = false ) {
+	public function reset( $clear = false ) {
 		// Reset and return the new options
 		return ( $this->options = $clear ? array() : CSSCompression::$defaults );
 	}
@@ -69,27 +78,27 @@ Class CSSCompression_Option extends CSSCompression_Setup
 	 * Extend like function to merge an array of preferences into
 	 * the options array.
 	 *
-	 * @param (array) prefs: Array of preferences to merge into options
+	 * @param (array) options: Array of preferences to merge into options
 	 */ 
-	protected function mergeOptions( $prefs = array() ) {
-		if ( $prefs && is_array( $prefs ) && count( $prefs ) ) {
+	public function merge( $options = array() ) {
+		if ( $options && is_array( $options ) && count( $options ) ) {
 			foreach ( $this->options as $key => $value ) {
-				if ( ! isset( $prefs[ $key ] ) ) {
+				if ( ! isset( $options[ $key ] ) ) {
 					continue;
 				}
-				else if ( $prefs[ $key ] && $prefs[ $key ] == 'on' ) {
+				else if ( $options[ $key ] && $options[ $key ] == 'on' ) {
 					$this->options[ $key ] = true;
 				}
-				else if ( $prefs[ $key ] && $prefs[ $key ] == 'off' ) {
+				else if ( $options[ $key ] && $options[ $key ] == 'off' ) {
 					$this->options[ $key ] = false;
 				}
 				else {
-					$this->options[ $key ] = intval( $prefs[ $key ] );
+					$this->options[ $key ] = intval( $options[ $key ] );
 				}
 			}
 		}
-		else if ( $prefs && is_string( $prefs ) && array_key_exists( $prefs, CSSCompression::$modes ) ) {
-			$this->_mode = $prefs;
+		else if ( $options && is_string( $options ) && array_key_exists( $options, CSSCompression::$modes ) ) {
+			$this->_mode = $options;
 
 			// Default all to true, the mode has to force false
 			foreach ( $this->options as $key => $value ) {
@@ -99,7 +108,7 @@ Class CSSCompression_Option extends CSSCompression_Setup
 			}
 
 			// Merge mode into options
-			foreach ( CSSCompression::$modes[ $prefs ] as $key => $value ) {
+			foreach ( CSSCompression::$modes[ $options ] as $key => $value ) {
 				$this->options[ $key ] = $value;
 			}
 		}

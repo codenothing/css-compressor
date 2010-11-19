@@ -1,7 +1,21 @@
 <?php
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 
-Class CSSCompression_Combine extends CSSCompression_Selectors
+Class CSSCompression_Combine
 {
+	/**
+	 * Combine Patterns
+	 *
+	 * @class Control: Compression Controller
+	 * @param (array) options: Reference to options
+	 * @param (array) methods: List of options with their corresponding handler
+	 */
+	private $Control;
+	private $options;
 	private $methods = array(
 		'csw-combine' => 'combineCSWproperties',
 		'auralcp-combine' => 'combineAuralCuePause',
@@ -13,10 +27,13 @@ Class CSSCompression_Combine extends CSSCompression_Selectors
 	);
 
 	/**
-	 * Just passes along the initializer
+	 * Stash a reference to the controller on each instantiation
+	 *
+	 * @param (class) control: CSSCompression Controller
 	 */
-	protected function __construct( $css = NULL, $options = NULL ) {
-		parent::__construct( $css, $options );
+	public function __construct( CSSCompression_Control $control ) {
+		$this->Control = $control;
+		$this->options = &$control->Option->options;
 	}
 
 	/**
@@ -25,7 +42,7 @@ Class CSSCompression_Combine extends CSSCompression_Selectors
 	 * @param (array) selectors: Array of selectors
 	 * @param (array) details: Array of details
 	 */
-	protected function combine( $selectors = array(), $details = array() ) {
+	public function combine( $selectors = array(), $details = array() ) {
 		foreach ( $details as &$value ) {
 			foreach ( $this->methods as $option => $fn ) {
 				if ( $this->options[ $option ] ) {
@@ -402,7 +419,7 @@ Class CSSCompression_Combine extends CSSCompression_Selectors
 	 * @param (array) search: Array of definitions requred
 	 */ 
 	private function searchDefinitions( $prop, $storage, $search ) {
-		// Return storage & search don't match
+		// Return if storage & search don't match
 		if ( count( $storage ) != count( $search ) ) {
 			return false;
 		}

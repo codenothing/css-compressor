@@ -1,22 +1,33 @@
 <?php
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 
-Class CSSCompression_Individuals extends CSSCompression_Format
+Class CSSCompression_Individuals
 {
 	/**
 	 * Individual patterns
 	 *
+	 * @class Control: Compression Controller
+	 * @class Numeric: Numeric handler
+	 * @class Color: Color Handler
+	 * @param (array) options: Reference to options
 	 * @param (regex) rdirectional: Properties that may have multiple directions
 	 * @param (regex) rnone: Properties that can have none as their value(will be converted to 0)
 	 * @param (regex) rfilter: Special alpha filter for msie
+	 * @param (regex) rspace: Checks for space without an escape '\' character before it
+	 * @param (array) weights: Array of font-weight name conversions to their numeric counterpart
 	 */
+	private $Control;
+	private $Numeric;
+	private $Color;
+	private $options = array();
 	private $rdirectional = "/^(margin|padding)$/";
 	private $rnone = "/^(border|background)$/";
 	private $rfilter = "/PROGID:DXImageTransform.Microsoft.Alpha\(Opacity=(\d+)\)/i";
-
-	/**
-	 * Array of font-weight name conversions to their
-	 * numeric counterpart
-	 */
+	private $rspace = "/(?<!\\\)\s/";
 	private $weights = array(
 		"lighter" => 100,
 		"normal" => 400,
@@ -25,10 +36,15 @@ Class CSSCompression_Individuals extends CSSCompression_Format
 	);
 
 	/**
-	 * Just passes along the initializer
+	 * Stash a reference to the controller on each instantiation
+	 *
+	 * @param (class) control: CSSCompression Controller
 	 */
-	protected function __construct( $css = NULL, $options = NULL ) {
-		parent::__construct( $css, $options );
+	public function __construct( CSSCompression_Control $control ) {
+		$this->Control = $control;
+		$this->Numeric = $control->Numeric;
+		$this->Color = $control->Color;
+		$this->options = &$control->Option->options;
 	}
 
 	/**
@@ -37,12 +53,12 @@ Class CSSCompression_Individuals extends CSSCompression_Format
 	 * @param (string) prop: CSS Property
 	 * @param (string) val: Value of CSS Property
 	 */ 
-	protected function individuals( $prop, $val ) {
+	public function individuals( $prop, $val ) {
 		// Properties should always be lowercase
 		$prop = strtolower( $prop );
 
 		// Split up each definiton for color and numeric compressions
-		$parts = preg_split( $this->r_space, $val );
+		$parts = preg_split( $this->rspace, $val );
 		foreach ( $parts as &$v ) {
 			if ( ! $v || $v == '' ) {
 				continue;
@@ -50,11 +66,11 @@ Class CSSCompression_Individuals extends CSSCompression_Format
 
 			// Remove uneeded decimals/units
 			if ( $this->options['format-units'] ) {
-				$v = $this->numeric( $v );
+				$v = $this->Numeric->numeric( $v );
 			}
 
 			// Color compression
-			$v = $this->color( $v );
+			$v = $this->Color->color( $v );
 		}
 		$val = trim( implode( ' ', $parts ) );
 
@@ -88,17 +104,8 @@ Class CSSCompression_Individuals extends CSSCompression_Format
 	 * @param (string) val: Value of CSS Property
 	 */ 
 	private function directionals( $val ) {
-		// Check if side definitions already reduced down to a single definition
-		if ( strpos( $val, ' ' ) === false ) {
-			// Redundent, but just in case
-			if ( $this->options['format-units'] ) {
-				$val = $this->numeric( $val );
-			}
-			return $val;
-		}
-
 		// Split up each definiton
-		$direction = preg_split( $this->r_space, $val );
+		$direction = preg_split( $this->rspace, $val );
 
 		// 4 Direction reduction
 		$count = count( $direction );
@@ -139,7 +146,7 @@ Class CSSCompression_Individuals extends CSSCompression_Format
 	 *
 	 * @param (string) val: font-weight prop value
 	 */ 
-	protected function fontweight( $val ) {
+	private function fontweight( $val ) {
 		return isset( $this->weights[ $val ] ) ? $this->weights[ $val ] : $val;
 	}
 };

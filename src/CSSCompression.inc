@@ -6,20 +6,11 @@
  */ 
 error_reporting( E_ALL );
 
-$lib = dirname(__FILE__) . '/lib/';
-require( $lib . 'Setup.php' );
-require( $lib . 'Option.php' );
-require( $lib . 'Format.php' );
-require( $lib . 'Individuals.php' );
-require( $lib . 'Numeric.php' );
-require( $lib . 'Color.php' );
-require( $lib . 'Selectors.php' );
-require( $lib . 'Combine.php' );
-require( $lib . 'Organize.php' );
-require( $lib . 'Cleanup.php' );
+// Controller handles all subclass loading
+require( dirname(__FILE__) . '/lib/Control.php' );
 
 
-Class CSSCompression extends CSSCompression_Cleanup
+Class CSSCompression
 {
 	/**
 	 * WARNING: This should ALWAYS BE FALSE in production
@@ -29,33 +20,9 @@ Class CSSCompression extends CSSCompression_Cleanup
 	const DEV = true;
 
 	/**
-	 * Modes are predefined sets of configuration for referencing
-	 * When creating a mode, all options are set to true, and the mode array
-	 * defines which options are to be false
-	 *
-	 * @mode safe: Keeps selector and detail order, and prevents hex to shortname conversion
-	 * @mode medium: Prevents hex to shortname conversion
-	 * @mode small: Full compression
-	 */
-	public static $modes = array(
-		'safe' => array(
-			'color-hex2shortcolor' => false,
-			'multiple-selectors' => false,
-			'multiple-details' => false,
-		),
-		'medium' => array(
-			'color-hex2shortcolor' => false,
-			'pseduo-space' => false
-		),
-		'small' => array(
-			'pseduo-space' => false
-		),
-	);
-
-	/**
 	 * The default set of options for every instance.
 	 */
-	public static $defaults = array(
+	public static $options = array(
 		// Converts long color names to short hex names
 		// (aliceblue -> #f0f8ff)
 		'color-long2hex' => true,
@@ -92,13 +59,10 @@ Class CSSCompression extends CSSCompression_Cleanup
 		// (margin: 15px 25px 15px 25px -> margin:15px 25px)
 		'directional-compress' => true,
 
-		// Combines multiply defined selectors
+		// Combines multiply defined selectors and details
 		// (p{color:blue;} p{font-size:12pt} -> p{color:blue;font-size:12pt;})
-		'multiple-selectors' => true,
-
-		// Combines selectors with same details
 		// (p{color:blue;} a{color:blue;} -> p,a{color:blue;})
-		'multiple-details' => true,
+		'organize' => true,
 
 		// Combines color/style/width properties
 		// (border-style:dashed;border-color:black;border-width:4px; -> border:4px dashed black)
@@ -137,58 +101,144 @@ Class CSSCompression extends CSSCompression_Cleanup
 	);
 
 	/**
-	 * Extend the default options with user defined POST vars.
+	 * Readability Constants
+	 *
+	 * @param (int) READ_MAX: Maximum readability of output
+	 * @param (int) READ_MED: Medium readability of output
+	 * @param (int) READ_MIN: Minimal readability of output
+	 * @param (int) READ_NONE: No readability of output (full compression into single line)
+	 */ 
+	const READ_MAX = 3;
+	const READ_MED = 2;
+	const READ_MIN = 1;
+	const READ_NONE = 0;
+
+	/**
+	 * Modes are predefined sets of configuration for referencing
+	 * When creating a mode, all options are set to true, and the mode array
+	 * defines which options are to be false
+	 *
+	 * @mode safe: Keeps selector and detail order, and prevents hex to shortname conversion
+	 * @mode medium: Prevents hex to shortname conversion
+	 * @mode small: Full compression
+	 */
+	public static $modes = array(
+		'safe' => array(
+			'color-hex2shortcolor' => false,
+			'orgainze' => false,
+		),
+		'medium' => array(
+			'color-hex2shortcolor' => false,
+			'pseduo-space' => false
+		),
+		'small' => array(
+			'pseduo-space' => false
+		),
+	);
+
+	/**
+	 * Controller of all subclasses
+	 */
+	private $Control;
+
+	/**
+	 * Builds the subclasses, runs the compression if css passed, and merges options
 	 *
 	 * @param (string) css: CSS to compress on initialization if needed
-	 * @param (array) prefs: Array of preferences to override the defaults
+	 * @param (array) options: Array of preferences to override the defaults
 	 */ 
-	public function __construct( $css = NULL, $prefs = NULL ) {
-		// Compression trigger is up the class tree
-		parent::__construct( $css, $prefs );
+	public function __construct( $css = NULL, $options = NULL ) {
+		$this->Control = new CSSCompression_Control( $this );
+
+		// Autorun against css passed
+		if ( $css ) {
+			// Allow passing options/mode only
+			if ( is_array( $css ) || ( strlen( $css ) < 15 && array_key_exists( $css, self::$modes ) ) ) {
+				$this->Control->Option->merge( $options );
+			}
+			else {
+				$this->css = $this->Control->Compress->compress( $css, $options );
+			}
+		}
+		// Merge passed options
+		else if ( $options ) {
+			$this->Control->Option->merge( $options );
+		}
 	}
 
 	/**
-	 * Only allow access to stats/css/media/options/_mode
+	 * (Proxy function) Control access to properties
 	 *
-	 *	- Getting stats/media/css returns the current value of that class var
-	 *	- Getting option will return the current full options array
+	 *	- Getting stats/_mode/css returns the current value of that property
+	 *	- Getting options will return the current full options array
 	 *	- Getting anything else returns that current value in the options array or NULL
 	 *
-	 * @param (string) name: Name of variable that you want to access
+	 * @param (string) name: Name of property that you want to access
 	 */ 
 	public function __get( $name ) {
-		if ( $name === 'stats' || $name === 'media' || $name === 'css' || $name === 'options' || $name == '_mode' ) {
-			return $this->$name;
-		}
-		else if ( isset( $this->options[ $name ] ) ) {
-			return $this->options[ $name ];
-		}
-		else {
-			return NULL;
-		}
+		return $this->Control->get( $name );
 	}
 
 	/**
-	 * The setter method only allows access to setting values in the options array
+	 * (Proxy function) The setter method only allows 
+	 * access to setting values in the options array
 	 *
-	 * @params (string) name: Key name of the option you want to set
-	 * @params (any) value: Value of the option you want to set
+	 * @param (string) name: Key name of the option you want to set
+	 * @param (any) value: Value of the option you want to set
 	 */ 
 	public function __set( $name, $value ) {
-		// Allow for passing array of options to merge into current ones
-		if ( $name === 'option' && is_array( $value ) ) {
-			$this->mergeOptions( $value );
-			return $this->options;
-		} else {
-			$this->options[ $name ] = $value;
-			return $this->options[ $name ];
+		return $this->Control->set( $name, $value );
+	}
+
+	/**
+	 * (Proxy function) Merges a predefined set options
+	 *
+	 * @param (string) mode: Name of mode to use.
+	 */
+	public function mode( $mode = NULL ) {
+		return $this->Control->Option->merge( $mode );
+	}
+
+	/**
+	 * (Proxy function) Run compression on the sheet passed
+	 *
+	 * @param (string) css: Stylesheet to be compressed
+	 * @param (array|string) options: Array of options or mode to use.
+	 */
+	public function compress( $css = NULL, $options = NULL ) {
+		return $this->Control->Compress->compress( $css, $options );
+	}
+
+	/**
+	 * Static access for direct compression
+	 *
+	 * @instance expressi: Use a separate instance from singleton access 
+	 * @param (string) css: Stylesheet to be compressed
+	 * @param (array|string) options: Array of options or mode to use.
+	 */
+	private static $expressi;
+	public static function express( $css = NULL, $options = NULL ) {
+		if ( ! self::$expressi ) {
+			self::$expressi = new CSSCompression();
 		}
+
+		self::$expressi->reset();
+		return self::$expressi->compress( $css, $options );
+	}
+
+	/**
+	 * Cleans out compressor and it's subclasses to defaults
+	 *
+	 * @params none
+	 */
+	public function reset(){
+		$this->Control->reset();
 	}
 
 	/**
 	 * The Singleton access method (for those that want it)
 	 *
-	 * @params none.
+	 * @instance instance: Saved instance of CSSCompression
 	 */
 	private static $instance;
 	public static function getInstance(){
@@ -200,8 +250,59 @@ Class CSSCompression extends CSSCompression_Cleanup
 	}
 
 	/**
-	 * Backdoor access to private methods in parent classes.
-	 * ONLY FOR DEVELOPMENT.
+	 * Reads JOSN based files, strips comments and converts to array
+	 *
+	 * @param (string) file: Filename
+	 */
+	public static function getJSON( $file ) {
+		// Assume helper file if full path not given
+		$file = $file[ 0 ] == '/' ? $file : dirname(__FILE__) . '/helpers/' . $file;
+
+		// Strip comments
+		$json = preg_replace(
+			array( "/\/\*(.*?)\*\//s", "/(\t|\s)+\/\/.*/" ),
+			array( '', '' ),
+			file_get_contents( $file )
+		);
+
+		// Decode json
+		$json = json_decode( $json, true );
+
+		// Check for errors
+		if ( $json === NULL ) {
+			// JSON Errors, taken directly from http://php.net/manual/en/function.json-last-error.php
+			switch( json_last_error() ) {
+				case JSON_ERROR_NONE:
+					$json = new Exception( 'JSON Error - No error has occurred' );
+					break;
+				case JSON_ERROR_DEPTH:
+					$json = new Exception( 'JSON Error - The maximum stack depth has been exceeded' );
+					break;
+				case JSON_ERROR_CTRL_CHAR:
+					$json = new Exception( 'JSON Error - Control character error, possibly incorrectly encoded' );
+					break;
+				case JSON_ERROR_STATE_MISMATCH:
+					$json = new Exception( 'JSON Error - Invalid or malformed JSON' );
+					break;
+				case JSON_ERROR_SYNTAX:
+					$json = new Exception( 'JSON Error - Syntax error' );
+					break;
+				case JSON_ERROR_UTF8:
+					$json = new Exception( 'JSON Error - Malformed UTF-8 characters, possibly incorrectly encoded' );
+					break;
+				default:
+					$json = new Exception( 'Unknown JSON Error' );
+					break;
+			}
+		}
+
+		// Good to go
+		return $json;
+	}
+
+	/**
+	 * Backdoor access to subclasses
+	 * ONLY FOR DEVELOPMENT/TESTING.
 	 *
 	 * @param (string) class: Name of the focus class
 	 * @param (array) config: Contains name reference and test arguments
@@ -214,7 +315,7 @@ Class CSSCompression extends CSSCompression_Cleanup
 			return NULL;
 		}
 
-		return parent::access( $class, $config );
+		return $this->Control->access( $class, $config );
 	}
 };
 

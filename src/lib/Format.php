@@ -1,147 +1,152 @@
 <?php
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 
-Class CSSCompression_Format extends CSSCompression_Option
+Class CSSCompression_Format
 {
 	/**
-	 * Readability Constants
+	 * Format Patterns
 	 *
-	 * @param (int) READ_MAX: Maximum readability of output
-	 * @param (int) READ_MED: Medium readability of output
-	 * @param (int) READ_MIN: Minimal readability of output
-	 * @param (int) READ_NONE: No readability of output (full compression into single line)
-	 */ 
-	const READ_MAX = 3;
-	const READ_MED = 2;
-	const READ_MIN = 1;
-	const READ_NONE = 0;
+	 * @class Control: Compression Controller
+	 * @param (array) options: Reference to options
+	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
+	 * @param (regex) rcolon: Checks for colon without an escape '\' character before it
+	 * @param (array) readability: Mapping to readability functions
+	 */
+	private $Control;
+	private $options = array();
+	private $rsemicolon = "/(?<!\\\);/";
+	private $rcolon = "/(?<!\\\):/";
+	private $readability = array(
+		CSSCompression::READ_MAX => 'maximum',
+		CSSCompression::READ_MED => 'medium',
+		CSSCompression::READ_MIN => 'minimum',
+		CSSCompression::READ_NONE => 'none',
+	);
 
 	/**
-	 * Just passes along the initializer
+	 * Stash a reference to the controller on each instantiation
+	 *
+	 * @param (class) control: CSSCompression Controller
 	 */
-	protected function __construct( $css = NULL, $options = NULL ) {
-		parent::__construct( $css, $options );
+	public function __construct( CSSCompression_Control $control ) {
+		$this->Control = $control;
+		$this->options = &$control->Option->options;
+	}
+
+
+	/**
+	 * Reformats compressed CSS into specified format
+	 *
+	 * @param (int) readability: Readability level of compressed output
+	 * @param (string) import: CSS Import property removed at beginning
+	 * @param (array) selectors: Array of selectors
+	 * @param (array) details: Array of details
+	 */ 
+	public function readability( $readability = CSSCompression::READ_NONE, $import = '', $selectors = array(), $details = array() ) {
+		if ( isset( $this->readability[ $readability ] ) ) {
+			$fn = $this->readability[ $readability ];
+			return trim( $this->$fn( $import, $selectors, $details ) );
+		}
+		else {
+			return 'Invalid Readability Value';
+		}
 	}
 
 	/**
-	 * Runs initial formatting to setup for compression
+	 * Returns maxium readability, breaking on every selector, brace, and property
 	 *
-	 * @param (string) css: CSS Contents
+	 * @param (string) import: CSS Import property removed at beginning
+	 * @param (array) selectors: Array of selectors
+	 * @param (array) details: Array of details
 	 */ 
-	protected function trim( $css ) {
-		// Regex
-		$search = array(
-			1 => "/(\/\*|\<\!\-\-)(.*?)(\*\/|\-\-\>)/s", // Remove all comments
-			2 => "/(\s+)?([,{};>\+])(\s+)?/s", // Remove un-needed spaces around special characters
-			3 => "/url\(['\"](.*?)['\"]\)/s", // Remove quotes from urls
-			4 => "/;{2,}/", // Remove unecessary semi-colons
-			5 => "/\s+/s", // Compress all spaces into single space
-			// Leave section open for additional entries
+	private function maximum( $import, $selectors, $details ) {
+		$css = str_replace( ';', ";\n", $import );
+		if ( $import ) {
+			$css .= "\n";
+		}
 
-			// Break apart elements for setup of further compression
-			20 => "/{/",
-			21 => "/}/",
-		);
+		foreach ( $selectors as $k => $v ) {
+			if ( ! $details[ $k ] || trim( $details[ $k ] ) == '' ) {
+				continue;
+			}
 
-		// Replacements
-		$replace = array(
-			1 => ' ',
-			2 => '$2',
-			3 => 'url($1)',
-			4 => ';',
-			5 => ' ',
-			// Leave section open for additional entries
+			$v = str_replace( '>', ' > ', $v );
+			$v = str_replace( '+', ' + ', $v );
+			$v = str_replace( ',', ', ', $v );
+			$css .= "$v {\n";
+			$arr = preg_split( $this->rsemicolon, $details[ $k ] );
 
-			// Add new line for setup of further compression
-			20 => "\n{",
-			21 => "}\n",
-		);
+			foreach ( $arr as $item ) {
+				if ( ! $item ) {
+					continue;
+				}
 
-		// Run replacements
-		$css = trim( preg_replace( $search, $replace, $css ) );
+				list( $prop, $val ) = preg_split( $this->rcolon, $item, 2 );
+				$css .= "\t$prop: $val;\n";
+			}
 
-		// Escape out possible splitter characters within urls
-		$search = array( ':', ';', ' ' );
-		$replace = array( "\\:", "\\;", "\\ " );
-		preg_match_all( "/url\((.*?)\)/", $css, $matches, PREG_OFFSET_CAPTURE );
-
-		for ( $i=0, $imax=count( $matches[0] ); $i < $imax; $i++ ) {
-			$value = 'url(' . str_replace( $search, $replace, $matches[1][$i][0] ) . ')';
-			$css = substr_replace( $css, $value, $matches[0][$i][1], strlen( $matches[0][$i][0] ) );
+			$css .= "}\n\n";
 		}
 
 		return $css;
 	}
 
 	/**
-	 * Reformats compressed CSS into specified format
+	 * Returns medium readability, putting selectors and details on new lines
 	 *
 	 * @param (string) import: CSS Import property removed at beginning
+	 * @param (array) selectors: Array of selectors
+	 * @param (array) details: Array of details
 	 */ 
-	protected function readability( $import = '' ) {
-		if ( $this->options['readability'] == self::READ_MAX ) {
-			$css = str_replace( ';', ";\n", $import );
-			if ( $import ) {
-				$css .= "\n";
-			}
-
-			foreach ( $this->selectors as $k => $v ) {
-				if ( ! $this->details[ $k ] || trim( $this->details[ $k ] ) == '' ) {
-					continue;
-				}
-
-				$v = str_replace( '>', ' > ', $v );
-				$v = str_replace( '+', ' + ', $v );
-				$v = str_replace( ',', ', ', $v );
-				$css .= "$v {\n";
-				$arr = preg_split( $this->r_semicolon, $this->details[ $k ] );
-
-				foreach ( $arr as $item ) {
-					if ( ! $item ) {
-						continue;
-					}
-
-					list( $prop, $val ) = preg_split( $this->r_colon, $item, 2 );
-					$css .= "\t$prop: $val;\n";
-				}
-
-				// Last semicolon isn't necessay, so don't keep it if possible
-				if ( $this->options['unnecessary-semicolons'] ) {
-					$css = preg_replace( "/;\n$/", "\n", $css );
-				}
-
-				$css .= "}\n\n";
+	private function medium( $import, $selectors, $details ) {
+		$css = str_replace( ';', ";\n", $import );
+		foreach ( $selectors as $k => $v ) {
+			if ( $details[ $k ] && $details[ $k ] != '' ) {
+				$css .= "$v {\n\t" . $details[ $k ] . "\n}\n";
 			}
 		}
-		else if ( $this->options['readability'] == self::READ_MED ) {
-			$css = str_replace( ';', ";\n", $import );
-			foreach ( $this->selectors as $k => $v ) {
-				if ( $this->details[ $k ] && $this->details[ $k ] != '' ) {
-					$css .= "$v {\n\t" . $this->details[ $k ] . "\n}\n";
-				}
+
+		return $css;
+	}
+
+	/**
+	 * Returns minimum readability, breaking after every selector and it's details
+	 *
+	 * @param (string) import: CSS Import property removed at beginning
+	 * @param (array) selectors: Array of selectors
+	 * @param (array) details: Array of details
+	 */ 
+	private function minimum( $import, $selectors, $details ) {
+		$css = str_replace( ';', ";\n", $import );
+		foreach ( $selectors as $k => $v ) {
+			if ( $details[ $k ] && $details[ $k ] != '' ) {
+				$css .= "$v{" . $details[ $k ] . "}\n";
 			}
-		}
-		else if ( $this->options['readability'] == self::READ_MIN ) {
-			$css = str_replace( ';', ";\n", $import );
-			foreach ( $this->selectors as $k => $v ) {
-				if ( $this->details[ $k ] && $this->details[ $k ] != '' ) {
-					$css .= "$v{" . $this->details[ $k ] . "}\n";
-				}
-			}
-		}
-		else if ( $this->options['readability'] == self::READ_NONE ) {
-			$css = $import;
-			foreach ( $this->selectors as $k => $v ) {
-				if ( isset( $this->details[ $k ] ) && $this->details[ $k ] != '' ) {
-					$css .= trim( "$v{" . $this->details[ $k ] . "}" );
-				}
-			}
-		}
-		else {
-			$css = 'Invalid Readability Value';
 		}
 
-		// Return formatted script
-		return trim( $css );
+		return $css;
+	}
+	
+	/**
+	 * Returns an unreadable, but fully compressed script
+	 *
+	 * @param (string) import: CSS Import property removed at beginning
+	 * @param (array) selectors: Array of selectors
+	 * @param (array) details: Array of details
+	 */ 
+	private function none( $import, $selectors, $details ) {
+		$css = $import;
+		foreach ( $selectors as $k => $v ) {
+			if ( isset( $details[ $k ] ) && $details[ $k ] != '' ) {
+				$css .= trim( "$v{" . $details[ $k ] . "}" );
+			}
+		}
+
+		return $css;
 	}
 
 	/**
@@ -149,7 +154,7 @@ Class CSSCompression_Format extends CSSCompression_Option
 	 *
 	 * @param (int) size: File size in Bytes
 	 */ 
-	public function convertSize( $size = 0 ) {
+	public function size( $size = 0 ) {
 		$ext = array( 'B', 'K', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
 		for( $c = 0; $size > 1024; $c++ ) {
 			$size /= 1024;
