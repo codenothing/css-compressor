@@ -60,3 +60,5 @@ Credits
 [Martin Zvarík](http://www.teplaky.net/) - Pointed out the url and empty definition bug.
 
 [Phil DeJarnett](http://www.overzealous.com/) - Pointed out splitting(and numerous other) problems
+
+Julien Deniau - Pointed out escaped characters issue
