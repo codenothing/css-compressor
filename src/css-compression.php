@@ -448,11 +448,11 @@ Class CSSCompression
 		// Escape out possible splitter characters within urls
 		$search = array( ':', ';', ' ' );
 		$replace = array( "\\:", "\\;", "\\ " );
-		preg_match_all( "/url\((.*?)\)/", $this->css, $matches, PREG_OFFSET_CAPTURE );
-
-		for ( $i=0, $imax=count( $matches[0] ); $i < $imax; $i++ ) {
-			$value = 'url(' . str_replace( $search, $replace, $matches[1][$i][0] ) . ')';
-			$this->css = substr_replace( $this->css, $value, $matches[0][$i][1], strlen( $matches[0][$i][0] ) );
+		$start = 0;
+		while ( preg_match( "/url\((.*?)\)/", $this->css, $match, PREG_OFFSET_CAPTURE, $start ) ) {
+			$value = 'url(' . str_replace( $search, $replace, $match[ 1 ][ 0 ] ) . ')';
+			$this->css = substr_replace( $this->css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+			$start = $match[ 1 ][ 1 ];
 		}
 	}
 
