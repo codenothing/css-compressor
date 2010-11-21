@@ -229,6 +229,58 @@
 			}
 		},
 
+		// Converting none values to 0
+		"none": {
+			"background": {
+				"params": [ "background", "none" ],
+				"expect": "0"
+			},
+			"border": {
+				"params": [ "border", "none" ],
+				"expect": "0"
+			},
+			"border-top": {
+				"params": [ "border-top", "none" ],
+				"expect": "0"
+			},
+			"border-left": {
+				"params": [ "border-left", "none" ],
+				"expect": "0"
+			},
+			"border-right": {
+				"params": [ "border-right", "none" ],
+				"expect": "0"
+			},
+			"border-top": {
+				"params": [ "border-top", "none" ],
+				"expect": "0"
+			},
+			"Shorthand": {
+				"params": [ "background", "white none no-repeat" ],
+				"expect": "white 0 no-repeat"
+			},
+			"Last Value": {
+				"params": [ "background", "white none" ],
+				"expect": "white 0"
+			},
+			"Nothing": {
+				"params": [ "background", "white url(someimage.png)" ],
+				"expect": "white url(someimage.png)"
+			}
+		},
+
+		// MSIE Filters
+		"filter": {
+			"Simple": {
+				"params": [ "-ms-filter", "PROGID:DXImageTransform.Microsoft.Alpha(Opacity=30)" ],
+				"expect": "alpha(opacity=30)"
+			},
+			"quotes": {
+				"params": [ "-ms-filter", "\"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)\"" ],
+				"expect": "alpha(opacity=80)"
+			}
+		},
+
 		// Main individuals, combination of Color, Numeric and Individual handlers
 		"individuals": {
 			"Directionals 4 to 1": {
@@ -236,57 +288,16 @@
 				"join": ":",
 				"expect": "margin:10px"
 			},
-			// None value
-			"none value: background": {
-				"params": [ "background", "none" ],
+			// Long hex to short name conversions
+			"Lowercase Hex: #7F9D0A": {
+				"params": [ "color", "#7F9D0A" ],
 				"join": ":",
-				"expect": "background:0"
-			},
-			"none value: border": {
-				"params": [ "border", "none" ],
-				"join": ":",
-				"expect": "border:0"
-			},
-			"none value: border-top": {
-				"params": [ "border-top", "none" ],
-				"join": ":",
-				"expect": "border-top:0"
-			},
-			"none value: border-left": {
-				"params": [ "border-left", "none" ],
-				"join": ":",
-				"expect": "border-left:0"
-			},
-			"none value: border-right": {
-				"params": [ "border-right", "none" ],
-				"join": ":",
-				"expect": "border-right:0"
-			},
-			"none value: border-top": {
-				"params": [ "border-top", "none" ],
-				"join": ":",
-				"expect": "border-top:0"
+				"expect": "color:#7f9d0a"
 			}
 		}
 	}
 }
 /*
-
-
-
-
-	},
-
-	// runColorChanges method
-	"runColorChanges": {
-		// Long hex to short name conversions
-		// Casing
-		"Upper case to lower: #7F9D0A": {
-			"params": "#7F9D0A",
-			"expect": "#7f9d0a"
-		}
-	},
-
 	// lowercaseSelectors method
 	"lowercaseSelectors": {
 		"input": {

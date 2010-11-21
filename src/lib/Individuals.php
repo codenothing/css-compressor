@@ -15,7 +15,8 @@ Class CSSCompression_Individuals
 	 * @class Color: Color Handler
 	 * @param (array) options: Reference to options
 	 * @param (regex) rdirectional: Properties that may have multiple directions
-	 * @param (regex) rnone: Properties that can have none as their value(will be converted to 0)
+	 * @param (regex) rnoneprop: Properties that can have none as their value(will be converted to 0)
+	 * @param (regex) rnone: Looks for a none value in shorthand notations
 	 * @param (regex) rfilter: Special alpha filter for msie
 	 * @param (regex) rspace: Checks for space without an escape '\' character before it
 	 * @param (array) weights: Array of font-weight name conversions to their numeric counterpart
@@ -25,8 +26,9 @@ Class CSSCompression_Individuals
 	private $Color;
 	private $options = array();
 	private $rdirectional = "/^(margin|padding)$/";
-	private $rnone = "/^(border|background)/";
-	private $rfilter = "/PROGID:DXImageTransform.Microsoft.Alpha\(Opacity=(\d+)\)/i";
+	private $rnoneprop = "/^(border|background)/";
+	private $rnone = "/\snone\s/";
+	private $rfilter = "/[\"']?PROGID:DXImageTransform.Microsoft.Alpha\(Opacity=(\d+)\)[\"']?/i";
 	private $rspace = "/(?<!\\\)\s/";
 	private $weights = array(
 		"lighter" => 100,
@@ -84,15 +86,9 @@ Class CSSCompression_Individuals
 			$val = $this->fontweight( strtolower( $val ) );
 		}
 
-		// Convert none vals to 0
-		if ( preg_match( $this->rnone, $prop ) && $val == 'none' ) {
-			$val = '0';
-		}
-
-		// Thank you ms for this nasty conversion
-		if ( preg_match( "/filter/", $prop ) ) {
-			$val = preg_replace( $this->rfilter, "alpha(opacity=$1)", $val );
-		}
+		// None to 0 converter
+		$val = $this->none( $prop, $val );
+		$val = $this->filter( $prop, $val );
 
 		// Return for list retrival
 		return array( $prop, $val );
@@ -148,6 +144,40 @@ Class CSSCompression_Individuals
 	 */ 
 	private function fontweight( $val ) {
 		return isset( $this->weights[ $val ] ) ? $this->weights[ $val ] : $val;
+	}
+
+	/**
+	 * Convert none vals to 0
+	 *
+	 * @param (string) prop: Current Property
+	 * @param (string) val: property value
+	 */ 
+	private function none( $prop, $val ) {
+		if ( preg_match( $this->rnoneprop, $prop ) ) {
+			if ( $val == 'none' ) {
+				$val = '0';
+			}
+			// Wrap spaces in case none is the last value
+			else if ( preg_match( $this->rnone, " " . $val . " " ) ) {
+				$val = trim( preg_replace( $this->rnone, ' 0 ', " " . $val . " " ) );
+			}
+		}
+
+		return $val;
+	}
+
+	/**
+	 * MSIE Filter Conversion
+	 *
+	 * @param (string) prop: Current Property
+	 * @param (string) val: property value
+	 */ 
+	private function filter( $prop, $val ) {
+		if ( preg_match( "/filter/", $prop ) ) {
+			$val = preg_replace( $this->rfilter, "alpha(opacity=$1)", $val );
+		}
+
+		return $val;
 	}
 
 	/**
