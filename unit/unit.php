@@ -14,21 +14,21 @@ define('AFTER', $root . '/sheets/after/');
 define('BENCHMARK', $root . '/benchmark/src/');
 
 
-Class CSScompressionTestUnit Extends CSSCompression
+Class CSScompressionUnitTest
 {
 	/**
 	 * Class Variables
 	 *
+	 * @class compressor: CSSCompression Instance
 	 * @param (int) errors: Number of errors found
 	 * @param (int) passes: Number of tests passed
 	 * @param (array) sandbox: Array containing test suite
-	 * @param (string) results: Result of all tests string for table
 	 * @param (array) instances: Array of default instance modes
 	 */
+	private $compressor;
 	private $errors = 0;
 	private $passes = 0;
 	private $sandbox = array();
-	private $results = '';
 	private $instances = array();
 
 	/**
@@ -37,15 +37,21 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	public function __construct(){
-		parent::__construct('');
-
 		// Reset the local class vars
-		$this->sandbox = $this->getSandbox();
+		$this->compressor = new CSSCompression();
+		$this->sandbox = CSSCompression::getJSON( dirname(__FILE__) . '/sandbox.json' );
 		$this->errors = 0;
-		$this->results = '';
+
+		// CSS Compressor doesn't currently throw exceptions, so we have to
+		if ( $this->sandbox instanceof Exception ) {
+			throw $this->sandbox;
+		}
 
 		// Run through sandbox tests
 		$this->setOptions();
+		$this->focus();
+
+		/*
 		$this->initialTrimTest();
 		$this->lineTesting();
 
@@ -56,6 +62,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'all' ) {
 			$this->testDoubles();
 		}
+		*/
 	}
 
 	/**
@@ -64,59 +71,29 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function setOptions(){
-		foreach ( $this->options as $key => $value ) {
-			$this->options[ $key ] = true;
+		$options = $this->compressor->option();
+		foreach ( $options as $key => $value ) {
+			$this->compressor->option( $key, true );
 		}
-		$this->options[ 'readability' ] = self::READ_NONE;
+		$this->compressor->option( 'readability', CSSCompression::READ_NONE );
 	}
 
-	/**
-	 * Get the sandbox json spec, strip the comments, and convert into an array
-	 *
-	 * @params none
-	 */
-	private function getSandbox(){
-		// Strip comments
-		$file = preg_replace(
-			array( "/\/\*(.*?)\*\//s", "/\t+\/\/.*/" ),
-			array( '', '' ),
-			file_get_contents( dirname(__FILE__) . '/sandbox.json' )
-		);
-
-		// Decode json
-		$json = json_decode( $file, true );
-
-		// Check for errors
-		if ( $json === NULL ) {
-			// JSON Errors, taken directly from http://php.net/manual/en/function.json-last-error.php
-			switch( json_last_error() ) {
-				case JSON_ERROR_NONE:
-					echo Color::boldred( 'JSON Error - No error has occurred' );
-					break;
-				case JSON_ERROR_DEPTH:
-					echo Color::boldred( 'JSON Error - The maximum stack depth has been exceeded' );
-					break;
-				case JSON_ERROR_CTRL_CHAR:
-					echo Color::boldred( 'JSON Error - Control character error, possibly incorrectly encoded' );
-					break;
-				case JSON_ERROR_STATE_MISMATCH:
-					echo Color::boldred( 'JSON Error - Invalid or malformed JSON' );
-					break;
-				case JSON_ERROR_SYNTAX:
-					echo Color::boldred( 'JSON Error - Syntax error' );
-					break;
-				case JSON_ERROR_UTF8:
-					echo Color::boldred( 'JSON Error - Malformed UTF-8 characters, possibly incorrectly encoded' );
-					break;
-				default:
-					echo Color::boldred( 'Unknown JSON Error' );
-					break;
+	private function focus(){
+		foreach ( $this->sandbox as $class => $obj ) {
+			foreach ( $obj as $method => $tests ) {
+				foreach ( $tests as $name => $row ) {
+					$result = $this->compressor->access( $class, $method, $row['params'] );
+					if ( isset( $row['join'] ) && is_array( $result ) ) {
+						$result = implode( $row['join'], $result );
+					}
+					/*
+					echo $row['expect'] . "\n=========\n";
+					echo $result . "\n======\n";
+					*/
+					$this->mark( "${class}.${method}", $name, $result == $row['expect'] );
+				}
 			}
-			exit( 1 );
 		}
-
-		// Good to go
-		return $json;
 	}
 
 	/**

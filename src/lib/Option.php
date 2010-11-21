@@ -11,8 +11,10 @@ Class CSSCompression_Option
 	 * Option Patterns
 	 *
 	 * @class Control: Compression Controller
+	 * @param (array) options: Instance settings
 	 */
 	private $Control;
+	public $options = array();
 
 	/**
 	 * Stash a reference to the controller on each instantiation
@@ -21,6 +23,7 @@ Class CSSCompression_Option
 	 */
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
+		$this->options = CSSCompression::$defaults;
 	}
 
 	/**
@@ -114,6 +117,21 @@ Class CSSCompression_Option
 		}
 
 		return $this->options;
+	}
+
+	/**
+	 * Access to private methods for testing
+	 *
+	 * @param (string) method: Method to be called
+	 * @param (array) args: Array of paramters to be passed in
+	 */
+	public function access( $method, $args ) {
+		if ( method_exists( $this, $method ) ) {
+			return call_user_func_array( array( $this, $method ), $args );
+		}
+		else {
+			throw new Exception( "Unknown method in Color Class - " . $method );
+		}
 	}
 };
 

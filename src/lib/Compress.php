@@ -92,7 +92,7 @@ Class CSSCompression_Compress
 		}
 
 		// Run final statistics before sending back the css
-		$this->runFinalStatistics( $css, $selectors );
+		$this->runFinalStatistics( $css, $selectors, $details );
 
 		// Return compressed css
 		return $css;
@@ -198,10 +198,10 @@ Class CSSCompression_Compress
 	 *
 	 * @params none
 	 */ 
-	private function runFinalStatistics( $css, $selectors ) {
+	private function runFinalStatistics( $css, $selectors, $details ) {
 		// Selectors and props
 		$this->stats['after']['selectors'] = count( $selectors );
-		foreach ( $this->details as $item ) {
+		foreach ( $details as $item ) {
 			$props = preg_split( $this->rsemicolon, $item );
 
 			// Make sure count is true
@@ -216,6 +216,21 @@ Class CSSCompression_Compress
 		// Final count for stats
 		$this->stats['after']['size'] = strlen( $css );
 		$this->stats['after']['time'] = array_sum( explode( ' ', microtime() ) );
+	}
+
+	/**
+	 * Access to private methods for testing
+	 *
+	 * @param (string) method: Method to be called
+	 * @param (array) args: Array of paramters to be passed in
+	 */
+	public function access( $method, $args ) {
+		if ( method_exists( $this, $method ) ) {
+			return call_user_func_array( array( $this, $method ), $args );
+		}
+		else {
+			throw new Exception( "Unknown method in Color Class - " . $method );
+		}
 	}
 };
 

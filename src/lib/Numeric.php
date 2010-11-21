@@ -83,6 +83,21 @@ Class CSSCompression_Numeric
 
 		return $str;
 	}
+
+	/**
+	 * Access to private methods for testing
+	 *
+	 * @param (string) method: Method to be called
+	 * @param (array) args: Array of paramters to be passed in
+	 */
+	public function access( $method, $args ) {
+		if ( method_exists( $this, $method ) ) {
+			return call_user_func_array( array( $this, $method ), $args );
+		}
+		else {
+			throw new Exception( "Unknown method in Color Class - " . $method );
+		}
+	}
 };
 
 ?>

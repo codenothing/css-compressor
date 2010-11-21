@@ -13,6 +13,6 @@ include( $root . '/color.php' );
 include( $root . '/unit.php' );
 
 // Unit Testing is on autorun
-new CSScompressionTestUnit();
+new CSScompressionUnitTest();
 
 ?>

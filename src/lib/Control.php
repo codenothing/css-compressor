@@ -48,7 +48,7 @@ Class CSSCompression_Control
 		'Combine',
 		'Organize',
 		'Cleanup',
-		'Compress' 
+		'Compress',
 	);
 
 	/**
@@ -60,7 +60,7 @@ Class CSSCompression_Control
 		$this->CSSCompression = $CSSCompression;
 
 		// Load all subclasses on demand
-		if ( ! class_exists( "CSSCompression_Setup", false ) ) {
+		if ( ! class_exists( "CSSCompression_Option", false ) ) {
 			$path = dirname(__FILE__) . '/';
 			foreach ( $this->subclasses as $class ) {
 				require( $path . $class . '.php' );
@@ -177,7 +177,16 @@ Class CSSCompression_Control
 	 * @param (string) class: Name of the focus class
 	 * @param (array) config: Contains name reference and test arguments
 	 */
-	public function access( $class, $config ) {
+	public function access( $class, $method, $args ) {
+		if ( $class == 'Control' ) {
+			return call_user_func_array( array( $class, $method ), $args );
+		}
+		else if ( in_array( $class, $this->subclasses ) ) {
+			return $this->$class->access( $method, $args );
+		}
+		else {
+			throw new Exception( "Unknown Class Access - " . $class );
+		}
 	}
 };
 

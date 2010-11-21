@@ -25,7 +25,7 @@ Class CSSCompression_Individuals
 	private $Color;
 	private $options = array();
 	private $rdirectional = "/^(margin|padding)$/";
-	private $rnone = "/^(border|background)$/";
+	private $rnone = "/^(border|background)/";
 	private $rfilter = "/PROGID:DXImageTransform.Microsoft.Alpha\(Opacity=(\d+)\)/i";
 	private $rspace = "/(?<!\\\)\s/";
 	private $weights = array(
@@ -148,6 +148,21 @@ Class CSSCompression_Individuals
 	 */ 
 	private function fontweight( $val ) {
 		return isset( $this->weights[ $val ] ) ? $this->weights[ $val ] : $val;
+	}
+
+	/**
+	 * Access to private methods for testing
+	 *
+	 * @param (string) method: Method to be called
+	 * @param (array) args: Array of paramters to be passed in
+	 */
+	public function access( $method, $args ) {
+		if ( method_exists( $this, $method ) ) {
+			return call_user_func_array( array( $this, $method ), $args );
+		}
+		else {
+			throw new Exception( "Unknown method in Color Class - " . $method );
+		}
 	}
 };
 

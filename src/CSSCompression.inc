@@ -22,7 +22,7 @@ Class CSSCompression
 	/**
 	 * The default set of options for every instance.
 	 */
-	public static $options = array(
+	public static $defaults = array(
 		// Converts long color names to short hex names
 		// (aliceblue -> #f0f8ff)
 		'color-long2hex' => true,
@@ -157,7 +157,7 @@ Class CSSCompression
 				$this->Control->Option->merge( $options );
 			}
 			else {
-				$this->css = $this->Control->Compress->compress( $css, $options );
+				$this->css = $this->Control->compress( $css, $options );
 			}
 		}
 		// Merge passed options
@@ -200,13 +200,28 @@ Class CSSCompression
 	}
 
 	/**
+	 * (Proxy function) Maintainable access to the options array
+	 *
+	 *	- Passing no arguments returns the entire options array
+	 *	- Passing a single name argument returns the value for the option
+	 * 	- Passing both a name and value, sets the value to the name key, and returns the value
+	 *	- Passing an array will merge the options with the array passed, for object like extension
+	 *
+	 * @param (string|array) name: The key name of the option
+	 * @param (any) value: Value to set the option
+	 */
+	public function option( $name = NULL, $value = NULL ) {
+		return $this->Control->Option->option( $name, $value );
+	}
+
+	/**
 	 * (Proxy function) Run compression on the sheet passed
 	 *
 	 * @param (string) css: Stylesheet to be compressed
 	 * @param (array|string) options: Array of options or mode to use.
 	 */
 	public function compress( $css = NULL, $options = NULL ) {
-		return $this->Control->Compress->compress( $css, $options );
+		return $this->Control->compress( $css, $options );
 	}
 
 	/**
@@ -305,17 +320,21 @@ Class CSSCompression
 	 * ONLY FOR DEVELOPMENT/TESTING.
 	 *
 	 * @param (string) class: Name of the focus class
-	 * @param (array) config: Contains name reference and test arguments
+	 * @param (string) method: Method function to call
+	 * @param (array) args: Array of arguments to pass in
 	 */
-	public function access( $class = NULL, $config = NULL ) {
+	public function access( $class = NULL, $method = NULL, $args = NULL ) {
 		if ( ! self::DEV ) {
-			throw new Exception("CSSCompression is not in development mode.");
+			throw new Exception( "CSSCompression is not in development mode." );
 		}
-		else if ( $class === NULL || $config === NULL ) {
-			return NULL;
+		else if ( $class === NULL || $method === NULL || $args === NULL ) {
+			throw new Exception( "Invalid Access Call." );
+		}
+		else if ( ! is_array( $args ) ) {
+			throw new Exception( "Expecting array of arguments." );
 		}
 
-		return $this->Control->access( $class, $config );
+		return $this->Control->access( $class, $method, $args );
 	}
 };
 

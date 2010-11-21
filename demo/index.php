@@ -26,7 +26,7 @@ if ( isset( $_GET['view'] ) && $_GET['view'] == "compress" ) {
 
 	// Add results above the form
 	echo "<div id='results'>";
-	$CSSC->displayStats();
+	// $CSSC->displayStats();
 	echo "<textarea style='height:$height;' onclick='this.select()'>".$CSSC->css."</textarea><br><br>";
 	echo '</div>';
 
@@ -117,11 +117,8 @@ else{
 				Compress single defined multi-directional properties (margin:15px 25px 15px 25px -&gt; margin:15px 25px)
 			</label>
 			<label>
-				<input type='checkbox' id='orderimportant1' name='multiple-selectors' <?php echo ( isset( $checked['order-important'] ) ? "disabled='disabled'" : '')?> <?php if ( isset( $checked['multiple-selectors'] ) ) echo $checked['multiple-selectors']; ?> />
-				Combine multiply defined selectors (p{color:blue;} p{font-size:12pt} -&gt; p{color:blue;font-size:12pt;})
-			</label>
-			<label class='odd'>
-				<input type='checkbox' id='orderimportant2' name='multiple-details' <?php echo ( isset( $checked['order-important'] ) ? "disabled='disabled'" : '')?> <?php if ( isset( $checked['multiple-details'] ) ) echo $checked['multiple-details']; ?> />
+				<input type='checkbox' id='organize' name='organize' <?php echo ( isset( $checked['organize'] ) ? "disabled='disabled'" : '')?> <?php if ( isset( $checked['organize'] ) ) echo $checked['organize']; ?> />
+				Combine multiply defined selectors (p{color:blue;} p{font-size:12pt} -&gt; p{color:blue;font-size:12pt;})<br>
 				Combine selectors with same details (p{color:blue;} a{color:blue;} -&gt; p,a{color:blue;})
 			</label>
 			<label>

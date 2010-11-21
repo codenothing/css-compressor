@@ -23,7 +23,7 @@ Class CSSCompression_Color
 	private $rrgb = "/^rgb\((\d{1,3}\%?(,\d{1,3}\%?,\d{1,3}\%?)?)\)$/i";
 	private $rhex = "/^#([0-9a-f]{3}|[0-9a-f]{6})$/i";
 	private $rfullhex = "/^#([0-9a-f]{6})$/i";
-	private static $long2hex = array();
+	private static $color2hex = array();
 	private static $hex2short = array();
 
 	/**
@@ -36,9 +36,9 @@ Class CSSCompression_Color
 		$this->Control = $control;
 		$this->options = &$control->Option->options;
 
-		if ( ! self::$long2hex ) {
-			if ( ( self::$long2hex = CSSCompression::getJSON( 'long2hex-colors.json' ) ) instanceof Exception ) {
-				throw self::$long2hex;
+		if ( ! self::$color2hex ) {
+			if ( ( self::$color2hex = CSSCompression::getJSON( 'long2hex-colors.json' ) ) instanceof Exception ) {
+				throw self::$color2hex;
 			}
 
 			if ( ( self::$hex2short = CSSCompression::getJSON( 'hex2short-colors.json' ) ) instanceof Exception ) {
@@ -60,12 +60,7 @@ Class CSSCompression_Color
 
 		// Convert long color names to hex codes
 		if ( $this->options['color-long2hex'] ) {
-			$val = $this->long2hex( $val );
-		}
-
-		// Convert 6 digit hex codes to short color names
-		if ( $this->options['color-hex2shortcolor'] ) {
-			$val = $this->hex2color( $val );
+			$val = $this->color2hex( $val );
 		}
 
 		// Convert large hex codes to small codes
@@ -76,6 +71,11 @@ Class CSSCompression_Color
 		// Ensure all hex codes are lowercase
 		if ( preg_match( $this->rhex, $val ) ) {
 			$val = strtolower( $val );
+		}
+
+		// Convert 6 digit hex codes to short color names
+		if ( $this->options['color-hex2shortcolor'] ) {
+			$val = $this->hex2color( $val );
 		}
 
 		return $val;
@@ -92,7 +92,7 @@ Class CSSCompression_Color
 		}
 
 		// locals
-		$hex = '0123456789ABCDEF';
+		$hex = '0123456789abcdef';
 		$str = explode( ',', $match[ 1 ] );
 		$new = '';
 
@@ -130,14 +130,8 @@ Class CSSCompression_Color
 	 *
 	 * @param (string) val: Color to be converted
 	 */
-	private function long2hex( $val ) {
-		return isset( $this->weights[ $val ] ) ? $this->weights[ $val ] : $val;
-		$low = strtolower( $val );
-		if ( isset( self::$long2hex[ $low ] ) ) {
-			$val = self::$long2hex[ $low ];
-		}
-
-		return $val;
+	private function color2hex( $val ) {
+		return isset( self::$color2hex[ $val ] ) ? self::$color2hex[ $val ] : $val;
 	}
 
 	/**
@@ -146,13 +140,7 @@ Class CSSCompression_Color
 	 * @param (string) val: Color to be converted
 	 */
 	private function hex2color( $val ) {
-		// Hex codes are all lowercase
-		$low = strtolower( $val );
-		if ( isset( self::$hex2short[ $low ] ) ) {
-			$val = self::$hex2short[ $low ];
-		}
-
-		return $val;
+		return isset( self::$hex2short[ $val ] ) ? self::$hex2short[ $val ] : $val;
 	}
 
 	/**
@@ -172,6 +160,21 @@ Class CSSCompression_Color
 		}
 
 		return $val;
+	}
+
+	/**
+	 * Access to private methods for testing
+	 *
+	 * @param (string) method: Method to be called
+	 * @param (array) args: Array of paramters to be passed in
+	 */
+	public function access( $method, $args ) {
+		if ( method_exists( $this, $method ) ) {
+			return call_user_func_array( array( $this, $method ), $args );
+		}
+		else {
+			throw new Exception( "Unknown method in Color Class - " . $method );
+		}
 	}
 };
 
