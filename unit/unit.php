@@ -7,28 +7,26 @@
 
 // Before/After directories
 // $root is borrowed from index.php
-define('SPECIAL_BEFORE', $root . '/special/before/');
-define('SPECIAL_AFTER', $root . '/special/after/');
 define('BEFORE', $root . '/sheets/before/');
 define('AFTER', $root . '/sheets/after/');
 define('BENCHMARK', $root . '/benchmark/src/');
 
 
-Class CSScompressionTestUnit Extends CSSCompression
+Class CSScompressionUnitTest
 {
 	/**
 	 * Class Variables
 	 *
+	 * @class compressor: CSSCompression Instance
 	 * @param (int) errors: Number of errors found
 	 * @param (int) passes: Number of tests passed
 	 * @param (array) sandbox: Array containing test suite
-	 * @param (string) results: Result of all tests string for table
 	 * @param (array) instances: Array of default instance modes
 	 */
+	private $compressor;
 	private $errors = 0;
 	private $passes = 0;
 	private $sandbox = array();
-	private $results = '';
 	private $instances = array();
 
 	/**
@@ -37,17 +35,19 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	public function __construct(){
-		parent::__construct('');
-
 		// Reset the local class vars
-		$this->sandbox = $this->getSandbox();
+		$this->compressor = new CSSCompression();
+		$this->sandbox = CSSCompression::getJSON( dirname(__FILE__) . '/sandbox.json' );
 		$this->errors = 0;
-		$this->results = '';
+
+		// CSS Compressor doesn't currently throw exceptions, so we have to
+		if ( $this->sandbox instanceof Exception ) {
+			throw $this->sandbox;
+		}
 
 		// Run through sandbox tests
 		$this->setOptions();
-		$this->initialTrimTest();
-		$this->lineTesting();
+		$this->focus();
 
 		// Full sheet tests (security checks)
 		$this->setOptions();
@@ -64,133 +64,108 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */ 
 	private function setOptions(){
-		foreach ( $this->options as $key => $value ) {
-			$this->options[ $key ] = true;
+		$options = $this->compressor->option();
+		foreach ( $options as $key => $value ) {
+			$this->compressor->option( $key, true );
 		}
-		$this->options[ 'readability' ] = self::READ_NONE;
+		$this->compressor->option( 'readability', CSSCompression::READ_NONE );
 	}
 
 	/**
-	 * Get the sandbox json spec, strip the comments, and convert into an array
+	 * Run through a focused set of tests that runs directly through each function
 	 *
 	 * @params none
 	 */
-	private function getSandbox(){
-		// Strip comments
-		$file = preg_replace(
-			array( "/\/\*(.*?)\*\//s", "/\t+\/\/.*/" ),
-			array( '', '' ),
-			file_get_contents( dirname(__FILE__) . '/sandbox.json' )
-		);
+	private function focus(){
+		foreach ( $this->sandbox as $class => $obj ) {
+			foreach ( $obj as $method => $tests ) {
+				if ( $class == 'Organize' && ( $method == 'reduceSelectors' || $method == 'reduceDetails' ) ) {
+					$this->organize( $method, $tests );
+					continue;
+				}
+				else if ( $class == 'Cleanup' && $method == 'cleanup' ) {
+					$this->cleanup( $tests );
+					continue;
+				}
+				foreach ( $tests as $name => $row ) {
+					// Readability help
+					if ( isset( $row['paramjoin'] ) ) {
+						$row['params'] = array( implode( $row['params'] ) );
+					}
 
-		// Decode json
-		$json = json_decode( $file, true );
+					// Get the result from that single function
+					$result = $this->compressor->access( $class, $method, $row['params'] );
 
-		// Check for errors
-		if ( $json === NULL ) {
-			// JSON Errors, taken directly from http://php.net/manual/en/function.json-last-error.php
-			switch( json_last_error() ) {
-				case JSON_ERROR_NONE:
-					echo Color::boldred( 'JSON Error - No error has occurred' );
-					break;
-				case JSON_ERROR_DEPTH:
-					echo Color::boldred( 'JSON Error - The maximum stack depth has been exceeded' );
-					break;
-				case JSON_ERROR_CTRL_CHAR:
-					echo Color::boldred( 'JSON Error - Control character error, possibly incorrectly encoded' );
-					break;
-				case JSON_ERROR_STATE_MISMATCH:
-					echo Color::boldred( 'JSON Error - Invalid or malformed JSON' );
-					break;
-				case JSON_ERROR_SYNTAX:
-					echo Color::boldred( 'JSON Error - Syntax error' );
-					break;
-				case JSON_ERROR_UTF8:
-					echo Color::boldred( 'JSON Error - Malformed UTF-8 characters, possibly incorrectly encoded' );
-					break;
-				default:
-					echo Color::boldred( 'Unknown JSON Error' );
-					break;
+					// Joining of the result
+					if ( isset( $row['join'] ) && is_array( $result ) ) {
+						$result = implode( $row['join'], $result );
+					}
+
+					// For readability, allow for arrays of expectations
+					if ( is_array( $row['expect'] ) ) {
+						$row['expect'] = implode( $row['expect'] );
+					}
+
+					// Mark the result
+					$this->mark( "${class}.${method}", $name, $result == $row['expect'] );
+				}
 			}
-			exit( 1 );
 		}
-
-		// Good to go
-		return $json;
 	}
 
 	/**
-	 * Runs a test on the initalTrim() method of CSSC, uses
-	 * a before/after system of files to do matching
+	 * Special testing for Organize methods
 	 *
-	 * @params none
-	 */ 
-	private function initialTrimTest(){
-		$this->css = file_get_contents( SPECIAL_BEFORE . 'initialTrim.css' );
-		$after = file_get_contents( SPECIAL_AFTER . 'initialTrim.css' );
-		$this->initialTrim();
-		$this->mark( 'initialTrim.css', 'all', trim( $this->css ) == trim( $after ) );
-	}
+	 * @param (string) method: Class method to be called
+	 * @param (array) tests: Test layout
+	 */
+	private function organize( $method, $tests ) {
+		$params = array( $tests['selectors']['params'], $tests['details']['params'] );
+		list ( $selectors, $details ) = $this->compressor->access( 'Organize', $method, $params );
 
-	/**
-	 * Uses a test-array contain CSSC methods and various
-	 * tests to run on each function. Takes special note to
-	 * individuals()  methods
-	 *
-	 * @params none
-	 */ 
-	private function lineTesting(){
-		foreach ( $this->sandbox as $fn => $tests ) {
-			if ( $fn == 'combineMultiplyDefinedSelectors' || $fn == 'combineMultiplyDefinedDetails' ) {
-				list ( $selectors, $details ) = $this->$fn( $tests['selectors']['test'], $tests['details']['test'] );
+		// Rekey the arrays
+		$selectors = array_values( $selectors );
+		$details = array_values( $details );
 
-				// Rekey the arrays
-				$selectors = array_values( $selectors );
-				$details = array_values( $details );
-
-				// Mark the entries
-				for ( $i = 0, $max = count( $selectors ); $i < $max; $i++ ) {
-					if ( isset( $selectors[ $i ] ) && isset( $details[ $i ] ) && 
-						isset( $tests['selectors']['expect'][ $i ] ) &&
-						isset( $tests['details']['expect'][ $i ] ) ) {
-							$this->mark(
-								$fn,
-								$i,
-								( $selectors[ $i ] === $tests['selectors']['expect'][ $i ] && 
-									$details[ $i ] === $tests['details']['expect'][ $i ] )
-							);
-					}
-					else {
-						$this->mark( $fn, $i, false );
-					}
-				}
-				$this->mark( $fn, 'Selectors Counted', count( $selectors ) === count( $tests['selectors']['expect'] ) );
-				$this->mark( $fn, 'Details Counted', count( $details ) === count( $tests['details']['expect'] ) );
-				continue;
+		// Mark the entries
+		for ( $i = 0, $max = count( $selectors ); $i < $max; $i++ ) {
+			if ( isset( $selectors[ $i ] ) && isset( $details[ $i ] ) && 
+				isset( $tests['selectors']['expect'][ $i ] ) &&
+				isset( $tests['details']['expect'][ $i ] ) ) {
+					$this->mark(
+						"Organize.$method",
+						$i,
+						( $selectors[ $i ] === $tests['selectors']['expect'][ $i ] && 
+							$details[ $i ] === $tests['details']['expect'][ $i ] )
+					);
 			}
+			else {
+				$this->mark( "Organize.$method", $i, false );
+			}
+		}
+		$this->mark( "Organize.$method", 'Selectors Counted', count( $selectors ) === count( $tests['selectors']['expect'] ) );
+		$this->mark( "Organize.$method", 'Details Counted', count( $details ) === count( $tests['details']['expect'] ) );
+	}
 
-			foreach ( $tests as $entry => $set ) {
-				// Some strings are too long and wrap, so
-				// we force them into an array for better
-				// readability
-				if ( is_array( $set['test'] ) ) {
-					$set['test'] = implode( '', $set['test'] );
-				}
-				// Sam with expect
-				if ( is_array( $set['expect'] ) ) {
-					$set['expect'] = implode( '', $set['expect'] );
-				}
+	/**
+	 * Special testing for Cleanup handler
+	 *
+	 * @param (array) tests: Test layout
+	 */
+	private function cleanup( $tests ) {
+		$params = array( array(), $tests['params'] );
+		list ( $selectors, $details ) = $this->compressor->access( 'Cleanup', 'cleanup', $params );
 
-				// Inididual tests are run on each prop
-				if ( $fn == 'individuals' ) {
-					list ( $prop, $val ) = explode( ':', $set['test'], 2 );
-					list ( $prop, $val ) = $this->individuals( $prop, $val );
-					$passed = ( "$prop:$val" == $set['expect'] );
-				}
-				else {
-					$passed = ( $this->$fn( $set['test'] ) == $set['expect'] );
-				}
-				$this->mark( $fn, $entry, $passed );
+		// Rekey the details
+		$details = array_values( $details );
+
+		// Mark the entries
+		for ( $i = 0, $max = count( $details ); $i < $max; $i++ ) {
+			if ( isset( $tests['expect'][ $i ] ) ) {
+				$this->mark( "Cleanup.cleanup", $i, $details[ $i ] === $tests[ 'expect' ][ $i ] );
+			}
+			else {
+				$this->mark( "Cleanup.cleanup", $i, false );
 			}
 		}
 	}
@@ -207,7 +182,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 			if ( preg_match( "/\.css$/", $file ) ) {
 				$before = trim( file_get_contents( BEFORE . $file ) );
 				$after = trim( file_get_contents( AFTER . $file ) );
-				$this->mark( $file, "full", $this->compress( $before ) === $after );
+				$this->mark( $file, "full", $this->compressor->compress( $before ) === $after );
 			}
 		}
 	}
@@ -219,7 +194,7 @@ Class CSScompressionTestUnit Extends CSSCompression
 	 * @params none
 	 */
 	private function testDoubles(){
-		foreach ( self::$modes as $mode => $options ) {
+		foreach ( CSSCompression::$modes as $mode => $options ) {
 			$this->instances[ $mode ] = new CSSCompression( '', $mode );
 		}
 
@@ -229,12 +204,11 @@ Class CSScompressionTestUnit Extends CSSCompression
 				$before = trim( file_get_contents( BENCHMARK . $file ) );
 				foreach ( $this->instances as $mode => $instance ) {
 					$first = $instance->compress( $before );
-					$a = array( 'selectors' => $instance->selectors, 'details' => $instance->details );
 					$size = $instance->stats['after']['size'];
 					$second = $instance->compress( $first );
-					$b = array( 'selectors' => $instance->selectors, 'details' => $instance->details );
 					$this->mark( 'Double CSS ' . $file, $mode, $first === $second );
 					$this->mark( 'Double Size ' . $file, $mode, $size === $instance->stats['after']['size'] );
+					break;
 				}
 			}
 		}

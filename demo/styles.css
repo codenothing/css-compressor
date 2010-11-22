@@ -24,23 +24,40 @@ label.odd {
 	background: #EEEDED;
 }
 
-label.order-important {
-	background: #DADAE7;
-	border: 1px solid #ADC6F0;
-	padding: 5px;
-}
-
 textarea{
-	width: 98%;
+	width: 100%;
 	height: 450px;
 	font-size: 8pt;
 }
 
+iframe {
+	width: 95%;
+	height: 475px;
+}
+
+button.compress {
+	float: right;
+	padding: 2px 5px;
+}
+
+div.example {
+	padding-left: 25px;
+	font-style: italic;
+}
+
+div.control {
+	background: #DADAE7;
+	border: 2px solid #ADC6F0;
+	padding: 5px;
+}
+
 div.options {
-	height: 422px;
+	display: none;
+	height: 400px;
 	overflow: auto;
-	border-left: 1px solid #ADC6F0;
-	border-bottom: 1px solid #ADC6F0;
+	border-right: 2px solid #ADC6F0;
+	border-left: 2px solid #ADC6F0;
+	border-bottom: 2px solid #ADC6F0;
 }
 
 #results {

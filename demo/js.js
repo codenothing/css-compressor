@@ -1,13 +1,16 @@
-var checkbox1, checkbox2;
+jQuery(function(){
+	var options = jQuery('div.options');
 
-function forceOrder( el ) {
-	if ( checkbox1 === undefined ){
-		checkbox1 = document.getElementById('orderimportant1');
-		checkbox2 = document.getElementById('orderimportant2');
-	}
+	// Style the options
+	options.find("label:odd").addClass('odd');
 
-	checkbox1.checked = !el.checked;
-	checkbox2.checked = !el.checked;
-	checkbox1.disabled = el.checked;
-	checkbox2.disabled = el.checked;
-}
+	// Only open them in custom mode
+	jQuery("select[name=mode]").change(function(){
+		if ( jQuery( this ).val() == 'custom' ) {
+			options.slideDown();
+		}
+		else {
+			options.slideUp();
+		}
+	});
+});

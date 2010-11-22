@@ -1,0 +1,13 @@
+body {
+	background: #E8DCFF;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+textarea {
+	width: 100%;
+	border: 1px solid #989898;
+	height: 425px;
+	font-size: 8pt;
+}

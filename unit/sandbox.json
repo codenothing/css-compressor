@@ -7,818 +7,899 @@
  * on all methods possible.
  */
 {
-	// individuals method
-	// This test runs simple tests, as there are more extensive tests below, this
-	// is just to make sure the central function works as expected
-	"individuals": {
+	// Numeric Handler
+	"Numeric": {
+		// Decimal removal
+		"decimal": {
+			"remove": {
+				"params": [ "1.0em" ],
+				"expect": "1em"
+			},
+			"keep": {
+				"params": [ "1.059em" ],
+				"expect": "1.059em"
+			}
+		},
+
+		// Unit removal
+		"units": {
+			"remove": {
+				"params": [ "0px" ],
+				"expect": "0"
+			},
+			"keep": {
+				"params": [ "1pt" ],
+				"expect": "1pt"
+			}
+		},
+
+		// Zero Removal
+		"zeroes": {
+			"0.8px": {
+				"params": [ "0.8px" ],
+				"expect": ".8px"
+			},
+			"0.2983%": {
+				"params": [ "0.2983%" ],
+				"expect": ".2983%"
+			},
+			"10.2983%": {
+				"params": [ "10.2983%" ],
+				"expect": "10.2983%"
+			}
+		},
+
+		// Main numeric handler, just checking that it handles
+		// all of the above scenarios
+		"numeric": {
+			"0.8px": {
+				"params": [ "0.8px" ],
+				"expect": ".8px"
+			},
+			"0 pixel": {
+				"params": [ "0px" ],
+				"expect": "0"
+			},
+			"decimal removal": {
+				"params": [ "1.0em" ],
+				"expect": "1em"
+			},
+			"Nothing": {
+				"params": [ "1pt" ],
+				"expect": "1pt"
+			}
+		}
+	},
+
+	// Color Handler
+	"Color": {
+		// RGB Conversions
+		"rgb2hex": {
+			"single numeric": {
+				"params": [ "rgb(145)" ],
+				"expect": "#919191"
+			},
+			"numeric": {
+				"params": [ "rgb(145,123,16)" ],
+				"expect": "#917b10"
+			},
+			"percentage": {
+				"params": [ "rgb(50%,50%,50%)" ],
+				"expect": "#7f7f7f"
+			}
+		},
+
+		// Long color names to hex codes
+		"color2hex": {
+			"aliceblue": {
+				"params": [ "aliceblue" ],
+				"expect": "#f0f8ff"
+			},
+			"darkgoldenrod": {
+				"params": [ "darkgoldenrod" ],
+				"expect": "#b8860b"
+			},
+			"lightgoldenrodyellow": {
+				"params": [ "lightgoldenrodyellow" ],
+				"expect": "#fafad2"
+			},
+			"red": {
+				"params": [ "red" ],
+				"expect": "red"
+			}
+		},
+
+		// Long hex to short name conversions
+		"hex2color": {
+			"azure": {
+				"params": [ "#f0ffff" ],
+				"expect": "azure"
+			},
+			"peru": {
+				"params": [ "#cd853f" ],
+				"expect": "peru"
+			},
+			"no change": {
+				"params": [ "#cd8599" ],
+				"expect": "#cd8599"
+			}
+		},
+
+		// Long hex to short hex conversions
+		"hex2short": {
+			// Long hex to short hex conversions
+			"#a60": {
+				"params": [ "#aa6600" ],
+				"expect": "#a60"
+			},
+			"#736": {
+				"params": [ "#773366" ],
+				"expect": "#736"
+			},
+			"#772213": {
+				"params": [ "#772213" ],
+				"expect": "#772213"
+			}
+		},
+
+		// Main color handler, runs all of the tests above
+		"color": {
+			"peru": {
+				"params": [ "#cd853f" ],
+				"expect": "peru"
+			},
+			"aliceblue": {
+				"params": [ "aliceblue" ],
+				"expect": "#f0f8ff"
+			},
+			"red": {
+				"params": [ "#FF0000" ],
+				"expect": "red"
+			},
+			"Lowercase Hex Codes": {
+				"params": [ "#ABCABC" ],
+				"expect": "#abcabc"
+			}
+		}
+	},
+
+	// Individuals Handler
+	"Individuals": {
 		// Directionals/Unit compression
-		"Directionals: 4 to 1": {
-			"test": "margin:10.0px 10px 10px 10px",
-			"expect": "margin:10px"
-		},
-		"Directionals: 4 to 2": {
-			"test": "padding:10px 15px 10.0px 15.0px",
-			"expect": "padding:10px 15px"
-		},
-		"Directionals: 3 to 2": {
-			"test": "padding:10px 0.15px 10.0px",
-			"expect": "padding:10px .15px"
+		"directionals": {
+			"4 to 1": {
+				"params": [ "10px 10px 10px 10px" ],
+				"expect": "10px"
+			},
+			"4 to 2": {
+				"params": [ "10px 15px 10px 15px" ],
+				"expect": "10px 15px"
+			},
+			"3 to 2": {
+				"params": [ "10px .15px 10px" ],
+				"expect": "10px .15px"
+			},
+			"3 to 3": {
+				"params": [ "10px 15px 12px" ],
+				"expect": "10px 15px 12px"
+			},
+			"4 to 4": {
+				"params": [ "10cm 9cm 8cm 7cm" ],
+				"expect": "10cm 9cm 8cm 7cm"
+			},
+			"2 to 1": {
+				"params": [ "10in 10in" ],
+				"expect": "10in"
+			},
+			"2 to 2": {
+				"params": [ "8in 7in" ],
+				"expect": "8in 7in"
+			},
+			"1 to 1": {
+				"params": [ "10cm" ],
+				"expect": "10cm"
+			}
 		},
 
 		// Font-Weight compressions
-		"Weight: lighter": {
-			"test": "font-weight:lighter",
-			"expect": "font-weight:100"
-		},
-		"Weight: bolder": {
-			"test": "font-weight:bolder",
-			"expect": "font-weight:900"
-		},
-		"Weight: heavy": {
-			"test": "font-weight:heavy",
-			"expect": "font-weight:heavy"
-		},
-
-		// Decimal conversions
-		"Decimals: 0.8": {
-			"test": "opacity:0.8",
-			"expect": "opacity:.8"
-		},
-		"Decimals: Any 0.2983": {
-			"test": "any:0.2983",
-			"expect": "any:.2983"
-		},
-
-		// RGB Conversions (Spaces are removed by inital trim}
-		"RGB: single numeric": {
-			"test": "color:rgb(145)",
-			"expect": "color:#919191"
-		},
-		"RGB: numeric": {
-			"test": "color:rgb(145,123,16)",
-			"expect": "color:#917b10"
-		},
-		"RGB: percentage": {
-			"test": "color:rgb(50%,50%,50%)",
-			"expect": "color:#7f7f7f"
+		"fontweight": {
+			"lighter": {
+				"params": [ "lighter" ],
+				"expect": "100"
+			},
+			"normal": {
+				"params": [ "normal" ],
+				"expect": "400"
+			},
+			"bold": {
+				"params": [ "bold" ],
+				"expect": "700"
+			},
+			"bolder": {
+				"params": [ "bolder" ],
+				"expect": "900"
+			},
+			"heavy": {
+				"params": [ "heavy" ],
+				"expect": "heavy"
+			},
+			"blah": {
+				"params": [ "blah" ],
+				"expect": "blah"
+			}
 		},
 
-		// Long name to hex conversions
-		"Color to hex": {
-			"test": "color:aliceblue",
-			"expect": "color:#f0f8ff"
+		// Converting none values to 0
+		"none": {
+			"background": {
+				"params": [ "background", "none" ],
+				"expect": "0"
+			},
+			"border": {
+				"params": [ "border", "none" ],
+				"expect": "0"
+			},
+			"border-top": {
+				"params": [ "border-top", "none" ],
+				"expect": "0"
+			},
+			"border-left": {
+				"params": [ "border-left", "none" ],
+				"expect": "0"
+			},
+			"border-right": {
+				"params": [ "border-right", "none" ],
+				"expect": "0"
+			},
+			"border-top": {
+				"params": [ "border-top", "none" ],
+				"expect": "0"
+			},
+			"Shorthand": {
+				"params": [ "background", "white none no-repeat" ],
+				"expect": "white 0 no-repeat"
+			},
+			"Last Value": {
+				"params": [ "background", "white none" ],
+				"expect": "white 0"
+			},
+			"Nothing": {
+				"params": [ "background", "white url(someimage.png)" ],
+				"expect": "white url(someimage.png)"
+			}
 		},
 
-		// Long hex to short name conversions
-		"Hex to color": {
-			"test": "color:#cd853f",
-			"expect": "color:peru"
+		// MSIE Filters
+		"filter": {
+			"Simple": {
+				"params": [ "-ms-filter", "PROGID:DXImageTransform.Microsoft.Alpha(Opacity=30)" ],
+				"expect": "alpha(opacity=30)"
+			},
+			"quotes": {
+				"params": [ "-ms-filter", "\"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)\"" ],
+				"expect": "alpha(opacity=80)"
+			}
 		},
 
-		// Long hex to short hex conversions
-		"Longhex to Shorthex": {
-			"test": "color:#aa6600",
-			"expect": "color:#a60"
-		},
-
-		// None value
-		"none value: background": {
-			"test": "background:none",
-			"expect": "background:0"
-		},
-		"none value: border": {
-			"test": "border:none",
-			"expect": "border:0"
-		},
-		"none value: border-top": {
-			"test": "border-top:none",
-			"expect": "border-top:0"
-		},
-		"none value: border-left": {
-			"test": "border-left:none",
-			"expect": "border-left:0"
-		},
-		"none value: border-right": {
-			"test": "border-right:none",
-			"expect": "border-right:0"
-		},
-		"none value: border-top": {
-			"test": "border-top:none",
-			"expect": "border-top:0"
+		// Main individuals, combination of Color, Numeric and Individual handlers
+		"individuals": {
+			// Test lowercasing of props, and various numeric conversions
+			"Directionals 4 to 1": {
+				"params": [ "MARGIN", "10.0px 10.000px 010.0px 10px" ],
+				"join": ":",
+				"expect": "margin:10px"
+			},
+			// Long hex to short name conversions
+			"Lowercase Hex: #7F9D0A": {
+				"params": [ "color", "#7F9D0A" ],
+				"join": ":",
+				"expect": "color:#7f9d0a"
+			}
 		}
 	},
 
-	// sidesDirectional method
-	"sidesDirectional": {
-		"4 to 1": {
-			"test": "10px 10px 10px 10px",
-			"expect": "10px"
+	"Selectors": {
+		"lowercaseSelectors": {
+			"input": {
+				"params": [ "INPUT" ],
+				"expect": "input"
+			},
+			"font": {
+				"params": [ "FONT" ],
+				"expect": "font"
+			},
+			"class": {
+				"params": [ "INPUT.testclass" ],
+				"expect": "input.testclass"
+			},
+			"pseudo": {
+				"params": [ "A:active,B:first-child" ],
+				"expect": "a:active,b:first-child"
+			},
+			"complex": {
+				"params": [ "BODY>DIV:first-child+A:active * P:first-child" ],
+				"expect": "body>div:first-child+a:active * p:first-child"
+			},
+			"id": {
+				"params": [ "BODY#BODY>DIV.CLASS * A#ID>P.CLASS" ],
+				"expect": "body#BODY>div.CLASS * a#ID>p.CLASS"
+			}
 		},
-		"4 to 2": {
-			"test": "10px 15px 10px 15px",
-			"expect": "10px 15px"
-		},
-		"3 to 2": {
-			"test": "10px 15px 10px",
-			"expect": "10px 15px"
-		},
-		"3 to 3": {
-			"test": "10px 15px 12px",
-			"expect": "10px 15px 12px"
-		},
-		"4 to 4": {
-			"test": "10cm 9cm 8cm 7cm",
-			"expect": "10cm 9cm 8cm 7cm"
-		},
-		"2 to 1": {
-			"test": "10in 10in",
-			"expect": "10in"
-		},
-		"2 to 2": {
-			"test": "8in 7in",
-			"expect": "8in 7in"
-		},
-		"1 to 1": {
-			"test": "10cm",
-			"expect": "10cm"
-		}
-	},
 
-	// fontweightConversion method
-	"fontweightConversion": {
-		"lighter": {
-			"test": "lighter",
-			"expect": "100"
+		"pseduoSpace": {
+			"first-child comma": {
+				"params": [ "a:first-child,a,b" ],
+				"expect": "a:first-child ,a,b"
+			},
+			"first-child tree": {
+				"params": [ "a:first-child>a" ],
+				"expect": "a:first-child >a"
+			},
+			"first-child adds": {
+				"params": [ "a:first-child+a" ],
+				"expect": "a:first-child +a"
+			},
+			"first-child brace": {
+				"params": [ "a:first-child{" ],
+				"expect": "a:first-child {"
+			},
+			"first-child empty": {
+				"params": [ "a:first-child" ],
+				"expect": "a:first-child "
+			},
+			"first-child space": {
+				"params": [ "a:first-child b" ],
+				"expect": "a:first-child b"
+			},
+			"multiple": {
+				"params": [ "a:hover>b:hover.test+pre.old:hover" ],
+				"expect": "a:hover >b:hover.test+pre.old:hover "
+			},
+			"nothing": {
+				"params": [ "a:hover.test" ],
+				"expect": "a:hover.test"
+			},
+			"empty": {
+				"params": [ "" ],
+				"expect": ""
+			}
 		},
-		"normal": {
-			"test": "normal",
-			"expect": "400"
-		},
-		"bold": {
-			"test": "bold",
-			"expect": "700"
-		},
-		"bolder": {
-			"test": "bolder",
-			"expect": "900"
-		},
-		"heavy": {
-			"test": "heavy",
-			"expect": "heavy"
-		},
-		"blah": {
-			"test": "blah",
-			"expect": "blah"
-		}
-	},
 
-	// removeDecimal method
-	"removeDecimal": {
-		"remove": {
-			"test": "1.0em",
-			"expect": "1em"
-		},
-		"keep": {
-			"test": "1.059em",
-			"expect": "1.059em"
-		}
-	},
-
-	// removeUnits method
-	"removeUnits": {
-		"remove": {
-			"test": "0px",
-			"expect": "0"
-		},
-		"keep": {
-			"test": "1pt",
-			"expect": "1pt"
-		}
-	},
-
-	// runColorChanges method
-	"runColorChanges": {
-		// RGB Conversions (Spaces are removed by inital trim}
-		"RGB: single numeric": {
-			"test": "rgb(145)",
-			"expect": "#919191"
-		},
-		"RGB: numeric": {
-			"test": "rgb(145,123,16)",
-			"expect": "#917b10"
-		},
-		"RGB: percentage": {
-			"test": "rgb(50%,50%,50%)",
-			"expect": "#7f7f7f"
-		},
-		// Long name to hex conversions
-		"Color2hex: aliceblue": {
-			"test": "aliceblue",
-			"expect": "#f0f8ff"
-		},
-		"Color2hex: darkgoldenrod": {
-			"test": "darkgoldenrod",
-			"expect": "#b8860b"
-		},
-		"Color2hex: lightgoldenrodyellow": {
-			"test": "lightgoldenrodyellow",
-			"expect": "#fafad2"
-		},
-		// Long hex to short name conversions
-		"Hex2color: azure": {
-			"test": "#f0ffff",
-			"expect": "azure"
-		},
-		"Hex2color: peru": {
-			"test": "#cd853f",
-			"expect": "peru"
-		},
-		// Long hex to short hex conversions
-		"Long to short hex: #a60": {
-			"test": "#aa6600",
-			"expect": "#a60"
-		},
-		"Long to short hex: #736": {
-			"test": "#773366",
-			"expect": "#736"
-		},
-		"Long to short hex: #772213": {
-			"test": "#772213",
-			"expect": "#772213"
-		},
-		// Casing
-		"Upper case to lower: #7F9D0A": {
-			"test": "#7F9D0A",
-			"expect": "#7f9d0a"
-		}
-	},
-
-	// lowercaseSelectors method
-	"lowercaseSelectors": {
-		"input": {
-			"test": "INPUT",
-			"expect": "input"
-		},
-		"font": {
-			"test": "FONT",
-			"expect": "font"
-		},
-		"class": {
-			"test": "INPUT.testclass",
-			"expect": "input.testclass"
-		},
-		"pseudo": {
-			"test": "A:active,B:first-child",
-			"expect": "a:active,b:first-child"
-		},
-		"complex": {
-			"test": "BODY>DIV:first-child+A:active * P:first-child",
-			"expect": "body>div:first-child+a:active * p:first-child"
-		},
-		"id": {
-			"test": "BODY#BODY>DIV.CLASS * A#ID>P.CLASS",
-			"expect": "body#BODY>div.CLASS * a#ID>p.CLASS"
-		}
-	},
-
-	// pseduoSpace
-	"pseduoSpace": {
-		"first-child comma": {
-			"test": "a:first-child,a,b",
-			"expect": "a:first-child ,a,b"
-		},
-		"first-child tree": {
-			"test": "a:first-child>a",
-			"expect": "a:first-child >a"
-		},
-		"first-child adds": {
-			"test": "a:first-child+a",
-			"expect": "a:first-child +a"
-		},
-		"first-child brace": {
-			"test": "a:first-child{",
-			"expect": "a:first-child {"
-		},
-		"first-child empty": {
-			"test": "a:first-child",
-			"expect": "a:first-child "
-		},
-		"first-child space": {
-			"test": "a:first-child b",
-			"expect": "a:first-child b"
-		},
-		"multiple": {
-			"test": "a:hover>b:hover.test+pre.old:hover",
-			"expect": "a:hover >b:hover.test+pre.old:hover "
-		},
-		"nothing": {
-			"test": "a:hover.test",
-			"expect": "a:hover.test"
-		},
-		"empty": {
-			"test": "",
-			"expect": ""
-		}
-	},
-
-	// Special combining based on selectors
-	"combineMultiplyDefinedSelectors": {
 		"selectors": {
-			"test": [
-				"#id div.class",
-				"#secondary .oops",
-				"#today p.boss",
-				"#id div.class",
-				"#today p.boss",
-				"#id div.class",
-				"#id div.class",
-				"#secondary .oops"
+			"Lowercase and pseduo": {
+				"type": "array",
+				"params": [
+					[ "A:hover>B:hover.test+PRE.old:hover", "A:first-child B" ]
+				],
+				"join": "|",
+				"expect": "a:hover >b:hover.test+pre.old:hover |a:first-child b"
+			}
+		}
+	},
+
+	"Cleanup": {
+		"removeMultipleDefinitions": {
+			"simple": {
+				"params": [ "margin-left:10px;color:blue;margin-left:10px;color:blue;" ],
+				"expect": "margin-left:10px;color:blue;"
+			}
+		},
+
+		"removeEscapedCharacters": {
+			"multiple": {
+				"params": [ "background:url(http\\://www.codenothing.com/random.php?foo=bar\\;&colon=te\\:st\\;)" ],
+				"expect": "background:url(http://www.codenothing.com/random.php?foo=bar;&colon=te:st;)"
+			},
+			"single": {
+				"params": [ "color:blue\\;" ],
+				"expect": "color:blue\\;"
+			}
+		},
+
+		"removeUnnecessarySemicolon": {
+			"1": {
+				"params": [ "color:red;font-size:12pt;" ],
+				"expect": "color:red;font-size:12pt"
+			},
+			"2": {
+				"params": [ "background:white;" ],
+				"expect": "background:white"
+			}
+		},
+
+		// Cleanup has it's own special test handler
+		"cleanup": {
+			"params": [
+				"color:blue;font-size:12pt;color:blue;font-size:12pt;",
+				"color:blue;background:red url(http\\://www.example.com?a=someitem\\;);color:blue;"
 			],
 			"expect": [
-				"#id div.class",
-				"#secondary .oops",
-				"#today p.boss"
-			]
-		},
-		"details": {
-			"test": [
-				"test1;",
-				"test2;",
-				"test3;",
-				"test4;",
-				"test5;",
-				"test6;",
-				"test7;",
-				"test8;"
-			],
-			"expect": [
-				"test1;test4;test6;test7;",
-				"test2;test8;",
-				"test3;test5;"
+				"color:blue;font-size:12pt",
+				"color:blue;background:red url(http\\://www.example.com?a=someitem\\;)"
 			]
 		}
 	},
 
-	// Special combining based on details
-	"combineMultiplyDefinedDetails": {
-		"selectors": {
-			"test": [
-				"#id div.class",
-				"#secondary .oops",
-				"#today p.boss",
-				"#id div.class",
-				"#today p.boss",
-				"#id div.class",
-				"#id div.class",
-				"#secondary .oops"
-			],
-			"expect": [
-				"#id div.class,#today p.boss,#id div.class",
-				"#secondary .oops,#id div.class",
-				"#id div.class",
-				"#today p.boss,#secondary .oops"
-			]
+	"Combine": {
+		"combineCSWproperties": {
+			"border": {
+				"params": [ "border-color:red;border-style:solid;border-width:2px;" ],
+				"expect": [
+					"border:2px solid red;",
+					"border:2px solid red;",
+					"border:2px solid red;"
+				]
+			},
+			"outline": {
+				"params": [ "outline-color:blue;outline-style:thin;outline-width:1px;" ],
+				"expect": [
+					"outline:1px thin blue;",
+					"outline:1px thin blue;",
+					"outline:1px thin blue;"
+				]
+			}
 		},
-		"details": {
-			"test": [
-				"color:red;font-size:12pt;font-weight:bold;",
-				"margin-left:10px;margin-top:20px;",
-				"font-size:12pt;font-weight:bold;color:red;",
-				"background:white;",
-				"border:1px solid black;border-radius:20px;",
-				"margin-top:20px;margin-left:10px;",
-				"font-weight:bold;color:red;font-size:12pt;",
-				"border-radius:20px;border:1px solid black;"
-			],
-			"expect": [
-				"color:red;font-size:12pt;font-weight:bold;",
-				"margin-left:10px;margin-top:20px;",
-				"background:white;",
-				"border:1px solid black;border-radius:20px;"
-			]
+
+		"combineAuralCuePause": {
+			"cue": {
+				"params": [ "cue-before:url(sound.wav};cue-after:url(after.wav};" ],
+				"expect": [
+					"cue:url(sound.wav} url(after.wav};",
+					"cue:url(sound.wav} url(after.wav};"
+				]
+			}
+		},
+
+		"combineMPproperties": {
+			"top-left": {
+				"params": [ "margin-top:10px;margin-left:10px;" ],
+				"expect": "margin-top:10px;margin-left:10px;"
+			},
+			"top-bottom": {
+				"params": [ "margin-top:10px;margin-bottom:10px;" ],
+				"expect": "margin-top:10px;margin-bottom:10px;"
+			},
+			"4 to 1": {
+				"params": [ "margin-top:10px;margin-left:10px;margin-right:10px;margin-bottom:10px;" ],
+				"expect": [
+					"margin:10px;",
+					"margin:10px;",
+					"margin:10px;",
+					"margin:10px;"
+				]
+			},
+			"4 to 2": {
+				"params": [ "padding-top:12px;padding-left:10px;padding-right:10px;padding-bottom:12px;" ],
+				"expect": [
+					"padding:12px 10px;",
+					"padding:12px 10px;",
+					"padding:12px 10px;",
+					"padding:12px 10px;"
+				]
+			}
+		},
+
+		"combineBorderDefinitions": {
+			"border": {
+				"params": [ "border-top:1px solid red;border-left:1px solid red;border-right:1px solid red;border-bottom:1px solid red;" ],
+				"expect": [
+					"border:1px solid red;",
+					"border:1px solid red;",
+					"border:1px solid red;",
+					"border:1px solid red;"
+				]
+			}
+		},
+
+		"combineFontDefinitions": {
+			"1": {
+				"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"expect": [
+					"font:italic normal bold 12pt/20px arial;",
+					"font:italic normal bold 12pt/20px arial;",
+					"font:italic normal bold 12pt/20px arial;",
+					"font:italic normal bold 12pt/20px arial;",
+					"font:italic normal bold 12pt/20px arial;",
+					"font:italic normal bold 12pt/20px arial;"
+				]
+			},
+			"2": {
+				"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;font-family:arial;" ],
+				"expect": [
+					"font:italic normal bold 12pt arial;",
+					"font:italic normal bold 12pt arial;",
+					"font:italic normal bold 12pt arial;",
+					"font:italic normal bold 12pt arial;",
+					"font:italic normal bold 12pt arial;"
+				]
+			},
+			"3": {
+				"params": [ "font-style:italic;font-variant:normal;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"expect": [
+					"font:italic normal 12pt/20px arial;",
+					"font:italic normal 12pt/20px arial;",
+					"font:italic normal 12pt/20px arial;",
+					"font:italic normal 12pt/20px arial;",
+					"font:italic normal 12pt/20px arial;"
+				]
+			},
+			"4": {
+				"params": [ "font-style:italic;font-variant:normal;font-size:12pt;font-family:arial;" ],
+				"expect": [
+					"font:italic normal 12pt arial;",
+					"font:italic normal 12pt arial;",
+					"font:italic normal 12pt arial;",
+					"font:italic normal 12pt arial;"
+				]
+			},
+			"5": {
+				"params": [ "font-style:italic;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"expect": [
+					"font:italic bold 12pt/20px arial;",
+					"font:italic bold 12pt/20px arial;",
+					"font:italic bold 12pt/20px arial;",
+					"font:italic bold 12pt/20px arial;",
+					"font:italic bold 12pt/20px arial;"
+				]
+			},
+			"6": {
+				"params": [ "font-style:italic;font-weight:bold;font-size:12pt;font-family:arial;" ],
+				"expect": [
+					"font:italic bold 12pt arial;",
+					"font:italic bold 12pt arial;",
+					"font:italic bold 12pt arial;",
+					"font:italic bold 12pt arial;"
+				]
+			},
+			"7": {
+				"params": [ "font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"expect": [
+					"font:normal bold 12pt/20px arial;",
+					"font:normal bold 12pt/20px arial;",
+					"font:normal bold 12pt/20px arial;",
+					"font:normal bold 12pt/20px arial;",
+					"font:normal bold 12pt/20px arial;"
+				]
+			},
+			"8": {
+				"params": [ "font-variant:normal;font-weight:bold;font-size:12pt;font-family:arial;" ],
+				"expect": [
+					"font:normal bold 12pt arial;",
+					"font:normal bold 12pt arial;",
+					"font:normal bold 12pt arial;",
+					"font:normal bold 12pt arial;"
+				]
+			},
+			"9": {
+				"params": [ "font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"expect": [
+					"font:bold 12pt/20px arial;",
+					"font:bold 12pt/20px arial;",
+					"font:bold 12pt/20px arial;",
+					"font:bold 12pt/20px arial;"
+				]
+			},
+			"10": {
+				"params": [ "font-weight:bold;font-size:12pt;font-family:arial;" ],
+				"expect": [
+					"font:bold 12pt arial;",
+					"font:bold 12pt arial;",
+					"font:bold 12pt arial;"
+				]
+			},
+			"11": {
+				"params": [ "font-variant:normal;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"expect": [
+					"font:normal 12pt/20px arial;",
+					"font:normal 12pt/20px arial;",
+					"font:normal 12pt/20px arial;",
+					"font:normal 12pt/20px arial;"
+				]
+			},
+			"12": {
+				"params": [ "font-variant:normal;font-size:12pt;font-family:arial;" ],
+				"expect": [
+					"font:normal 12pt arial;",
+					"font:normal 12pt arial;",
+					"font:normal 12pt arial;"
+				]
+			},
+			"13": {
+				"params": [ "font-style:italic;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"expect": [
+					"font:italic 12pt/20px arial;",
+					"font:italic 12pt/20px arial;",
+					"font:italic 12pt/20px arial;",
+					"font:italic 12pt/20px arial;"
+				]
+			},
+			"14": {
+				"params": [ "font-style:italic;font-size:12pt;font-family:arial;" ],
+				"expect": [
+					"font:italic 12pt arial;",
+					"font:italic 12pt arial;",
+					"font:italic 12pt arial;"
+				]
+			},
+			"15": {
+				"params": [ "font-size:12pt;line-height:20px;font-family:arial;" ],
+				"expect": [
+					"font:12pt/20px arial;",
+					"font:12pt/20px arial;",
+					"font:12pt/20px arial;"
+				]
+			},
+			"16": {
+				"params": [ "font-size:12pt;font-family:arial;" ],
+				"expect": [
+					"font:12pt arial;",
+					"font:12pt arial;"
+				]
+			}
+		},
+
+		"combineBackgroundDefinitions": {
+			"1": {
+				"paramjoin": "",
+				"params": [
+					"background-color:green;",
+					"background-image:url(images/img.gif);",
+					"background-repeat:no-repeat;",
+					"background-attachment:scroll;",
+					"background-position:center;"
+				],
+				"expect": [
+					"background:green url(images/img.gif) no-repeat scroll center;",
+					"background:green url(images/img.gif) no-repeat scroll center;",
+					"background:green url(images/img.gif) no-repeat scroll center;",
+					"background:green url(images/img.gif) no-repeat scroll center;",
+					"background:green url(images/img.gif) no-repeat scroll center;"
+				]
+			},
+			"2": {
+				"paramjoin": "",
+				"params": [
+					"background-color:green;",
+					"background-image:url(images/img.gif);",
+					"background-attachment:scroll;",
+					"background-position:center;"
+				],
+				"expect": [
+					"background:green url(images/img.gif) scroll center;",
+					"background:green url(images/img.gif) scroll center;",
+					"background:green url(images/img.gif) scroll center;",
+					"background:green url(images/img.gif) scroll center;"
+				]
+			},
+			"3": {
+				"paramjoin": "",
+				"params": [
+					"background-color:green;",
+					"background-image:url(images/img.gif);",
+					"background-repeat:no-repeat;",
+					"background-position:center;"
+				],
+				"expect": [
+					"background:green url(images/img.gif) no-repeat center;",
+					"background:green url(images/img.gif) no-repeat center;",
+					"background:green url(images/img.gif) no-repeat center;",
+					"background:green url(images/img.gif) no-repeat center;"
+				]
+			},
+			"4": {
+				"paramjoin": "",
+				"params": [
+					"background-color:green;",
+					"background-image:url(images/img.gif);",
+					"background-repeat:no-repeat;",
+					"background-attachment:scroll;"
+				],
+				"expect": [
+					"background:green url(images/img.gif) no-repeat scroll;",
+					"background:green url(images/img.gif) no-repeat scroll;",
+					"background:green url(images/img.gif) no-repeat scroll;",
+					"background:green url(images/img.gif) no-repeat scroll;"
+				]
+			},
+			"5": {
+				"params": [ "background-color:green;background-image:url(images/img.gif);background-repeat:no-repeat;" ],
+				"expect": [
+					"background:green url(images/img.gif) no-repeat;",
+					"background:green url(images/img.gif) no-repeat;",
+					"background:green url(images/img.gif) no-repeat;"
+				]
+			},
+			"6": {
+				"params": [ "background-color:green;background-image:url(images/img.gif);background-attachment:scroll;" ],
+				"expect": [
+					"background:green url(images/img.gif) scroll;",
+					"background:green url(images/img.gif) scroll;",
+					"background:green url(images/img.gif) scroll;"
+				]
+			},
+			"7": {
+				"params": [ "background-color:green;background-image:url(images/img.gif);background-position:center;" ],
+				"expect": [
+					"background:green url(images/img.gif) center;",
+					"background:green url(images/img.gif) center;",
+					"background:green url(images/img.gif) center;"
+				]
+			},
+			"8": {
+				"params": [ "background-color:green;background-image:url(images/img.gif);" ],
+				"expect": [
+					"background:green url(images/img.gif);",
+					"background:green url(images/img.gif);"
+				]
+			},
+			"9": {
+				"params": [ "background-image:url(images/img.gif);background-attachment:scroll;background-position:center;" ],
+				"expect": [
+					"background:url(images/img.gif) scroll center;",
+					"background:url(images/img.gif) scroll center;",
+					"background:url(images/img.gif) scroll center;"
+				]
+			},
+			"10": {
+				"params": [ "background-image:url(images/img.gif);background-repeat:no-repeat;background-position:center;" ],
+				"expect": [
+					"background:url(images/img.gif) no-repeat center;",
+					"background:url(images/img.gif) no-repeat center;",
+					"background:url(images/img.gif) no-repeat center;"
+				]
+			},
+			"11": {
+				"params": [ "background-image:url(images/img.gif);background-repeat:no-repeat;background-attachment:scroll;" ],
+				"expect": [
+					"background:url(images/img.gif) no-repeat scroll;",
+					"background:url(images/img.gif) no-repeat scroll;",
+					"background:url(images/img.gif) no-repeat scroll;"
+				]
+			},
+			"12": {
+				"params": [ "background-image:url(images/img.gif);background-repeat:no-repeat;" ],
+				"expect": [
+					"background:url(images/img.gif) no-repeat;",
+					"background:url(images/img.gif) no-repeat;"
+				]
+			},
+			"13": {
+				"params": [ "background-image:url(images/img.gif);background-attachment:scroll;" ],
+				"expect": [
+					"background:url(images/img.gif) scroll;",
+					"background:url(images/img.gif) scroll;"
+				]
+			},
+			"14": {
+				"params": [ "background-image:url(images/img.gif);" ],
+				"expect": "background:url(images/img.gif);"
+			},
+			"15": {
+				"params": [ "background-color:green;" ],
+				"expect": "background:green;"
+			}
+		},
+
+		"combineListProperties": {
+			"1": {
+				"params": [ "list-style-type:none;list-style-position:inline;list-style-image:url(images/img.gif);" ],
+				"expect": [
+					"list-style:none inline url(images/img.gif);",
+					"list-style:none inline url(images/img.gif);",
+					"list-style:none inline url(images/img.gif);"
+				]
+			},
+			"2": {
+				"params": [ "list-style-type:none;list-style-position:inline;" ],
+				"expect": [
+					"list-style:none inline;",
+					"list-style:none inline;"
+				]
+			},
+			"3": {
+				"params": [ "list-style-type:none;list-style-image:url(images/img.gif);" ],
+				"expect": [
+					"list-style:none url(images/img.gif);",
+					"list-style:none url(images/img.gif);"
+				]
+			},
+			"4": {
+				"params": [ "list-style-position:inline;list-style-image:url(images/img.gif);" ],
+				"expect": [
+					"list-style:inline url(images/img.gif);",
+					"list-style:inline url(images/img.gif);"
+				]
+			},
+			"5": {
+				"params": [ "list-style-type:none;" ],
+				"expect": "list-style:none;"
+			},
+			"6": {
+				"params": [ "list-style-position:inline;" ],
+				"expect": "list-style:inline;"
+			},
+			"7": {
+				"params": [ "list-style-image:url(images/img.gif);" ],
+				"expect": "list-style:url(images/img.gif);"
+			}
 		}
 	},
 
-	// combineCSWproperties method
-	"combineCSWproperties": {
-		"border": {
-			"test": "border-color:red;border-style:solid;border-width:2px;",
-			"expect": [
-				"border:2px solid red;",
-				"border:2px solid red;",
-				"border:2px solid red;"
-			]
+	"Organize": {
+		"reduceSelectors": {
+			"selectors": {
+				"params": [
+					"#id div.class",
+					"#secondary .oops",
+					"#today p.boss",
+					"#id div.class",
+					"#today p.boss",
+					"#id div.class",
+					"#id div.class",
+					"#secondary .oops"
+				],
+				"expect": [
+					"#id div.class",
+					"#secondary .oops",
+					"#today p.boss"
+				]
+			},
+			"details": {
+				"params": [
+					"test1;",
+					"test2;",
+					"test3;",
+					"test4;",
+					"test5;",
+					"test6;",
+					"test7;",
+					"test8;"
+				],
+				"expect": [
+					"test1;test4;test6;test7;",
+					"test2;test8;",
+					"test3;test5;"
+				]
+			}
 		},
-		"outline": {
-			"test": "outline-color:blue;outline-style:thin;outline-width:1px;",
-			"expect": [
-				"outline:1px thin blue;",
-				"outline:1px thin blue;",
-				"outline:1px thin blue;"
-			]
-		}
-	},
 
-	// combineAuralCuePause method
-	"combineAuralCuePause": {
-		"cue": {
-			"test": "cue-before:url(sound.wav};cue-after:url(after.wav};",
-			"expect": [
-				"cue:url(sound.wav} url(after.wav};",
-				"cue:url(sound.wav} url(after.wav};"
-			]
-		}
-	},
-
-	// combineMPproperties method
-	"combineMPproperties": {
-		"top-left": {
-			"test": "margin-top:10px;margin-left:10px;",
-			"expect": "margin-top:10px;margin-left:10px;"
-		},
-		"top-bottom": {
-			"test": "margin-top:10px;margin-bottom:10px;",
-			"expect": "margin-top:10px;margin-bottom:10px;"
-		},
-		"4 to 1": {
-			"test": "margin-top:10px;margin-left:10px;margin-right:10px;margin-bottom:10px;",
-			"expect": [
-				"margin:10px;",
-				"margin:10px;",
-				"margin:10px;",
-				"margin:10px;"
-			]
-		},
-		"4 to 2": {
-			"test": "padding-top:12px;padding-left:10px;padding-right:10px;padding-bottom:12px;",
-			"expect": [
-				"padding:12px 10px;",
-				"padding:12px 10px;",
-				"padding:12px 10px;",
-				"padding:12px 10px;"
-			]
-		}
-	},
-
-	// combineBorderDefinitions method
-	"combineBorderDefinitions": {
-		"border": {
-			"test": "border-top:1px solid red;border-left:1px solid red;border-right:1px solid red;border-bottom:1px solid red;",
-			"expect": [
-				"border:1px solid red;",
-				"border:1px solid red;",
-				"border:1px solid red;",
-				"border:1px solid red;"
-			]
-		}
-	},
-
-	// combineFontDefinitions method
-	"combineFontDefinitions": {
-		"1": {
-			"test": "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;",
-			"expect": [
-				"font:italic normal bold 12pt/20px arial;",
-				"font:italic normal bold 12pt/20px arial;",
-				"font:italic normal bold 12pt/20px arial;",
-				"font:italic normal bold 12pt/20px arial;",
-				"font:italic normal bold 12pt/20px arial;",
-				"font:italic normal bold 12pt/20px arial;"
-			]
-		},
-		"2": {
-			"test": "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;font-family:arial;",
-			"expect": [
-				"font:italic normal bold 12pt arial;",
-				"font:italic normal bold 12pt arial;",
-				"font:italic normal bold 12pt arial;",
-				"font:italic normal bold 12pt arial;",
-				"font:italic normal bold 12pt arial;"
-			]
-		},
-		"3": {
-			"test": "font-style:italic;font-variant:normal;font-size:12pt;line-height:20px;font-family:arial;",
-			"expect": [
-				"font:italic normal 12pt/20px arial;",
-				"font:italic normal 12pt/20px arial;",
-				"font:italic normal 12pt/20px arial;",
-				"font:italic normal 12pt/20px arial;",
-				"font:italic normal 12pt/20px arial;"
-			]
-		},
-		"4": {
-			"test": "font-style:italic;font-variant:normal;font-size:12pt;font-family:arial;",
-			"expect": [
-				"font:italic normal 12pt arial;",
-				"font:italic normal 12pt arial;",
-				"font:italic normal 12pt arial;",
-				"font:italic normal 12pt arial;"
-			]
-		},
-		"5": {
-			"test": "font-style:italic;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;",
-			"expect": [
-				"font:italic bold 12pt/20px arial;",
-				"font:italic bold 12pt/20px arial;",
-				"font:italic bold 12pt/20px arial;",
-				"font:italic bold 12pt/20px arial;",
-				"font:italic bold 12pt/20px arial;"
-			]
-		},
-		"6": {
-			"test": "font-style:italic;font-weight:bold;font-size:12pt;font-family:arial;",
-			"expect": [
-				"font:italic bold 12pt arial;",
-				"font:italic bold 12pt arial;",
-				"font:italic bold 12pt arial;",
-				"font:italic bold 12pt arial;"
-			]
-		},
-		"7": {
-			"test": "font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;",
-			"expect": [
-				"font:normal bold 12pt/20px arial;",
-				"font:normal bold 12pt/20px arial;",
-				"font:normal bold 12pt/20px arial;",
-				"font:normal bold 12pt/20px arial;",
-				"font:normal bold 12pt/20px arial;"
-			]
-		},
-		"8": {
-			"test": "font-variant:normal;font-weight:bold;font-size:12pt;font-family:arial;",
-			"expect": [
-				"font:normal bold 12pt arial;",
-				"font:normal bold 12pt arial;",
-				"font:normal bold 12pt arial;",
-				"font:normal bold 12pt arial;"
-			]
-		},
-		"9": {
-			"test": "font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;",
-			"expect": [
-				"font:bold 12pt/20px arial;",
-				"font:bold 12pt/20px arial;",
-				"font:bold 12pt/20px arial;",
-				"font:bold 12pt/20px arial;"
-			]
-		},
-		"10": {
-			"test": "font-weight:bold;font-size:12pt;font-family:arial;",
-			"expect": [
-				"font:bold 12pt arial;",
-				"font:bold 12pt arial;",
-				"font:bold 12pt arial;"
-			]
-		},
-		"11": {
-			"test": "font-variant:normal;font-size:12pt;line-height:20px;font-family:arial;",
-			"expect": [
-				"font:normal 12pt/20px arial;",
-				"font:normal 12pt/20px arial;",
-				"font:normal 12pt/20px arial;",
-				"font:normal 12pt/20px arial;"
-			]
-		},
-		"12": {
-			"test": "font-variant:normal;font-size:12pt;font-family:arial;",
-			"expect": [
-				"font:normal 12pt arial;",
-				"font:normal 12pt arial;",
-				"font:normal 12pt arial;"
-			]
-		},
-		"13": {
-			"test": "font-style:italic;font-size:12pt;line-height:20px;font-family:arial;",
-			"expect": [
-				"font:italic 12pt/20px arial;",
-				"font:italic 12pt/20px arial;",
-				"font:italic 12pt/20px arial;",
-				"font:italic 12pt/20px arial;"
-			]
-		},
-		"14": {
-			"test": "font-style:italic;font-size:12pt;font-family:arial;",
-			"expect": [
-				"font:italic 12pt arial;",
-				"font:italic 12pt arial;",
-				"font:italic 12pt arial;"
-			]
-		},
-		"15": {
-			"test": "font-size:12pt;line-height:20px;font-family:arial;",
-			"expect": [
-				"font:12pt/20px arial;",
-				"font:12pt/20px arial;",
-				"font:12pt/20px arial;"
-			]
-		},
-		"16": {
-			"test": "font-size:12pt;font-family:arial;",
-			"expect": [
-				"font:12pt arial;",
-				"font:12pt arial;"
-			]
-		}
-	},
-
-	// combineBackgroundDefinitions method
-	"combineBackgroundDefinitions": {
-		"1": {
-			"test": [
-				"background-color:green;",
-				"background-image:url(images/img.gif};",
-				"background-repeat:no-repeat;",
-				"background-attachment:scroll;",
-				"background-position:center;"
-			],
-			"expect": [
-				"background:green url(images/img.gif} no-repeat scroll center;",
-				"background:green url(images/img.gif} no-repeat scroll center;",
-				"background:green url(images/img.gif} no-repeat scroll center;",
-				"background:green url(images/img.gif} no-repeat scroll center;",
-				"background:green url(images/img.gif} no-repeat scroll center;"
-			]
-		},
-		"2": {
-			"test": "background-color:green;background-image:url(images/img.gif};background-attachment:scroll;background-position:center;",
-			"expect": [
-				"background:green url(images/img.gif} scroll center;",
-				"background:green url(images/img.gif} scroll center;",
-				"background:green url(images/img.gif} scroll center;",
-				"background:green url(images/img.gif} scroll center;"
-			]
-		},
-		"3": {
-			"test": "background-color:green;background-image:url(images/img.gif};background-repeat:no-repeat;background-position:center;",
-			"expect": [
-				"background:green url(images/img.gif} no-repeat center;",
-				"background:green url(images/img.gif} no-repeat center;",
-				"background:green url(images/img.gif} no-repeat center;",
-				"background:green url(images/img.gif} no-repeat center;"
-			]
-		},
-		"4": {
-			"test": "background-color:green;background-image:url(images/img.gif};background-repeat:no-repeat;background-attachment:scroll;",
-			"expect": [
-				"background:green url(images/img.gif} no-repeat scroll;",
-				"background:green url(images/img.gif} no-repeat scroll;",
-				"background:green url(images/img.gif} no-repeat scroll;",
-				"background:green url(images/img.gif} no-repeat scroll;"
-			]
-		},
-		"5": {
-			"test": "background-color:green;background-image:url(images/img.gif};background-repeat:no-repeat;",
-			"expect": [
-				"background:green url(images/img.gif} no-repeat;",
-				"background:green url(images/img.gif} no-repeat;",
-				"background:green url(images/img.gif} no-repeat;"
-			]
-		},
-		"6": {
-			"test": "background-color:green;background-image:url(images/img.gif};background-attachment:scroll;",
-			"expect": [
-				"background:green url(images/img.gif} scroll;",
-				"background:green url(images/img.gif} scroll;",
-				"background:green url(images/img.gif} scroll;"
-			]
-		},
-		"7": {
-			"test": "background-color:green;background-image:url(images/img.gif};background-position:center;",
-			"expect": [
-				"background:green url(images/img.gif} center;",
-				"background:green url(images/img.gif} center;",
-				"background:green url(images/img.gif} center;"
-			]
-		},
-		"8": {
-			"test": "background-color:green;background-image:url(images/img.gif};",
-			"expect": [
-				"background:green url(images/img.gif};",
-				"background:green url(images/img.gif};"
-			]
-		},
-		"9": {
-			"test": "background-image:url(images/img.gif};background-attachment:scroll;background-position:center;",
-			"expect": [
-				"background:url(images/img.gif} scroll center;",
-				"background:url(images/img.gif} scroll center;",
-				"background:url(images/img.gif} scroll center;"
-			]
-		},
-		"10": {
-			"test": "background-image:url(images/img.gif};background-repeat:no-repeat;background-position:center;",
-			"expect": [
-				"background:url(images/img.gif} no-repeat center;",
-				"background:url(images/img.gif} no-repeat center;",
-				"background:url(images/img.gif} no-repeat center;"
-			]
-		},
-		"11": {
-			"test": "background-image:url(images/img.gif};background-repeat:no-repeat;background-attachment:scroll;",
-			"expect": [
-				"background:url(images/img.gif} no-repeat scroll;",
-				"background:url(images/img.gif} no-repeat scroll;",
-				"background:url(images/img.gif} no-repeat scroll;"
-			]
-		},
-		"12": {
-			"test": "background-image:url(images/img.gif};background-repeat:no-repeat;",
-			"expect": [
-				"background:url(images/img.gif} no-repeat;",
-				"background:url(images/img.gif} no-repeat;"
-			]
-		},
-		"13": {
-			"test": "background-image:url(images/img.gif};background-attachment:scroll;",
-			"expect": [
-				"background:url(images/img.gif} scroll;",
-				"background:url(images/img.gif} scroll;"
-			]
-		},
-		"14": {
-			"test": "background-image:url(images/img.gif};",
-			"expect": "background:url(images/img.gif};"
-		},
-		"15": {
-			"test": "background-color:green;",
-			"expect": "background:green;"
-		}
-	},
-
-	// combineListProperties method
-	"combineListProperties": {
-		"1": {
-			"test": "list-style-type:none;list-style-position:inline;list-style-image:url(images/img.gif};",
-			"expect": [
-				"list-style:none inline url(images/img.gif};",
-				"list-style:none inline url(images/img.gif};",
-				"list-style:none inline url(images/img.gif};"
-			]
-		},
-		"2": {
-			"test": "list-style-type:none;list-style-position:inline;",
-			"expect": [
-				"list-style:none inline;",
-				"list-style:none inline;"
-			]
-		},
-		"3": {
-			"test": "list-style-type:none;list-style-image:url(images/img.gif};",
-			"expect": [
-				"list-style:none url(images/img.gif};",
-				"list-style:none url(images/img.gif};"
-			]
-		},
-		"4": {
-			"test": "list-style-position:inline;list-style-image:url(images/img.gif};",
-			"expect": [
-				"list-style:inline url(images/img.gif};",
-				"list-style:inline url(images/img.gif};"
-			]
-		},
-		"5": {
-			"test": "list-style-type:none;",
-			"expect": "list-style:none;"
-		},
-		"6": {
-			"test": "list-style-position:inline;",
-			"expect": "list-style:inline;"
-		},
-		"7": {
-			"test": "list-style-image:url(images/img.gif};",
-			"expect": "list-style:url(images/img.gif};"
-		}
-	},
-
-	// removeMultipleDefinitions method
-	"removeMultipleDefinitions": {
-		"1": {
-			"test": "margin-left:10px;color:blue;margin-left:10px;color:blue;",
-			"expect": "margin-left:10px;color:blue;"
-		}
-	},
-
-	// removeEscapedURLs method
-	"removeEscapedURLs": {
-		"1": {
-			"test": "background:url(http\\://www.codenothing.com/random.php?foo=bar\\;&colon=te\\:st\\;)",
-			"expect": "background:url(http://www.codenothing.com/random.php?foo=bar;&colon=te:st;)"
-		},
-		"2": {
-			"test": "color:blue\\;",
-			"expect": "color:blue\\;"
-		}
-	},
-
-	// removeUnnecessarySemicolon method
-	"removeUnnecessarySemicolon": {
-		"1": {
-			"test": "color:red;font-size:12pt;",
-			"expect": "color:red;font-size:12pt"
-		},
-		"2": {
-			"test": "background:white;",
-			"expect": "background:white"
+		"reduceDetails": {
+			"selectors": {
+				"params": [
+					"#id div.class",
+					"#secondary .oops",
+					"#today p.boss",
+					"#id div.class",
+					"#today p.boss",
+					"#id div.class",
+					"#id div.class",
+					"#secondary .oops"
+				],
+				"expect": [
+					"#id div.class,#today p.boss,#id div.class",
+					"#secondary .oops,#id div.class",
+					"#id div.class",
+					"#today p.boss,#secondary .oops"
+				]
+			},
+			"details": {
+				"params": [
+					"color:red;font-size:12pt;font-weight:bold;",
+					"margin-left:10px;margin-top:20px;",
+					"font-size:12pt;font-weight:bold;color:red;",
+					"background:white;",
+					"border:1px solid black;border-radius:20px;",
+					"margin-top:20px;margin-left:10px;",
+					"font-weight:bold;color:red;font-size:12pt;",
+					"border-radius:20px;border:1px solid black;"
+				],
+				"expect": [
+					"color:red;font-size:12pt;font-weight:bold;",
+					"margin-left:10px;margin-top:20px;",
+					"background:white;",
+					"border:1px solid black;border-radius:20px;"
+				]
+			}
 		}
 	}
 }
