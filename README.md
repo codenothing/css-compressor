@@ -28,10 +28,10 @@ array is returned. If both a name and value are passed, then that value is set t
 	$CSSC->option( 'readability', CSSCompression::READ_NONE );
 
 
-Additionally, a resetOptions function is provided to revert back to base options (decided at runtime).
+Additionally, a reset function is provided to revert back to base options (decided at runtime).
 
 	// Resets options to original values
-	$CSSC->resetOptions();
+	$CSSC->reset();
 
 
 Singleton Instances
