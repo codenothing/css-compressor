@@ -71,6 +71,11 @@ Class CSScompressionUnitTest
 		$this->compressor->option( 'readability', CSSCompression::READ_NONE );
 	}
 
+	/**
+	 * Run through a focused set of tests that runs directly through each function
+	 *
+	 * @params none
+	 */
 	private function focus(){
 		foreach ( $this->sandbox as $class => $obj ) {
 			foreach ( $obj as $method => $tests ) {
@@ -101,16 +106,19 @@ Class CSScompressionUnitTest
 						$row['expect'] = implode( $row['expect'] );
 					}
 
-					/*
-					echo $row['expect'] . "\n=========\n";
-					echo $result . "\n======\n";
-					*/
+					// Mark the result
 					$this->mark( "${class}.${method}", $name, $result == $row['expect'] );
 				}
 			}
 		}
 	}
 
+	/**
+	 * Special testing for Organize methods
+	 *
+	 * @param (string) method: Class method to be called
+	 * @param (array) tests: Test layout
+	 */
 	private function organize( $method, $tests ) {
 		$params = array( $tests['selectors']['params'], $tests['details']['params'] );
 		list ( $selectors, $details ) = $this->compressor->access( 'Organize', $method, $params );
@@ -139,6 +147,11 @@ Class CSScompressionUnitTest
 		$this->mark( "Organize.$method", 'Details Counted', count( $details ) === count( $tests['details']['expect'] ) );
 	}
 
+	/**
+	 * Special testing for Cleanup handler
+	 *
+	 * @param (array) tests: Test layout
+	 */
 	private function cleanup( $tests ) {
 		$params = array( array(), $tests['params'] );
 		list ( $selectors, $details ) = $this->compressor->access( 'Cleanup', 'cleanup', $params );

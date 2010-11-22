@@ -101,7 +101,7 @@ Class CSSCompression_Option
 			}
 		}
 		else if ( $options && is_string( $options ) && array_key_exists( $options, CSSCompression::$modes ) ) {
-			$this->_mode = $options;
+			$this->Control->mode = $options;
 
 			// Default all to true, the mode has to force false
 			foreach ( $this->options as $key => $value ) {

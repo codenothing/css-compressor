@@ -385,7 +385,7 @@
 			}
 		},
 
-		"removeEscapedURLs": {
+		"removeEscapedCharacters": {
 			"multiple": {
 				"params": [ "background:url(http\\://www.codenothing.com/random.php?foo=bar\\;&colon=te\\:st\\;)" ],
 				"expect": "background:url(http://www.codenothing.com/random.php?foo=bar;&colon=te:st;)"
@@ -415,7 +415,7 @@
 			],
 			"expect": [
 				"color:blue;font-size:12pt",
-				"color:blue;background:red url(http://www.example.com?a=someitem;)"
+				"color:blue;background:red url(http\\://www.example.com?a=someitem\\;)"
 			]
 		}
 	},

@@ -89,6 +89,11 @@ Class CSSCompression_Format
 				$css .= "\t$prop: $val;\n";
 			}
 
+			// Kill that last semicolon at users request
+			if ( $this->options['unnecessary-semicolons'] ) {
+				$css = preg_replace( "/;\n$/", "\n", $css );
+			}
+
 			$css .= "}\n\n";
 		}
 

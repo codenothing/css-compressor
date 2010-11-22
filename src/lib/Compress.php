@@ -75,15 +75,21 @@ Class CSSCompression_Compress
 		// If order isn't important, run comination functions before and after compressions to catch all instances
 		// Be sure to prune before hand for higher chance of matching
 		if ( $this->options['organize'] ) {
-			list( $selectors, $details ) = $this->Cleanup->cleanup( $selectors, $details, true );
+			list( $selectors, $details ) = $this->Cleanup->cleanup( $selectors, $details );
 			list( $selectors, $details ) = $this->Organize->organize( $selectors, $details );
 		}
 
 		// Do final maintenace work, remove injected slashes and property/values
 		list( $selectors, $details ) = $this->Cleanup->cleanup( $selectors, $details );
 
+		// Run final counters before full cleanup
+		$this->finalCount( $selectors, $details );
+
 		// Format css to users preference
 		$css = $this->Format->readability( $this->options['readability'], $import, $selectors, $details );
+
+		// Remove escapables
+		$css = $this->Cleanup->removeEscapedCharacters( $css );
 
 		// Add media string to top
 		// TODO: Compress media individually like full css sheets
@@ -91,8 +97,8 @@ Class CSSCompression_Compress
 			$css = $media . $css;
 		}
 
-		// Run final statistics before sending back the css
-		$this->runFinalStatistics( $css, $selectors, $details );
+		// Mark final file size
+		$this->stats['after']['size'] = strlen( $css );
 
 		// Return compressed css
 		return $css;
@@ -110,6 +116,8 @@ Class CSSCompression_Compress
 		$details = array();
 		$media = false;
 		$media_str = '';
+		$media_content = '';
+		$media_instance = NULL;
 		$import = '';
 		$SEL_COUNTER = 0;
 
@@ -117,11 +125,25 @@ Class CSSCompression_Compress
 			$row = trim( $row );
 			// Determine whether your looking at the details or element
 			if ( $media && $row == '}' ) {
-				$media_str .= "}\n";
+				if ( ! $media_instance ) {
+					$media_instance = new CSSCompression( '', $this->options );
+				}
+
+				// Compress the media section separatley
+				$media_content = $media_instance->compress( substr( $media_content, 1 ) );
+
+				// Formatting for anything higher then 0 readability
+				if ( $this->options['readability'] > CSSCompression::READ_NONE ) {
+					$media_content = "\n\t" . str_replace( "\n", "\n\t", $media_content ) . "\n";
+				}
+
+				// Stash the compressed media script, and reset the media vars
+				$media_str .= "{" . $media_content . "}\n";
+				$media_content = '';
 				$media = false;
 			}
 			else if ( $media ) {
-				$media_str .= $row;
+				$media_content .= $row;
 			}
 			else if ( strpos( $row, '{') === 0 ) {
 				$row = substr( $row, 1, strlen( $row ) - 2 );
@@ -198,7 +220,7 @@ Class CSSCompression_Compress
 	 *
 	 * @params none
 	 */ 
-	private function runFinalStatistics( $css, $selectors, $details ) {
+	private function finalCount( $selectors, $details ) {
 		// Selectors and props
 		$this->stats['after']['selectors'] = count( $selectors );
 		foreach ( $details as $item ) {
@@ -214,7 +236,6 @@ Class CSSCompression_Compress
 		}
 
 		// Final count for stats
-		$this->stats['after']['size'] = strlen( $css );
 		$this->stats['after']['time'] = array_sum( explode( ' ', microtime() ) );
 	}
 

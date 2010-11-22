@@ -44,16 +44,31 @@ Class CSSCompression_Cleanup
 	 * @param (array) details: Array of details
 	 * @param (boolean) simple: If true, keeps injections
 	 */
-	public function cleanup( $selectors, $details, $simple = false ) {
+	public function cleanup( $selectors, $details ) {
 		foreach ( $details as &$value ) {
 			$value = $this->removeMultipleDefinitions( $value );
 			$value = $this->removeUnnecessarySemicolon( $value );
-			if ( $simple === false ) {
-				$value = $this->removeEscapedURLs( $value );
-			}
 		}
 
 		return array( $selectors, $details );
+	}
+
+	/**
+	 * Removes '\' from possible splitter characters in URLs
+	 *
+	 * @params none
+	 */ 
+	public function removeEscapedCharacters( $css ) {
+		$search = array( ':', ';', ' ' );
+		$replace = array( "\\:", "\\;", "\\ " );
+		$start = 0;
+		while ( preg_match( $this->rurl, $css, $match, PREG_OFFSET_CAPTURE, $start ) ) {
+			$value = 'url(' . str_replace( $this->escaped['patterns'], $this->escaped['replacements'], $match[ 1 ][ 0 ] ) . ')';
+			$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+			$start = $match[ 1 ][ 1 ];
+		}
+
+		return $css;
 	}
 
 	/**
@@ -81,23 +96,6 @@ Class CSSCompression_Cleanup
 
 		// Return converted val
 		return $val;
-	}
-
-	/**
-	 * Removes '\' from possible splitter characters in URLs
-	 *
-	 * @params none
-	 */ 
-	private function removeEscapedURLs($str){
-		preg_match_all( $this->rurl, $str, $matches, PREG_OFFSET_CAPTURE );
-
-		for ( $i = 0, $imax = count( $matches[0] ); $i < $imax; $i++ ) {
-			$value = 'url(' . str_replace( $this->escaped['patterns'], $this->escaped['replacements'], $matches[1][$i][0] ) . ')';
-			$str = substr_replace( $str, $value, $matches[0][$i][1], strlen( $matches[0][$i][0] ) );
-		}
-
-		// Return unescaped string
-		return $str;
 	}
 
 	/**

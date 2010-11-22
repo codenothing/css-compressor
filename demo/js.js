@@ -1,10 +1,16 @@
-var organize;
+jQuery(function(){
+	var options = jQuery('div.options');
 
-function forceOrder( el ) {
-	if ( organize === undefined ){
-		organize = document.getElementById('organize');
-	}
+	// Style the options
+	options.find("label:odd").addClass('odd');
 
-	organize.checked = !el.checked;
-	organize.disabled = el.checked;
-}
+	// Only open them in custom mode
+	jQuery("select[name=mode]").change(function(){
+		if ( jQuery( this ).val() == 'custom' ) {
+			options.slideDown();
+		}
+		else {
+			options.slideUp();
+		}
+	});
+});

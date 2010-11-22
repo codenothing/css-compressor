@@ -21,7 +21,12 @@ Class CompressionBenchmark
 		// Create the basice mode instances
 		foreach( CSSCompression::$modes as $mode => $config ) {
 			$this->instances[ $mode ] = new CSSCompression( NULL, $mode );
-			$this->averages[ $mode ] = array();
+			$this->averages[ $mode ] = array(
+				'size-before' => 0,
+				'size-after' => 0,
+				'size-gzip' => 0,
+				'time' => 0,
+			);
 		}
 
 		// Make the dist
@@ -81,7 +86,7 @@ Class CompressionBenchmark
 	}
 
 	private function compress( $file = '', $css = '', $instance ) {
-		file_put_contents( $this->root . 'dist/' . $file . '.' . $instance->_mode, $instance->compress( $css ) );
+		file_put_contents( $this->root . 'dist/' . $file . '.' . $instance->mode, $instance->compress( $css ) );
 		$gzip = gzencode( $instance->css );
 
 		// References
@@ -94,17 +99,17 @@ Class CompressionBenchmark
 		}
 
 		// Store compression results
-		$this->files[ $file ][ $instance->_mode ] = $instance->stats;
+		$this->files[ $file ][ $instance->mode ] = $instance->stats;
 
 		// Log basic result for averages
-		$this->averages[ $instance->_mode ]['size-before'] += $before['size'];
-		$this->averages[ $instance->_mode ]['size-after'] += $after['size'];
-		$this->averages[ $instance->_mode ]['size-gzip'] += strlen( $gzip );
-		$this->averages[ $instance->_mode ]['time'] += $after['time'] - $before['time'];
+		$this->averages[ $instance->mode ]['size-before'] += $before['size'];
+		$this->averages[ $instance->mode ]['size-after'] += $after['size'];
+		$this->averages[ $instance->mode ]['size-gzip'] += strlen( $gzip );
+		$this->averages[ $instance->mode ]['time'] += $after['time'] - $before['time'];
 
 		// Return formatted string result
 		return array(
-			$instance->_mode . ': '
+			$instance->mode . ': '
 			. Color::yellow( $after['size'] )
 			. '(' . Color::green( $after['size'] - $before['size'] ) . ')'
 			. '[' . Color::blue( number_format( $after['size'] / $before['size'] * 100, 2 )  . '%' ) . '] ',
