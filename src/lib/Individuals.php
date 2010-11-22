@@ -88,6 +88,8 @@ Class CSSCompression_Individuals
 
 		// None to 0 converter
 		$val = $this->none( $prop, $val );
+
+		// MSIE Filters
 		$val = $this->filter( $prop, $val );
 
 		// Return for list retrival

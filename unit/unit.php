@@ -81,11 +81,29 @@ Class CSScompressionUnitTest
 	private function focus(){
 		foreach ( $this->sandbox as $class => $obj ) {
 			foreach ( $obj as $method => $tests ) {
+				if ( $class == 'Organize' && ( $method == 'reduceSelectors' || $method == 'reduceDetails' ) ) {
+					$this->organize( $method, $tests );
+					continue;
+				}
 				foreach ( $tests as $name => $row ) {
+					// Readability help
+					if ( isset( $row['paramjoin'] ) ) {
+						$row['params'] = array( implode( $row['params'] ) );
+					}
+
+					// Get the result from that single function
 					$result = $this->compressor->access( $class, $method, $row['params'] );
+
+					// Joining of the result
 					if ( isset( $row['join'] ) && is_array( $result ) ) {
 						$result = implode( $row['join'], $result );
 					}
+
+					// For readability, allow for arrays of expectations
+					if ( is_array( $row['expect'] ) ) {
+						$row['expect'] = implode( $row['expect'] );
+					}
+
 					/*
 					echo $row['expect'] . "\n=========\n";
 					echo $result . "\n======\n";
@@ -94,6 +112,34 @@ Class CSScompressionUnitTest
 				}
 			}
 		}
+	}
+
+	private function organize( $method, $tests ) {
+		$params = array( $tests['selectors']['params'], $tests['details']['params'] );
+		list ( $selectors, $details ) = $this->compressor->access( 'Organize', $method, $params );
+
+		// Rekey the arrays
+		$selectors = array_values( $selectors );
+		$details = array_values( $details );
+
+		// Mark the entries
+		for ( $i = 0, $max = count( $selectors ); $i < $max; $i++ ) {
+			if ( isset( $selectors[ $i ] ) && isset( $details[ $i ] ) && 
+				isset( $tests['selectors']['expect'][ $i ] ) &&
+				isset( $tests['details']['expect'][ $i ] ) ) {
+					$this->mark(
+						"Organize.$method",
+						$i,
+						( $selectors[ $i ] === $tests['selectors']['expect'][ $i ] && 
+							$details[ $i ] === $tests['details']['expect'][ $i ] )
+					);
+			}
+			else {
+				$this->mark( "Organize.$method", $i, false );
+			}
+		}
+		$this->mark( "Organize.$method", 'Selectors Counted', count( $selectors ) === count( $tests['selectors']['expect'] ) );
+		$this->mark( "Organize.$method", 'Details Counted', count( $details ) === count( $tests['details']['expect'] ) );
 	}
 
 	/**

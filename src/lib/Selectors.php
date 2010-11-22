@@ -5,7 +5,7 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 
-Class CSSCompression_Selectors extends CSSCompression_Color
+Class CSSCompression_Selectors
 {
 	/**
 	 * Selector patterns
