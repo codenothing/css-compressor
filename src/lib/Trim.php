@@ -15,6 +15,23 @@ Class CSSCompression_Trim
 	 */
 	private $Control;
 	private $options = array();
+	private $rurl = "/url\((.*?)\)/";
+	private $trimmings = array(
+		'patterns' => array(
+			"/(\/\*|\<\!\-\-)(.*?)(\*\/|\-\-\>)/s", // Remove all comments
+			"/(\s+)?([,{};>\+])(\s+)?/s", // Remove un-needed spaces around special characters
+			"/url\(['\"](.*?)['\"]\)/s", // Remove quotes from urls
+			"/;{2,}/", // Remove unecessary semi-colons
+			"/\s+/s", // Compress all spaces into single space
+		),
+		'replacements' => array(
+			' ',
+			'$2',
+			'url($1)',
+			';',
+			' ',
+		)
+	);
 
 	/**
 	 * Stash a reference to the controller on each instantiation
@@ -43,47 +60,23 @@ Class CSSCompression_Trim
 	 * @param (string) css: CSS Contents
 	 */ 
 	private function strip( $css ) {
-		// Regex
-		$search = array(
-			1 => "/(\/\*|\<\!\-\-)(.*?)(\*\/|\-\-\>)/s", // Remove all comments
-			2 => "/(\s+)?([,{};>\+])(\s+)?/s", // Remove un-needed spaces around special characters
-			3 => "/url\(['\"](.*?)['\"]\)/s", // Remove quotes from urls
-			4 => "/;{2,}/", // Remove unecessary semi-colons
-			5 => "/\s+/s", // Compress all spaces into single space
-			// Leave section open for additional entries
-
-			// Break apart elements for setup of further compression
-			20 => "/{/",
-			21 => "/}/",
-		);
-
-		// Replacements
-		$replace = array(
-			1 => ' ',
-			2 => '$2',
-			3 => 'url($1)',
-			4 => ';',
-			5 => ' ',
-			// Leave section open for additional entries
-
-			// Add new line for setup of further compression
-			20 => "\n{",
-			21 => "}\n",
-		);
-
 		// Run replacements
-		return trim( preg_replace( $search, $replace, $css ) );
+		return trim( preg_replace( $this->trimmings['patterns'], $this->trimmings['replacements'], $css ) );
 	}
 
+	/**
+	 * Escape out possible splitter characters within urls
+	 *
+	 * @param (string) css: Full stylesheet
+	 */
 	private function escape( $css ) {
-		// Escape out possible splitter characters within urls
 		$search = array( ':', ';', ' ' );
 		$replace = array( "\\:", "\\;", "\\ " );
-		preg_match_all( "/url\((.*?)\)/", $css, $matches, PREG_OFFSET_CAPTURE );
-
-		for ( $i=0, $imax=count( $matches[0] ); $i < $imax; $i++ ) {
-			$value = 'url(' . str_replace( $search, $replace, $matches[1][$i][0] ) . ')';
-			$css = substr_replace( $css, $value, $matches[0][$i][1], strlen( $matches[0][$i][0] ) );
+		$start = 0;
+		while ( preg_match( $this->rurl, $css, $match, PREG_OFFSET_CAPTURE, $start ) ) {
+			$value = 'url(' . str_replace( $search, $replace, $match[ 1 ][ 0 ] ) . ')';
+			$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+			$start = $match[ 1 ][ 1 ];
 		}
 
 		return $css;

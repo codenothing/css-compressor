@@ -47,9 +47,9 @@ Class CSSCompression_Cleanup
 	public function cleanup( $selectors, $details, $simple = false ) {
 		foreach ( $details as &$value ) {
 			$value = $this->removeMultipleDefinitions( $value );
+			$value = $this->removeUnnecessarySemicolon( $value );
 			if ( $simple === false ) {
 				$value = $this->removeEscapedURLs( $value );
-				$value = $this->removeUnnecessarySemicolon( $value );
 			}
 		}
 

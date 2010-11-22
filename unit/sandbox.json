@@ -405,6 +405,18 @@
 				"params": [ "background:white;" ],
 				"expect": "background:white"
 			}
+		},
+
+		// Cleanup has it's own special test handler
+		"cleanup": {
+			"params": [
+				"color:blue;font-size:12pt;color:blue;font-size:12pt;",
+				"color:blue;background:red url(http\\://www.example.com?a=someitem\\;);color:blue;"
+			],
+			"expect": [
+				"color:blue;font-size:12pt",
+				"color:blue;background:red url(http://www.example.com?a=someitem;)"
+			]
 		}
 	},
 

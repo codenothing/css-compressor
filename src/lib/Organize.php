@@ -17,6 +17,7 @@ Class CSSCompression_Organize
 	private $Control;
 	private $options = array();
 	private $rsemicolon = "/(?<!\\\);/";
+	private $rlastsemi = "/;$/";
 
 	/**
 	 * Stash a reference to the controller on each instantiation
@@ -66,13 +67,23 @@ Class CSSCompression_Organize
 				}
 
 				if ( $selectors[ $i ] == $selectors[ $k ] ) {
+					// Prevent noticies
 					if ( ! isset( $details[ $i ] ) ) {
 						$details[ $i ] = '';
 					}
 					if ( ! isset( $details[ $k ] ) ) {
 						$details[ $k ] = '';
 					}
-					$details[ $i ] .= $details[ $k ];
+
+					// We kill the last semicolon before organization, so account for that.
+					if ( $details[ $i ] != '' && $details[ $k ] != '' && ! preg_match( $this->rlastsemi, $details[ $i ] ) ) {
+						$details[ $i ] .= ';' . $details[ $k ];
+					}
+					else {
+						$details[ $i ] .= $details[ $k ];
+					}
+
+					// Remove the second part
 					unset( $selectors[ $k ], $details[ $k ] );
 				}
 			}

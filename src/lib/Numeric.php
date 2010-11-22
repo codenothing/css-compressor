@@ -78,7 +78,7 @@ Class CSSCompression_Numeric
 	 */
 	private function zeroes( $str ) {
 		if ( preg_match( $this->rzero, $str, $match ) ) {
-			$str = $match[ 1 ] . $match[ 2 ];
+			$str = $match[ 1 ] . ( isset( $match[ 2 ] ) ? $match[ 2 ] : '' );
 		}
 
 		return $str;

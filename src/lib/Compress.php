@@ -105,7 +105,7 @@ Class CSSCompression_Compress
 	 */ 
 	private function setup( $css ) {
 		// Seperate the element from the elements details
-		$css = explode( "\n", $css );
+		$css = explode( "\n", str_replace( array( "{", "}" ), array( "\n{", "}\n" ), $css ) );
 		$selectors = array();
 		$details = array();
 		$media = false;

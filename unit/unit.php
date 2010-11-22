@@ -7,8 +7,6 @@
 
 // Before/After directories
 // $root is borrowed from index.php
-define('SPECIAL_BEFORE', $root . '/special/before/');
-define('SPECIAL_AFTER', $root . '/special/after/');
 define('BEFORE', $root . '/sheets/before/');
 define('AFTER', $root . '/sheets/after/');
 define('BENCHMARK', $root . '/benchmark/src/');
@@ -51,10 +49,6 @@ Class CSScompressionUnitTest
 		$this->setOptions();
 		$this->focus();
 
-		/*
-		$this->initialTrimTest();
-		$this->lineTesting();
-
 		// Full sheet tests (security checks)
 		$this->setOptions();
 		$this->testSheets();
@@ -62,7 +56,6 @@ Class CSScompressionUnitTest
 		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'all' ) {
 			$this->testDoubles();
 		}
-		*/
 	}
 
 	/**
@@ -83,6 +76,10 @@ Class CSScompressionUnitTest
 			foreach ( $obj as $method => $tests ) {
 				if ( $class == 'Organize' && ( $method == 'reduceSelectors' || $method == 'reduceDetails' ) ) {
 					$this->organize( $method, $tests );
+					continue;
+				}
+				else if ( $class == 'Cleanup' && $method == 'cleanup' ) {
+					$this->cleanup( $tests );
 					continue;
 				}
 				foreach ( $tests as $name => $row ) {
@@ -142,78 +139,20 @@ Class CSScompressionUnitTest
 		$this->mark( "Organize.$method", 'Details Counted', count( $details ) === count( $tests['details']['expect'] ) );
 	}
 
-	/**
-	 * Runs a test on the initalTrim() method of CSSC, uses
-	 * a before/after system of files to do matching
-	 *
-	 * @params none
-	 */ 
-	private function initialTrimTest(){
-		$this->css = file_get_contents( SPECIAL_BEFORE . 'initialTrim.css' );
-		$after = file_get_contents( SPECIAL_AFTER . 'initialTrim.css' );
-		$this->initialTrim();
-		$this->mark( 'initialTrim.css', 'all', trim( $this->css ) == trim( $after ) );
-	}
+	private function cleanup( $tests ) {
+		$params = array( array(), $tests['params'] );
+		list ( $selectors, $details ) = $this->compressor->access( 'Cleanup', 'cleanup', $params );
 
-	/**
-	 * Uses a test-array contain CSSC methods and various
-	 * tests to run on each function. Takes special note to
-	 * individuals()  methods
-	 *
-	 * @params none
-	 */ 
-	private function lineTesting(){
-		foreach ( $this->sandbox as $fn => $tests ) {
-			if ( $fn == 'combineMultiplyDefinedSelectors' || $fn == 'combineMultiplyDefinedDetails' ) {
-				list ( $selectors, $details ) = $this->$fn( $tests['selectors']['test'], $tests['details']['test'] );
+		// Rekey the details
+		$details = array_values( $details );
 
-				// Rekey the arrays
-				$selectors = array_values( $selectors );
-				$details = array_values( $details );
-
-				// Mark the entries
-				for ( $i = 0, $max = count( $selectors ); $i < $max; $i++ ) {
-					if ( isset( $selectors[ $i ] ) && isset( $details[ $i ] ) && 
-						isset( $tests['selectors']['expect'][ $i ] ) &&
-						isset( $tests['details']['expect'][ $i ] ) ) {
-							$this->mark(
-								$fn,
-								$i,
-								( $selectors[ $i ] === $tests['selectors']['expect'][ $i ] && 
-									$details[ $i ] === $tests['details']['expect'][ $i ] )
-							);
-					}
-					else {
-						$this->mark( $fn, $i, false );
-					}
-				}
-				$this->mark( $fn, 'Selectors Counted', count( $selectors ) === count( $tests['selectors']['expect'] ) );
-				$this->mark( $fn, 'Details Counted', count( $details ) === count( $tests['details']['expect'] ) );
-				continue;
+		// Mark the entries
+		for ( $i = 0, $max = count( $details ); $i < $max; $i++ ) {
+			if ( isset( $tests['expect'][ $i ] ) ) {
+				$this->mark( "Cleanup.cleanup", $i, $details[ $i ] === $tests[ 'expect' ][ $i ] );
 			}
-
-			foreach ( $tests as $entry => $set ) {
-				// Some strings are too long and wrap, so
-				// we force them into an array for better
-				// readability
-				if ( is_array( $set['test'] ) ) {
-					$set['test'] = implode( '', $set['test'] );
-				}
-				// Sam with expect
-				if ( is_array( $set['expect'] ) ) {
-					$set['expect'] = implode( '', $set['expect'] );
-				}
-
-				// Inididual tests are run on each prop
-				if ( $fn == 'individuals' ) {
-					list ( $prop, $val ) = explode( ':', $set['test'], 2 );
-					list ( $prop, $val ) = $this->individuals( $prop, $val );
-					$passed = ( "$prop:$val" == $set['expect'] );
-				}
-				else {
-					$passed = ( $this->$fn( $set['test'] ) == $set['expect'] );
-				}
-				$this->mark( $fn, $entry, $passed );
+			else {
+				$this->mark( "Cleanup.cleanup", $i, false );
 			}
 		}
 	}
@@ -230,7 +169,7 @@ Class CSScompressionUnitTest
 			if ( preg_match( "/\.css$/", $file ) ) {
 				$before = trim( file_get_contents( BEFORE . $file ) );
 				$after = trim( file_get_contents( AFTER . $file ) );
-				$this->mark( $file, "full", $this->compress( $before ) === $after );
+				$this->mark( $file, "full", $this->compressor->compress( $before ) === $after );
 			}
 		}
 	}
@@ -242,7 +181,7 @@ Class CSScompressionUnitTest
 	 * @params none
 	 */
 	private function testDoubles(){
-		foreach ( self::$modes as $mode => $options ) {
+		foreach ( CSSCompression::$modes as $mode => $options ) {
 			$this->instances[ $mode ] = new CSSCompression( '', $mode );
 		}
 
@@ -252,12 +191,11 @@ Class CSScompressionUnitTest
 				$before = trim( file_get_contents( BENCHMARK . $file ) );
 				foreach ( $this->instances as $mode => $instance ) {
 					$first = $instance->compress( $before );
-					$a = array( 'selectors' => $instance->selectors, 'details' => $instance->details );
 					$size = $instance->stats['after']['size'];
 					$second = $instance->compress( $first );
-					$b = array( 'selectors' => $instance->selectors, 'details' => $instance->details );
 					$this->mark( 'Double CSS ' . $file, $mode, $first === $second );
 					$this->mark( 'Double Size ' . $file, $mode, $size === $instance->stats['after']['size'] );
+					break;
 				}
 			}
 		}
