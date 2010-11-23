@@ -61,7 +61,7 @@ Class CSSCompression_Compress
 	 */ 
 	public function compress( $css ) {
 		// Do a little tokenizing, compress each property individually
-		list( $selectors, $details, $import, $media ) = $this->setup( $css );
+		list( $selectors, $details, $import, $media, $fontface ) = $this->setup( $css );
 
 		// Mark number of selectors pre-combine
 		$this->stats['before']['selectors'] = count( $selectors );
@@ -86,15 +86,27 @@ Class CSSCompression_Compress
 		$this->finalCount( $selectors, $details );
 
 		// Format css to users preference
-		$css = $this->Format->readability( $this->options['readability'], $import, $selectors, $details );
+		$css = $this->Format->readability( $this->options['readability'], $selectors, $details );
 
 		// Remove escapables
 		$css = $this->Cleanup->removeEscapedCharacters( $css );
 
-		// Add media string to top
-		// TODO: Compress media individually like full css sheets
+		// Check readability before adding imports/media/charset
+		$newline = $this->options['readability'] > CSSCompression::READ_NONE ? "\n" : '';
+
+		// Add media before fontface & imports/charset
 		if ( $media ) {
-			$css = $media . $css;
+			$css = $media . $newline . $css;
+		}
+
+		// Add font face befpre imports/charset
+		if ( $fontface ) {
+			$css = preg_replace( "/;}$/", "}", $fontface ) . $newline . $css;
+		}
+
+		// Imports and charset have to go first
+		if ( $import ) {
+			$css = str_replace( ';', ';' . $newline, $import ) . $newline . $css;
 		}
 
 		// Mark final file size
@@ -111,7 +123,7 @@ Class CSSCompression_Compress
 	 */ 
 	private function setup( $css ) {
 		// Seperate the element from the elements details
-		$css = explode( "\n", str_replace( array( "{", "}" ), array( "\n{", "}\n" ), $css ) );
+		$css = explode( "\n", preg_replace( array( "/{/", "/}/", "/@(charset|media|import)/i" ), array( "\n{", "}\n", "\n@$1" ), $css ) );
 		$selectors = array();
 		$details = array();
 		$media = false;
@@ -119,6 +131,8 @@ Class CSSCompression_Compress
 		$media_content = '';
 		$media_instance = NULL;
 		$import = '';
+		$fontface = false;
+		$fontface_str = '';
 		$SEL_COUNTER = 0;
 
 		foreach ( $css as $row ) {
@@ -133,17 +147,23 @@ Class CSSCompression_Compress
 				$media_content = $media_instance->compress( substr( $media_content, 1 ) );
 
 				// Formatting for anything higher then 0 readability
+				$newline = '';
 				if ( $this->options['readability'] > CSSCompression::READ_NONE ) {
 					$media_content = "\n\t" . str_replace( "\n", "\n\t", $media_content ) . "\n";
+					$newline = "\n";
 				}
 
 				// Stash the compressed media script, and reset the media vars
-				$media_str .= "{" . $media_content . "}\n";
+				$media_str .= "{" . $media_content . "}$newline";
 				$media_content = '';
 				$media = false;
 			}
 			else if ( $media ) {
 				$media_content .= $row;
+			}
+			else if ( $fontface && strpos( $row, '{' ) === 0 ) {
+				$fontface_str .= $row;
+				$fontface = false;
 			}
 			else if ( strpos( $row, '{') === 0 ) {
 				$row = substr( $row, 1, strlen( $row ) - 2 );
@@ -201,9 +221,13 @@ Class CSSCompression_Compress
 				unset( $arr[ count( $arr ) - 1 ] );
 				$import .= trim( implode( ';', $arr ) ) . ';';
 			}
-			else if ( strpos( $row, '@' ) === 0 ) {
+			else if ( strpos( $row, '@media' ) === 0 ) {
 				$media = true;
 				$media_str .= $row;
+			}
+			else if ( strpos( $row, '@font-face' ) === 0 ) {
+				$fontface_str .= $row;
+				$fontface = true;
 			}
 			else if ( $row ) {
 				// Add to selector counter for details storage
@@ -212,7 +236,7 @@ Class CSSCompression_Compress
 			}
 		}
 
-		return array( $selectors, $details, $import, $media_str );
+		return array( $selectors, $details, $import, $media_str, $fontface_str );
 	}
 
 	/**

@@ -968,9 +968,9 @@
 				],
 				"expect": [
 					"#red>div.today+b.old,body.broken,#wtf{",
-					"background: url(someimg.jpg);",
-					"border: 1px solid red;",
-					"color: white;",
+					"background:url(someimg.jpg);",
+					"border:1px solid red;",
+					"color:white;",
 					"}"
 				]
 			}
@@ -1019,12 +1019,12 @@
 				],
 				"expect": [
 					"#red>div.today+b.old,body.broken,#wtf{",
-					"background: url(http\\://www.example1.com?a=semi\\;);",
-					"border: 1px solid red;",
-					"color: white;",
+					"background:url(http\\://www.example1.com?a=semi\\;);",
+					"border:1px solid red;",
+					"color:white;",
 					"}",
 					"#next{",
-					"background: url(http\\://www.example2.com?a=semi\\;);",
+					"background:url(http\\://www.example2.com?a=semi\\;);",
 					"}"
 				]
 			}

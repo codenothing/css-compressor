@@ -46,10 +46,10 @@ Class CSSCompression_Format
 	 * @param (array) selectors: Array of selectors
 	 * @param (array) details: Array of details
 	 */ 
-	public function readability( $readability = CSSCompression::READ_NONE, $import = '', $selectors = array(), $details = array() ) {
+	public function readability( $readability = CSSCompression::READ_NONE, $selectors = array(), $details = array() ) {
 		if ( isset( $this->readability[ $readability ] ) ) {
 			$fn = $this->readability[ $readability ];
-			return trim( $this->$fn( $import, $selectors, $details ) );
+			return trim( $this->$fn( $selectors, $details ) );
 		}
 		else {
 			return 'Invalid Readability Value';
@@ -63,12 +63,8 @@ Class CSSCompression_Format
 	 * @param (array) selectors: Array of selectors
 	 * @param (array) details: Array of details
 	 */ 
-	private function maximum( $import, $selectors, $details ) {
-		$css = str_replace( ';', ";\n", $import );
-		if ( $import ) {
-			$css .= "\n";
-		}
-
+	private function maximum( $selectors, $details ) {
+		$css = '';
 		foreach ( $selectors as $k => $v ) {
 			if ( ! $details[ $k ] || trim( $details[ $k ] ) == '' ) {
 				continue;
@@ -107,8 +103,8 @@ Class CSSCompression_Format
 	 * @param (array) selectors: Array of selectors
 	 * @param (array) details: Array of details
 	 */ 
-	private function medium( $import, $selectors, $details ) {
-		$css = str_replace( ';', ";\n", $import );
+	private function medium( $selectors, $details ) {
+		$css = '';
 		foreach ( $selectors as $k => $v ) {
 			if ( $details[ $k ] && $details[ $k ] != '' ) {
 				$css .= "$v {\n\t" . $details[ $k ] . "\n}\n";
@@ -125,8 +121,8 @@ Class CSSCompression_Format
 	 * @param (array) selectors: Array of selectors
 	 * @param (array) details: Array of details
 	 */ 
-	private function minimum( $import, $selectors, $details ) {
-		$css = str_replace( ';', ";\n", $import );
+	private function minimum( $selectors, $details ) {
+		$css = '';
 		foreach ( $selectors as $k => $v ) {
 			if ( $details[ $k ] && $details[ $k ] != '' ) {
 				$css .= "$v{" . $details[ $k ] . "}\n";
@@ -139,12 +135,11 @@ Class CSSCompression_Format
 	/**
 	 * Returns an unreadable, but fully compressed script
 	 *
-	 * @param (string) import: CSS Import property removed at beginning
 	 * @param (array) selectors: Array of selectors
 	 * @param (array) details: Array of details
 	 */ 
-	private function none( $import, $selectors, $details ) {
-		$css = $import;
+	private function none( $selectors, $details ) {
+		$css = '';
 		foreach ( $selectors as $k => $v ) {
 			if ( isset( $details[ $k ] ) && $details[ $k ] != '' ) {
 				$css .= trim( "$v{" . $details[ $k ] . "}" );
