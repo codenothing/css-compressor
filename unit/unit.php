@@ -53,6 +53,7 @@ Class CSScompressionUnitTest
 		$this->setOptions();
 		$this->testSheets();
 
+		// Multi compression checks
 		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'all' ) {
 			$this->testDoubles();
 		}
@@ -218,7 +219,6 @@ Class CSScompressionUnitTest
 					$second = $instance->compress( $first );
 					$this->mark( 'Double CSS ' . $file, $mode, $first === $second );
 					$this->mark( 'Double Size ' . $file, $mode, $size === $instance->stats['after']['size'] );
-					break;
 				}
 			}
 		}

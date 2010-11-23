@@ -48,6 +48,7 @@ Class CSSCompression_Control
 		'Combine',
 		'Organize',
 		'Cleanup',
+		'Setup',
 		'Compress',
 	);
 

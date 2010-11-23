@@ -61,4 +61,4 @@ Credits
 
 [Phil DeJarnett](http://www.overzealous.com/) - Pointed out splitting(and numerous other) problems
 
-Julien Deniau - Pointed out escaped characters issue
+[Julien Deniau](http://www.jeuxvideo.fr/) - Pointed out escaped characters issue
