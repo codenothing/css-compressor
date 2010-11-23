@@ -126,46 +126,17 @@ Class CSSCompression_Compress
 		$css = explode( "\n", preg_replace( array( "/{/", "/}/", "/@(charset|media|import)/i" ), array( "\n{", "}\n", "\n@$1" ), $css ) );
 		$selectors = array();
 		$details = array();
-		$media = false;
-		$media_str = '';
-		$media_content = '';
+		$media = '';
 		$media_instance = NULL;
 		$import = '';
-		$fontface = false;
-		$fontface_str = '';
+		$fontface = '';
 		$SEL_COUNTER = 0;
 
-		foreach ( $css as $row ) {
-			$row = trim( $row );
+		while ( count( $css ) ) {
+			$row = trim( array_shift( $css ) );
+
 			// Determine whether your looking at the details or element
-			if ( $media && $row == '}' ) {
-				if ( ! $media_instance ) {
-					$media_instance = new CSSCompression( '', $this->options );
-				}
-
-				// Compress the media section separatley
-				$media_content = $media_instance->compress( substr( $media_content, 1 ) );
-
-				// Formatting for anything higher then 0 readability
-				$newline = '';
-				if ( $this->options['readability'] > CSSCompression::READ_NONE ) {
-					$media_content = "\n\t" . str_replace( "\n", "\n\t", $media_content ) . "\n";
-					$newline = "\n";
-				}
-
-				// Stash the compressed media script, and reset the media vars
-				$media_str .= "{" . $media_content . "}$newline";
-				$media_content = '';
-				$media = false;
-			}
-			else if ( $media ) {
-				$media_content .= $row;
-			}
-			else if ( $fontface && strpos( $row, '{' ) === 0 ) {
-				$fontface_str .= $row;
-				$fontface = false;
-			}
-			else if ( strpos( $row, '{') === 0 ) {
+			if ( strpos( $row, '{' ) === 0 ) {
 				$row = substr( $row, 1, strlen( $row ) - 2 );
 				$row = preg_split( $this->rsemicolon, $row );
 				$parts = array();
@@ -222,12 +193,44 @@ Class CSSCompression_Compress
 				$import .= trim( implode( ';', $arr ) ) . ';';
 			}
 			else if ( strpos( $row, '@media' ) === 0 ) {
-				$media = true;
-				$media_str .= $row;
+				$media .= $row;
+				$left = 0;
+				$right = 0;
+				$content = '';
+
+				// Find the end of the media section
+				while ( count( $css ) && ( $left < 1 || $left > $right ) ) {
+					$row = trim( array_shift( $css ) );
+					$left += substr_count( $row, '{' );
+					$right += substr_count( $row, '}' );
+					$content .= $row;
+				}
+
+				// Get new instance for compression
+				if ( ! $media_instance ) {
+					$media_instance = new CSSCompression( '', $this->options );
+				}
+
+				// Remove the first and last braces from the content
+				$content = substr( $content, 1 );
+				$content = substr( $content, 0, -1 );
+
+				// Compress the media section separatley
+				$content = $media_instance->compress( $content );
+
+				// Formatting for anything higher then 0 readability
+				$newline = '';
+				if ( $this->options['readability'] > CSSCompression::READ_NONE ) {
+					$content = "\n\t" . str_replace( "\n", "\n\t", $content ) . "\n";
+					$newline = "\n";
+				}
+
+				// Stash the compressed media script
+				$media .= "{" . $content . "}$newline";
 			}
 			else if ( strpos( $row, '@font-face' ) === 0 ) {
-				$fontface_str .= $row;
-				$fontface = true;
+				$fontface .= $row;
+				$fontface .= count( $css ) ? preg_replace( "/(\s+)?:(\s+)?/s", ":", trim( array_shift( $css ) ) ) : '';
 			}
 			else if ( $row ) {
 				// Add to selector counter for details storage
@@ -236,7 +239,7 @@ Class CSSCompression_Compress
 			}
 		}
 
-		return array( $selectors, $details, $import, $media_str, $fontface_str );
+		return array( $selectors, $details, $import, $media, $fontface );
 	}
 
 	/**
