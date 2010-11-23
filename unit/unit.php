@@ -79,14 +79,14 @@ Class CSScompressionUnitTest
 	private function focus(){
 		foreach ( $this->sandbox as $class => $obj ) {
 			foreach ( $obj as $method => $tests ) {
-				if ( $class == 'Organize' && ( $method == 'reduceSelectors' || $method == 'reduceDetails' ) ) {
-					$this->organize( $method, $tests );
+				// Check for special test handler
+				if ( isset( $tests['_special'] ) ) {
+					$fn = $tests['_special'];
+					$this->$fn( $class, $method, $tests );
 					continue;
 				}
-				else if ( $class == 'Cleanup' && $method == 'cleanup' ) {
-					$this->cleanup( $tests );
-					continue;
-				}
+
+				// Run each test
 				foreach ( $tests as $name => $row ) {
 					// Readability help
 					if ( isset( $row['paramjoin'] ) ) {
@@ -114,14 +114,15 @@ Class CSScompressionUnitTest
 	}
 
 	/**
-	 * Special testing for Organize methods
+	 * Special testing for selector and detail matching
 	 *
+	 * @param (string) class: Class to be called
 	 * @param (string) method: Class method to be called
 	 * @param (array) tests: Test layout
 	 */
-	private function organize( $method, $tests ) {
+	private function both( $class, $method, $tests ) {
 		$params = array( $tests['selectors']['params'], $tests['details']['params'] );
-		list ( $selectors, $details ) = $this->compressor->access( 'Organize', $method, $params );
+		list ( $selectors, $details ) = $this->compressor->access( $class, $method, $params );
 
 		// Rekey the arrays
 		$selectors = array_values( $selectors );
@@ -133,28 +134,30 @@ Class CSScompressionUnitTest
 				isset( $tests['selectors']['expect'][ $i ] ) &&
 				isset( $tests['details']['expect'][ $i ] ) ) {
 					$this->mark(
-						"Organize.$method",
+						"$class.$method",
 						$i,
 						( $selectors[ $i ] === $tests['selectors']['expect'][ $i ] && 
 							$details[ $i ] === $tests['details']['expect'][ $i ] )
 					);
 			}
 			else {
-				$this->mark( "Organize.$method", $i, false );
+				$this->mark( "$class.$method", $i, false );
 			}
 		}
-		$this->mark( "Organize.$method", 'Selectors Counted', count( $selectors ) === count( $tests['selectors']['expect'] ) );
-		$this->mark( "Organize.$method", 'Details Counted', count( $details ) === count( $tests['details']['expect'] ) );
+		$this->mark( "$class.$method", 'Selectors Counted', count( $selectors ) === count( $tests['selectors']['expect'] ) );
+		$this->mark( "$class.$method", 'Details Counted', count( $details ) === count( $tests['details']['expect'] ) );
 	}
 
 	/**
-	 * Special testing for Cleanup handler
+	 * Special testing for details arrays
 	 *
+	 * @param (string) class: Class to be called
+	 * @param (string) method: Class method to be called
 	 * @param (array) tests: Test layout
 	 */
-	private function cleanup( $tests ) {
+	private function details( $class, $method, $tests ) {
 		$params = array( array(), $tests['params'] );
-		list ( $selectors, $details ) = $this->compressor->access( 'Cleanup', 'cleanup', $params );
+		list ( $selectors, $details ) = $this->compressor->access( $class, $method, $params );
 
 		// Rekey the details
 		$details = array_values( $details );
@@ -162,12 +165,19 @@ Class CSScompressionUnitTest
 		// Mark the entries
 		for ( $i = 0, $max = count( $details ); $i < $max; $i++ ) {
 			if ( isset( $tests['expect'][ $i ] ) ) {
-				$this->mark( "Cleanup.cleanup", $i, $details[ $i ] === $tests[ 'expect' ][ $i ] );
+				// Allow for array entries, for easier reading in sandbox.json
+				if ( is_array( $tests['expect'][ $i ] ) ) {
+					$tests['expect'][ $i ] = implode( $tests['expect'][ $i ] );
+				}
+
+				// Mark the result
+				$this->mark( "$class.$method", $i, $details[ $i ] === $tests[ 'expect' ][ $i ] );
 			}
 			else {
-				$this->mark( "Cleanup.cleanup", $i, false );
+				$this->mark( "$class.$method", $i, false );
 			}
 		}
+		$this->mark( "$class.$method", 'Details Counted', count( $details ) === count( $tests['expect'] ) );
 	}
 
 	/**

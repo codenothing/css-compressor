@@ -298,7 +298,9 @@
 		}
 	},
 
+	// Selectors subclass
 	"Selectors": {
+		// All element selectors should be lowercase
 		"lowercaseSelectors": {
 			"input": {
 				"params": [ "INPUT" ],
@@ -326,6 +328,7 @@
 			}
 		},
 
+		// IE coughs up if there is no space after a pseduo selector
 		"pseduoSpace": {
 			"first-child comma": {
 				"params": [ "a:first-child,a,b" ],
@@ -365,9 +368,9 @@
 			}
 		},
 
+		// Combination of all Selectors methods
 		"selectors": {
 			"Lowercase and pseduo": {
-				"type": "array",
 				"params": [
 					[ "A:hover>B:hover.test+PRE.old:hover", "A:first-child B" ]
 				],
@@ -377,7 +380,9 @@
 		}
 	},
 
+	// Cleanup handler
 	"Cleanup": {
+		// Removes definitions defined twice, usually injected by the compressor itself
 		"removeMultipleDefinitions": {
 			"simple": {
 				"params": [ "margin-left:10px;color:blue;margin-left:10px;color:blue;" ],
@@ -385,6 +390,7 @@
 			}
 		},
 
+		// Escaped character removal
 		"removeEscapedCharacters": {
 			"multiple": {
 				"params": [ "background:url(http\\://www.codenothing.com/random.php?foo=bar\\;&colon=te\\:st\\;)" ],
@@ -396,6 +402,7 @@
 			}
 		},
 
+		// last semi-colon
 		"removeUnnecessarySemicolon": {
 			"1": {
 				"params": [ "color:red;font-size:12pt;" ],
@@ -409,6 +416,7 @@
 
 		// Cleanup has it's own special test handler
 		"cleanup": {
+			"_special": "details",
 			"params": [
 				"color:blue;font-size:12pt;color:blue;font-size:12pt;",
 				"color:blue;background:red url(http\\://www.example.com?a=someitem\\;);color:blue;"
@@ -420,7 +428,9 @@
 		}
 	},
 
+	// Combine handler
 	"Combine": {
+		// Color/Style/Width properties
 		"combineCSWproperties": {
 			"border": {
 				"params": [ "border-color:red;border-style:solid;border-width:2px;" ],
@@ -440,16 +450,18 @@
 			}
 		},
 
+		// Sound props
 		"combineAuralCuePause": {
 			"cue": {
-				"params": [ "cue-before:url(sound.wav};cue-after:url(after.wav};" ],
+				"params": [ "cue-before:url(sound.wav);cue-after:url(after.wav);" ],
 				"expect": [
-					"cue:url(sound.wav} url(after.wav};",
-					"cue:url(sound.wav} url(after.wav};"
+					"cue:url(sound.wav) url(after.wav);",
+					"cue:url(sound.wav) url(after.wav);"
 				]
 			}
 		},
 
+		// Margin/Padding combinations
 		"combineMPproperties": {
 			"top-left": {
 				"params": [ "margin-top:10px;margin-left:10px;" ],
@@ -479,6 +491,7 @@
 			}
 		},
 
+		// Border combinations
 		"combineBorderDefinitions": {
 			"border": {
 				"params": [ "border-top:1px solid red;border-left:1px solid red;border-right:1px solid red;border-bottom:1px solid red;" ],
@@ -491,6 +504,7 @@
 			}
 		},
 
+		// Font combinations
 		"combineFontDefinitions": {
 			"1": {
 				"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
@@ -638,6 +652,7 @@
 			}
 		},
 
+		// Background combinations
 		"combineBackgroundDefinitions": {
 			"1": {
 				"paramjoin": "",
@@ -780,6 +795,7 @@
 			}
 		},
 
+		// List combinations
 		"combineListProperties": {
 			"1": {
 				"params": [ "list-style-type:none;list-style-position:inline;list-style-image:url(images/img.gif);" ],
@@ -822,11 +838,42 @@
 				"params": [ "list-style-image:url(images/img.gif);" ],
 				"expect": "list-style:url(images/img.gif);"
 			}
+		},
+
+		// Central handler for all details
+		"combine": {
+			"_special": "details",
+			"params": [
+				"font-size:12pt;list-style-type:none;font-family:arial;list-style-position:inline;",
+				"background-color:green;background-image:url(images/img.gif);",
+				"margin-top:10px;margin-left:10px;margin-right:10px;margin-bottom:10px;"
+			],
+			"expect": [
+				[
+					"font:12pt arial;",
+					"list-style:none inline;",
+					"font:12pt arial;",
+					"list-style:none inline;"
+				],
+				[
+					"background:green url(images/img.gif);",
+					"background:green url(images/img.gif);"
+				],
+				[
+					"margin:10px;",
+					"margin:10px;",
+					"margin:10px;",
+					"margin:10px;"
+				]
+			]
 		}
 	},
 
+	// Combining selectors based on selectors/details
 	"Organize": {
+		// Selector based combination
 		"reduceSelectors": {
+			"_special": "both",
 			"selectors": {
 				"params": [
 					"#id div.class",
@@ -863,7 +910,9 @@
 			}
 		},
 
+		// Detail based combination
 		"reduceDetails": {
+			"_special": "both",
 			"selectors": {
 				"params": [
 					"#id div.class",
@@ -898,6 +947,85 @@
 					"margin-left:10px;margin-top:20px;",
 					"background:white;",
 					"border:1px solid black;border-radius:20px;"
+				]
+			}
+		}
+	},
+
+	// Trimming Handler
+	"Trim": {
+		// Trimming down the stylesheet, removing all whitespace possible
+		"strip": {
+			"simple": {
+				"paramjoin": "\n\t",
+				"params": [
+					"\n\n\n\n\t\t\n",
+					"\n\t\t\t\t\t#red > div.today + b.old, body.broken, #wtf {\n\n",
+					"\t\n\tbackground: url(\"someimg.jpg\");;;;\n\n\n",
+					"\t\tborder: 1px solid red;;;;;\n\t\n\t",
+					"\tcolor: white;;;;;\n\t\n",
+					"}\n\n\n"
+				],
+				"expect": [
+					"#red>div.today+b.old,body.broken,#wtf{",
+					"background: url(someimg.jpg);",
+					"border: 1px solid red;",
+					"color: white;",
+					"}"
+				]
+			}
+		},
+
+		// Escaping special characters
+		"escape": {
+			// Single property with URL
+			"single": {
+				"params": [ "#one{background:url(http://www.example1.com?a=semi;);}" ],
+				"expect": "#one{background:url(http\\://www.example1.com?a=semi\\;);}"
+			},
+
+			// Many properties with URL
+			"many": {
+				"paramjoin": "",
+				"params": [
+					"#one{background:url(http://www.example1.com?a=semi;);}",
+					"#two{background:url(http://www.example2.com?a=semi;);}",
+					"#three{background:url(http://www.example3.com?a=semi;);}",
+					"#four{background:url(http://www.example4.com?a=semi;);}"
+				],
+				"expect": [
+					"#one{background:url(http\\://www.example1.com?a=semi\\;);}",
+					"#two{background:url(http\\://www.example2.com?a=semi\\;);}",
+					"#three{background:url(http\\://www.example3.com?a=semi\\;);}",
+					"#four{background:url(http\\://www.example4.com?a=semi\\;);}"
+				]
+			}
+		},
+
+		// Combines all of the above methods
+		"trim": {
+			"combined": {
+				"paramjoin": "\n\t",
+				"params": [
+					"\n\n\n\n\t\t\n",
+					"\n\t\t\t\t\t#red > div.today + b.old, body.broken, #wtf {\n\n",
+					"\t\n\tbackground: url(\"http://www.example1.com?a=semi;\");;;;\n\n\n",
+					"\t\tborder: 1px solid red;;;;;\n\t\n\t",
+					"\tcolor: white;;;;;\n\t\n",
+					"\n\t}\n\n\n",
+					"#next \t\t {\n",
+					"\t\n\tbackground: url(\"http://www.example2.com?a=semi;\");;;;\n\n\n",
+					"\n}\n\n"
+				],
+				"expect": [
+					"#red>div.today+b.old,body.broken,#wtf{",
+					"background: url(http\\://www.example1.com?a=semi\\;);",
+					"border: 1px solid red;",
+					"color: white;",
+					"}",
+					"#next{",
+					"background: url(http\\://www.example2.com?a=semi\\;);",
+					"}"
 				]
 			}
 		}
