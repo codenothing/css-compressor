@@ -61,7 +61,7 @@ Class CSSCompression_Compress
 	 */ 
 	public function compress( $css ) {
 		// Do a little tokenizing, compress each property individually
-		list( $selectors, $details, $import, $media, $fontface ) = $this->Setup->setup( $css );
+		list( $selectors, $details, $import, $media, $fontface, $unknown ) = $this->Setup->setup( $css );
 
 		// Mark number of selectors pre-combine
 		$this->stats['before']['selectors'] = count( $selectors );

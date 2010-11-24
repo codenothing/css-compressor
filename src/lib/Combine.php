@@ -12,10 +12,26 @@ Class CSSCompression_Combine
 	 *
 	 * @class Control: Compression Controller
 	 * @param (array) options: Reference to options
+	 * @param (regex) rcsw: Border/Outline matching
+	 * @param (regex) raural: Aurual matching
+	 * @param (regex) rmp: Margin/Padding matching
+	 * @param (regex) rborder: Border matching
+	 * @param (regex) rfont: Font matching
+	 * @param (regex) rbackground: Background matching
+	 * @param (regex) rlist: List style matching
+	 * @param (regex) rimportant: Checking props for uncombinables
 	 * @param (array) methods: List of options with their corresponding handler
 	 */
 	private $Control;
 	private $options;
+	private $rcsw = "/(border|outline)-(color|style|width):(.*?)(?<!\\\);/";
+	private $raural = "/(cue|pause)-(before|after):(.*?)(?<!\\\);/";
+	private $rmp = "/(margin|padding)-(top|right|bottom|left):(.*?)(?<!\\\);/";
+	private $rborder = "/(border)-(top|right|bottom|left):(.*?)(?<!\\\);/";
+	private $rfont = "/(font|line)-(style|variant|weight|size|height|family):(.*?)(?<!\\\);/";
+	private $rbackground = "/background-(color|image|repeat|attachment|position):(.*?)(?<!\\\);/";
+	private $rlist = "/list-style-(type|position|image):(.*?)(?<!\\\);/";
+	private $rimportant = "/inherit|\!important|\s/i";
 	private $methods = array(
 		'csw-combine' => 'combineCSWproperties',
 		'auralcp-combine' => 'combineAuralCuePause',
@@ -61,8 +77,7 @@ Class CSSCompression_Combine
 	 */ 
 	private function combineCSWproperties( $val ) {
 		$storage = array();
-		$pattern = "/(border|outline)-(color|style|width):(.*?);/is";
-		preg_match_all( $pattern, $val, $matches );
+		preg_match_all( $this->rcsw, $val, $matches );
 
 		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 			$a = strtolower( $matches[ 1 ][ $i ] );
@@ -99,8 +114,7 @@ Class CSSCompression_Combine
 	 */ 
 	private function combineAuralCuePause( $val ) {
 		$storage = array();
-		$pattern = "/(cue|pause)-(before|after):(.*?);/i";
-		preg_match_all( $pattern, $val, $matches );
+		preg_match_all( $this->raural, $val, $matches );
 
 		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 			$a = strtolower( $matches[ 1 ][ $i ] );
@@ -137,8 +151,7 @@ Class CSSCompression_Combine
 	 */ 
 	private function combineMPproperties( $val ) {
 		$storage = array();
-		$pattern = "/(margin|padding)-(top|right|bottom|left):(.*?);/i";
-		preg_match_all( $pattern, $val, $matches );
+		preg_match_all( $this->rmp, $val, $matches );
 
 		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++){
 			if ( ! isset( $storage[ $matches[1][$i] ] ) ) {
@@ -197,8 +210,7 @@ Class CSSCompression_Combine
 	 */
 	private function combineBorderDefinitions( $val ) {
 		$storage = array();
-		$pattern = "/(border)-(top|right|bottom|left):(.*?);/i";
-		preg_match_all( $pattern, $val, $matches );
+		preg_match_all( $this->rborder, $val, $matches );
 
 		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 			$a = $matches[1][$i];
@@ -235,8 +247,7 @@ Class CSSCompression_Combine
 	 */ 
 	private function combineFontDefinitions( $val ) {
 		$storage = array();
-		$pattern = "/(font|line)-(style|variant|weight|size|height|family):(.*?);/i";
-		preg_match_all( $pattern, $val, $matches );
+		preg_match_all( $this->rfont, $val, $matches );
 
 		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 			// Store each property in it's full state
@@ -297,8 +308,7 @@ Class CSSCompression_Combine
 	 */ 
 	private function combineBackgroundDefinitions( $val ) {
 		$storage = array();
-		$pattern = "/background-(color|image|repeat|attachment|position):(.*?);/i";
-		preg_match_all( $pattern, $val, $matches );
+		preg_match_all( $this->rbackground, $val, $matches );
 
 		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
 			// Store each property in it's full state
@@ -353,8 +363,7 @@ Class CSSCompression_Combine
 	 */ 
 	private function combineListProperties( $val ) {
 		$storage = array();
-		$pattern = "/list-style-(type|position|image):(.*?);/i";
-		preg_match_all( $pattern, $val, $matches );
+		preg_match_all( $this->rlist, $val, $matches );
 
 		// Store secondhand prop
 		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
@@ -399,14 +408,14 @@ Class CSSCompression_Combine
 	private function checkUncombinables( $obj ) {
 		if ( is_array( $obj ) ) {
 			foreach ( $obj as $item ) {
-				if ( preg_match( "/inherit|\!important|\s/i", $item ) ) {
+				if ( preg_match( $this->rimportant, $item ) ) {
 					return true;
 				}
 			}
 			return false;
 		}
 		else {
-			return preg_match( "/inherit|\!important|\s/i", $obj );
+			return preg_match( $this->rimportant, $obj );
 		}
 	}
 

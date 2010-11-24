@@ -191,9 +191,21 @@ Class CSScompressionUnitTest
 
 		while ( ( $file = readdir( $handle ) ) !== false ) {
 			if ( preg_match( "/\.css$/", $file ) ) {
+				// Pit has special needs
+				if ( $file == 'pit.css' ) {
+					$this->compressor->option( 'readability', CSSCompression::READ_MAX );
+					$this->compressor->option( 'pseduo-space', false );
+				}
+
+				// Mark the result
 				$before = trim( file_get_contents( BEFORE . $file ) );
 				$after = trim( file_get_contents( AFTER . $file ) );
 				$this->mark( $file, "full", $this->compressor->compress( $before ) === $after );
+
+				// Reset pits special needs
+				if ( $file == 'pit.css' ) {
+					$this->setOptions();
+				}
 			}
 		}
 	}

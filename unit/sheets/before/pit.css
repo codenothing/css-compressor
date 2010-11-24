@@ -1,0 +1,81 @@
+/**
+
+This is just a cluster of various templates that can be compressed
+
+**/
+
+/* Some imports and charset */
+@charset 'utf-8';
+@import url("import4.css") tv, print;
+@import url("yesterday.css");
+@import url("today.css");
+
+/* Get some media action in there */
+@media all {
+	* html div {
+		color: black;
+		font-size: 12pt;
+	}
+
+	div > p.example {
+		font-size: 15px;
+	}
+
+	h1, h2, h3 > a {
+		font-size: 25.3pt;
+	}
+}
+
+
+/* Thank you Paul Irish - http://paulirish.com/2009/bulletproof-font-face-implementation-syntax/ */
+@font-face {
+	font-family: 'Graublau Web';
+	src: url('GraublauWeb.eot');
+	src: local('☺'),
+		url('GraublauWeb.otf') format('opentype');
+}
+
+/* basic elements */
+body > div + a :first-child {
+	color: black;
+	background-color: white;
+	background-image: url(http://www.example.com/body-bg.png?a=semi;);
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10.0px 0.001px 010.0px 0.001px;
+}
+
+p, a:hover, p:hover {
+	font-family: gerogia, serif;
+	font-size: 12.0px;
+	line-height: -1pt;
+	font-weight: bold;
+	font-variant: small-caps;
+	text-align: justify;
+	color: #FF0000;
+	background: #AC54BD;
+}
+
+pre {
+	color: red;
+}
+
+code {
+	color: red;
+}
+
+div.code {
+	color: red;
+}
+
+div.same {
+	color: blue;
+	font-size: 15.2%;
+}
+
+div.same {
+	margin: 20.0px 20px;
+	background: red;
+}

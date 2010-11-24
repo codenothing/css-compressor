@@ -1,0 +1,50 @@
+@charset 'utf-8';
+@import url(import4.css) tv,print;
+@import url(yesterday.css);
+@import url(today.css);
+
+@font-face {
+	font-family:'Graublau Web';
+	src:url(GraublauWeb.eot);
+	src:local('☺'),url(GraublauWeb.otf) format('opentype')
+}
+
+@media all{
+	* html div {
+		color: #000;
+		font-size: 12pt
+	}
+	
+	div > p.example {
+		font-size: 15px
+	}
+	
+	h1, h2, h3 > a {
+		font-size: 25.3pt
+	}
+}
+
+body > div + a :first-child {
+	color: #000;
+	background: #fff url(http://www.example.com/body-bg.png?a=semi;);
+	margin: 0 auto;
+	padding: 10px .001px
+}
+
+p, a:hover, p:hover {
+	font: small-caps 700 12px/-1pt gerogia,serif;
+	text-align: justify;
+	color: red;
+	background: #ac54bd
+}
+
+pre, code, div.code {
+	color: red
+}
+
+div.same {
+	color: blue;
+	font-size: 15.2%;
+	margin: 20px;
+	background: red
+}
