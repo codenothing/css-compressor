@@ -16,7 +16,7 @@ Class CSSCompression_Control
 	 * @param (array) stats: Holds compression stats
 	 */ 
 	public $css = '';
-	public $mode = '';
+	public $mode = 'custom';
 	public $options = array();
 	public $stats = array();
 

@@ -85,6 +85,7 @@ Class CSSCompression_Option
 	 */ 
 	public function merge( $options = array() ) {
 		if ( $options && is_array( $options ) && count( $options ) ) {
+			$this->Control->mode = 'custom';
 			foreach ( $this->options as $key => $value ) {
 				if ( ! isset( $options[ $key ] ) ) {
 					continue;

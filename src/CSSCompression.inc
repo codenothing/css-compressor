@@ -140,12 +140,12 @@ Class CSSCompression
 	/**
 	 * Static Helpers
 	 *
-	 * @instance expressi: Use a separate instance from singleton access 
+	 * @instance express: Use a separate instance from singleton access 
 	 * @instance instance: Saved instance of CSSCompression
 	 * @param (array) rjson: Array of patterns and their 
 	 *     replacements to clean out comments in a josn file
 	 */
-	private static $expressi;
+	private static $express;
 	private static $instance;
 	private static $rjson = array(
 		'patterns' => array(
@@ -176,7 +176,7 @@ Class CSSCompression
 		if ( $css ) {
 			// Allow passing options/mode only
 			if ( is_array( $css ) || ( strlen( $css ) < 15 && array_key_exists( $css, self::$modes ) ) ) {
-				$this->Control->Option->merge( $options );
+				$this->Control->Option->merge( $css );
 			}
 			else {
 				$this->css = $this->Control->compress( $css, $options );
@@ -253,12 +253,12 @@ Class CSSCompression
 	 * @param (array|string) options: Array of options or mode to use.
 	 */
 	public static function express( $css = NULL, $options = NULL ) {
-		if ( ! self::$expressi ) {
-			self::$expressi = new CSSCompression();
+		if ( ! self::$express ) {
+			self::$express = new CSSCompression();
 		}
 
-		self::$expressi->reset();
-		return self::$expressi->compress( $css, $options );
+		self::$express->reset();
+		return self::$express->compress( $css, $options );
 	}
 
 	/**
