@@ -14,5 +14,4 @@ include( $root . '/unit.php' );
 
 // Unit Testing is on autorun
 new CSScompressionUnitTest();
-
 ?>

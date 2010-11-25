@@ -4,7 +4,6 @@
  * [DATE]
  * Corey Hart @ http://www.codenothing.com
  */ 
-error_reporting( E_ALL );
 
 // Controller handles all subclass loading
 require( dirname(__FILE__) . '/lib/Exception.php' );
