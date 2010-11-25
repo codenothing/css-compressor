@@ -124,11 +124,21 @@ Class CSSCompression_Control
 	}
 
 	/**
-	 * Cleans out class variables for next run
+	 * Resets options to their defaults, and flushes out variables
 	 *
 	 * @params none
 	 */
 	public function reset(){
+		$this->Option->reset();
+		$this->flush();
+	}
+
+	/**
+	 * Cleans out class variables for next run
+	 *
+	 * @params none
+	 */
+	public function flush(){
 		$this->css = '';
 		$this->stats = array(
 			'before' => array(
@@ -154,7 +164,7 @@ Class CSSCompression_Control
 	 */
 	public function compress( $css = NULL, $options = NULL ) {
 		// Reset and merge options
-		$this->reset();
+		$this->flush();
 		$this->Option->merge( $options );
 
 		// Initial stats

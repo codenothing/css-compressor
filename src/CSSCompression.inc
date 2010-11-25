@@ -266,7 +266,16 @@ Class CSSCompression
 	 * @params none
 	 */
 	public function reset(){
-		$this->Control->reset();
+		return $this->Control->reset();
+	}
+
+	/**
+	 * Cleans out class variables for next run
+	 *
+	 * @params none
+	 */
+	public function flush(){
+		return $this->Control->flush();
 	}
 
 	/**
