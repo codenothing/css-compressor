@@ -99,7 +99,7 @@ Class CSSCompression_Selectors
 			return call_user_func_array( array( $this, $method ), $args );
 		}
 		else {
-			throw new Exception( "Unknown method in Color Class - " . $method );
+			throw new CSSCompression_Exception( "Unknown method in Color Class - " . $method );
 		}
 	}
 };

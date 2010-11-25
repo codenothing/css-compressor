@@ -186,7 +186,7 @@ Class CSSCompression_Control
 			return $this->$class->access( $method, $args );
 		}
 		else {
-			throw new Exception( "Unknown Class Access - " . $class );
+			throw new CSSCompression_Exception( "Unknown Class Access - " . $class );
 		}
 	}
 };

@@ -37,11 +37,11 @@ Class CSSCompression_Color
 		$this->options = &$control->Option->options;
 
 		if ( ! self::$color2hex ) {
-			if ( ( self::$color2hex = CSSCompression::getJSON( 'long2hex-colors.json' ) ) instanceof Exception ) {
+			if ( ( self::$color2hex = CSSCompression::getJSON( 'long2hex-colors.json' ) ) instanceof CSSCompression_Exception ) {
 				throw self::$color2hex;
 			}
 
-			if ( ( self::$hex2short = CSSCompression::getJSON( 'hex2short-colors.json' ) ) instanceof Exception ) {
+			if ( ( self::$hex2short = CSSCompression::getJSON( 'hex2short-colors.json' ) ) instanceof CSSCompression_Exception ) {
 				throw self::$hex2short;
 			}
 		}
@@ -173,7 +173,7 @@ Class CSSCompression_Color
 			return call_user_func_array( array( $this, $method ), $args );
 		}
 		else {
-			throw new Exception( "Unknown method in Color Class - " . $method );
+			throw new CSSCompression_Exception( "Unknown method in Color Class - " . $method );
 		}
 	}
 };
