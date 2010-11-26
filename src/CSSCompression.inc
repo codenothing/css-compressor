@@ -225,8 +225,8 @@ Class CSSCompression
 	 *
 	 *	- Passing no arguments returns the entire options array
 	 *	- Passing a single name argument returns the value for the option
-	 * 	- Passing both a name and value, sets the value to the name key, and returns the value
 	 *	- Passing an array will merge the options with the array passed, for object like extension
+	 * 	- Passing both a name and value, sets the value to the name key, and returns the value
 	 *
 	 * @param (string|array) name: The key name of the option
 	 * @param (any) value: Value to set the option
