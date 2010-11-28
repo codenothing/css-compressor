@@ -217,7 +217,17 @@ Class CSSCompression
 	 * @param (string) mode: Name of mode to use.
 	 */
 	public function mode( $mode = NULL ) {
-		return $this->Control->Option->merge( $mode );
+		return $this->Control->Option->mode( $mode );
+	}
+
+	/**
+	 * Creates a new mode, or overwrites existing mode
+	 *
+	 * @param (string) mode: Name of the mode
+	 * @param (array) config: Configuration of the mode
+	 */
+	public static function addMode( $mode = NULL, $config = array() ) {
+		return is_string( $mode ) ? CSSCompression::$modes[ $mode ] = $config : NULL;
 	}
 
 	/**

@@ -103,6 +103,8 @@ Class CSSCompression_Setup
 				// Stash details (after the opening brace)
 				array_push( $details, $this->details( trim( $css[ 1 ] ) ) );
 
+				// drop the details from the stack
+				$css = array_slice( $css, 3 );
 			}
 			else {
 				array_push( $unknown, $row );
@@ -132,8 +134,14 @@ Class CSSCompression_Setup
 		// Find the end of the media section
 		while ( count( $css ) && ( $left < 1 || $left > $right ) ) {
 			$row = trim( array_shift( $css ) );
-			$left += substr_count( $row, '{' );
-			$right += substr_count( $row, '}' );
+
+			if ( $row == '{' ) {
+				$left++;
+			}
+			else if ( $row == '}' ) {
+				$right++;
+			}
+
 			$content .= $row;
 		}
 
