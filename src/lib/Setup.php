@@ -88,7 +88,7 @@ Class CSSCompression_Setup
 				$media .= $row . $this->media( $css );
 			}
 			else if ( strpos( $row, '@font-face' ) === 0 && count( $css ) >= 3 ) {
-				$fontface .= $row . $this->fontface( $css[ 1 ] );
+				$fontface .= $row . $this->fontface( trim( $css[ 1 ] ) );
 
 				// drop the details from the stack
 				$css = array_slice( $css, 3 );
@@ -145,13 +145,8 @@ Class CSSCompression_Setup
 			$content .= $row;
 		}
 
-
-		// Remove the first and last braces from the content
-		$content = substr( $content, 1 );
-		$content = substr( $content, 0, -1 );
-
-		// Compress the media section separatley
-		$content = $this->instance->compress( $content, $this->options );
+		// Compress the media section independently (remove the wrapping braces first)
+		$content = $this->instance->compress( substr( $content, 1, -1 ), $this->options );
 
 		// Formatting for anything higher then 0 readability
 		if ( $this->options['readability'] > CSSCompression::READ_NONE ) {
@@ -169,7 +164,7 @@ Class CSSCompression_Setup
 	 * @param (string) row: Font-face properties
 	 */
 	private function fontface( $row ) {
-		$row = preg_replace( $this->rfontface['patterns'], $this->rfontface['replacements'], trim( $row ) );
+		$row = preg_replace( $this->rfontface['patterns'], $this->rfontface['replacements'], $row );
 		if ( $this->options['readability'] > CSSCompression::READ_NONE ) {
 			return " {\n\t" . preg_replace( $this->rsemicolon, ";\n\t", $row ) . "\n}\n";
 		}
