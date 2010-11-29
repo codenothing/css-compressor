@@ -46,7 +46,7 @@ Class CSSCompression_Selectors
 	 *
 	 * @param (array) selectors: Array of selectors
 	 */
-	public function selectors( $selectors = array() ) {
+	public function selectors( &$selectors = array() ) {
 		foreach ( $selectors as &$selector ) {
 			// Lowercase selectors for combining
 			if ( $this->options['lowercase-selectors'] ) {
@@ -96,7 +96,12 @@ Class CSSCompression_Selectors
 	 */
 	public function access( $method, $args ) {
 		if ( method_exists( $this, $method ) ) {
-			return call_user_func_array( array( $this, $method ), $args );
+			if ( $method == 'selectors' ) {
+				return $this->selectors( $args[ 0 ] );
+			}
+			else {
+				return call_user_func_array( array( $this, $method ), $args );
+			}
 		}
 		else {
 			throw new CSSCompression_Exception( "Unknown method in Color Class - " . $method );

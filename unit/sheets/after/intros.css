@@ -1,0 +1,83 @@
+@charset "UTF-8";
+@import "stuff.css";
+@import url(stuff.css);
+@import url(stuff.css) print,handheld;
+@import url(stuff.css) screen and (color);
+@import "stuff.css" screen and (color),projection and (min-color: 256);
+@namespace svg "http://www.w3.org/2000/svg";
+@namespace svg url(http://www.w3.org/2000/svg);
+@namespace "http://example.org";
+@namespace empty "";
+@namespace "";
+@somefuturehack "testing.spec";
+@media print and (color),projection and (device-aspect-ratio: 16/9) {
+	@page :left {
+		@bottom-left-corner {
+			margin: 2cm
+		}
+	}
+}
+
+@media only screen and (max-device-width: 480px) {
+	#bigbanner {
+		display: none
+	}
+}
+
+@media print {
+	@page mine :left {
+		@bottom-left-corner {
+			margin: 2cm
+		}
+	}
+}
+
+@keyframes 'diagonal-slide' {
+	from {
+		left: 0;
+		top: 0
+	}
+	
+	to {
+		left: 100px;
+		top: 100px
+	}
+}
+
+@-webkit-keyframes pulse {
+	0% {
+		background: red;
+		opacity: 1.0;
+		-webkit-transform: scale(1.0) rotate(0deg)
+	}
+	
+	33% {
+		background: blue;
+		opacity: .75;
+		-webkit-transform: scale(1.1) rotate(-5deg)
+	}
+	
+	67% {
+		background: #080;
+		opacity: .5;
+		-webkit-transform: scale(1.1) rotate(5deg)
+	}
+	
+	100% {
+		background: red;
+		opacity: 1.0;
+		-webkit-transform: scale(1.0) rotate(0deg)
+	}
+}
+
+@page {
+	size: A4 landscape
+}
+
+@media screen {
+	margin: 20px
+}
+
+#mydiv {
+	color: red
+}

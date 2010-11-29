@@ -61,56 +61,45 @@ Class CSSCompression_Compress
 	 */ 
 	public function compress( $css ) {
 		// Do a little tokenizing, compress each property individually
-		list( $selectors, $details, $import, $media, $fontface, $unknown ) = $this->Setup->setup( $css );
+		$setup = $this->Setup->setup( $css );
 
 		// Mark number of selectors pre-combine
-		$this->stats['before']['selectors'] = count( $selectors );
+		$this->stats['before']['selectors'] = count( $setup['selectors'] );
 
 		// Do selector specific compressions
-		$selectors = $this->Selectors->selectors( $selectors );
+		$this->Selectors->selectors( $setup['selectors'] );
 
 		// Look at each group of properties as a whole, and compress/combine similiar definitions
-		list( $selectors, $details ) = $this->Combine->combine( $selectors, $details );
+		$this->Combine->combine( $setup['selectors'], $setup['details'] );
 
 		// If order isn't important, run comination functions before and after compressions to catch all instances
 		// Be sure to prune before hand for higher chance of matching
 		if ( $this->options['organize'] ) {
-			list( $selectors, $details ) = $this->Cleanup->cleanup( $selectors, $details );
-			list( $selectors, $details ) = $this->Organize->organize( $selectors, $details );
+			$this->Cleanup->cleanup( $setup['selectors'], $setup['details'] );
+			$this->Organize->organize( $setup['selectors'], $setup['details'] );
 		}
 
 		// Do final maintenace work, remove injected property/values
-		list( $selectors, $details ) = $this->Cleanup->cleanup( $selectors, $details );
+		$this->Cleanup->cleanup( $setup['selectors'], $setup['details'] );
 
 		// Run final counters before full cleanup
-		$this->finalCount( $selectors, $details );
+		$this->finalCount( $setup['selectors'], $setup['details'] );
 
 		// Format css to users preference
-		$css = $this->Format->readability( $this->options['readability'], $selectors, $details );
+		$css = $this->Format->readability( $this->options['readability'], $setup['selectors'], $setup['details'] );
+
+		// Check readability before adding intros
+		foreach ( $setup as $value ) {
+			if ( $value && is_string( $value ) ) {
+				$css = $value . $css;
+			}
+		}
 
 		// Remove escapables
 		$css = $this->Cleanup->removeEscapedCharacters( $css );
 
-		// Check readability before adding imports/media/charset
-		$newline = $this->options['readability'] > CSSCompression::READ_NONE ? "\n" : '';
-
-		// Add media before fontface & imports/charset
-		if ( $media ) {
-			$css = $media . $newline . $css;
-		}
-
-		// Add fontface befpre imports/charset
-		if ( $fontface ) {
-			$css = preg_replace( "/;}$/", "}", $fontface ) . $newline . $css;
-		}
-
-		// Imports and charset have to go first
-		if ( $import ) {
-			$css = str_replace( ';', ';' . $newline, $import ) . $newline . $css;
-		}
-
 		// Mark final file size
-		$this->stats['after']['size'] = strlen( $css );
+		$this->stats['after']['size'] = strlen( $css = trim( $css ) );
 
 		// Return compressed css
 		return $css;

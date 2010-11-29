@@ -28,7 +28,7 @@ Class CSSCompression_Individuals
 	private $rdirectional = "/^(margin|padding)$/";
 	private $rnoneprop = "/^(border|background)/";
 	private $rnone = "/\snone\s/";
-	private $rfilter = "/[\"']?PROGID:DXImageTransform.Microsoft.Alpha\(Opacity=(\d+)\)[\"']?/i";
+	private $rfilter = "/[\"']?PROGID\\\?:DXImageTransform.Microsoft.Alpha\(Opacity=(\d+)\)[\"']?/i";
 	private $rspace = "/(?<!\\\)\s/";
 	private $weights = array(
 		"lighter" => 100,

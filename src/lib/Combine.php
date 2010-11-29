@@ -58,7 +58,7 @@ Class CSSCompression_Combine
 	 * @param (array) selectors: Array of selectors
 	 * @param (array) details: Array of details
 	 */
-	public function combine( $selectors = array(), $details = array() ) {
+	public function combine( &$selectors = array(), &$details = array() ) {
 		foreach ( $details as &$value ) {
 			foreach ( $this->methods as $option => $fn ) {
 				if ( $this->options[ $option ] ) {
@@ -452,7 +452,12 @@ Class CSSCompression_Combine
 	 */
 	public function access( $method, $args ) {
 		if ( method_exists( $this, $method ) ) {
-			return call_user_func_array( array( $this, $method ), $args );
+			if ( $method == 'combine' ) {
+				return $this->combine( $args[ 0 ], $args[ 1 ] );
+			}
+			else {
+				return call_user_func_array( array( $this, $method ), $args );
+			}
 		}
 		else {
 			throw new CSSCompression_Exception( "Unknown method in Color Class - " . $method );

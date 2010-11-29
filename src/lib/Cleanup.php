@@ -15,14 +15,18 @@ Class CSSCompression_Cleanup
 	 * @param (regex) rsemi: Checks for last semit colon in details
 	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
 	 * @param (regex) rcolon: Checks for colon without an escape '\' character before it
-	 * @param (regex) rurl: Matches url definition
+	 * @param (array) rescape: Array of patterns for groupings that should be escaped
 	 * @param (array) escaped: Contains patterns and replacements for espaced characters
 	 */
 	private $Control;
 	private $rsemi = "/;$/";
 	private $rsemicolon = "/(?<!\\\);/";
 	private $rcolon = "/(?<!\\\):/";
-	private $rurl = "/url\((.*?)\)/";
+	private $rescape = array(
+		"/(url\()(.*?)(\))/",
+		"/(\")(.*?)(\")/",
+		"/(')(.*?)(')/",
+	);
 	private $escaped = array(
 		'patterns'=> array( "\\:", "\\;", "\\ " ),
 		'replacements' => array( ':', ';', ' ' )
@@ -42,9 +46,8 @@ Class CSSCompression_Cleanup
 	 *
 	 * @param (array) selectors: Array of selectors
 	 * @param (array) details: Array of details
-	 * @param (boolean) simple: If true, keeps injections
 	 */
-	public function cleanup( $selectors, $details ) {
+	public function cleanup( &$selectors, &$details ) {
 		foreach ( $details as &$value ) {
 			$value = $this->removeMultipleDefinitions( $value );
 			$value = $this->removeUnnecessarySemicolon( $value );
@@ -59,13 +62,15 @@ Class CSSCompression_Cleanup
 	 * @params none
 	 */ 
 	public function removeEscapedCharacters( $css ) {
-		$search = array( ':', ';', ' ' );
-		$replace = array( "\\:", "\\;", "\\ " );
-		$start = 0;
-		while ( preg_match( $this->rurl, $css, $match, PREG_OFFSET_CAPTURE, $start ) ) {
-			$value = 'url(' . str_replace( $this->escaped['patterns'], $this->escaped['replacements'], $match[ 1 ][ 0 ] ) . ')';
-			$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
-			$start = $match[ 1 ][ 1 ];
+		foreach ( $this->rescape as $regex ) {
+			$start = 0;
+			while ( preg_match( $regex, $css, $match, PREG_OFFSET_CAPTURE, $start ) ) {
+				$value = $match[ 1 ][ 0 ]
+					. str_replace( $this->escaped['patterns'], $this->escaped['replacements'], $match[ 2 ][ 0 ] )
+					. $match[ 3 ][ 0 ];
+				$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+				$start = $match[ 0 ][ 1 ] + strlen( $value ) + 1;
+			}
 		}
 
 		return $css;
@@ -115,7 +120,12 @@ Class CSSCompression_Cleanup
 	 */
 	public function access( $method, $args ) {
 		if ( method_exists( $this, $method ) ) {
-			return call_user_func_array( array( $this, $method ), $args );
+			if ( $method == 'cleanup' ) {
+				return $this->cleanup( $args[ 0 ], $args[ 1 ] );
+			}
+			else {
+				return call_user_func_array( array( $this, $method ), $args );
+			}
 		}
 		else {
 			throw new CSSCompression_Exception( "Unknown method in Color Class - " . $method );

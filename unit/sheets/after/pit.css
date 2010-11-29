@@ -2,14 +2,13 @@
 @import url(import4.css) tv,print;
 @import url(yesterday.css);
 @import url(today.css);
-
 @font-face {
 	font-family:'Graublau Web';
 	src:url(GraublauWeb.eot);
 	src:local('☺'),url(GraublauWeb.otf) format('opentype')
 }
 
-@media all{
+@media all {
 	* html div {
 		color: #000;
 		font-size: 12pt

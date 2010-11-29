@@ -36,7 +36,7 @@ Class CSSCompression_Organize
 	 * @param (array) selectors: Array of selectors, map directly to details
 	 * @param (array) details: Array of details, map directly to selectors
 	 */
-	public function organize( $selectors = array(), $details = array() ) {
+	public function organize( &$selectors = array(), &$details = array() ) {
 		// Combining defns based on similar selectors
 		list ( $selectors, $details ) = $this->reduceSelectors( $selectors, $details );
 
