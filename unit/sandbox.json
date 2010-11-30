@@ -336,15 +336,11 @@
 			},
 			"first-child tree": {
 				"params": [ "a:first-child>a" ],
-				"expect": "a:first-child >a"
+				"expect": "a:first-child>a"
 			},
 			"first-child adds": {
 				"params": [ "a:first-child+a" ],
-				"expect": "a:first-child +a"
-			},
-			"first-child brace": {
-				"params": [ "a:first-child{" ],
-				"expect": "a:first-child {"
+				"expect": "a:first-child+a"
 			},
 			"first-child empty": {
 				"params": [ "a:first-child" ],
@@ -356,7 +352,7 @@
 			},
 			"multiple": {
 				"params": [ "a:hover>b:hover.test+pre.old:hover" ],
-				"expect": "a:hover >b:hover.test+pre.old:hover "
+				"expect": "a:hover>b:hover.test+pre.old:hover "
 			},
 			"nothing": {
 				"params": [ "a:hover.test" ],
@@ -375,7 +371,7 @@
 					[ "A:hover>B:hover.test+PRE.old:hover", "A:first-child B" ]
 				],
 				"join": "|",
-				"expect": "a:hover >b:hover.test+pre.old:hover |a:first-child b"
+				"expect": "a:hover>b:hover.test+pre.old:hover |a:first-child b"
 			}
 		}
 	},
