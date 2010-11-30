@@ -134,6 +134,11 @@ Corey Hart @ http://www.codenothing.com
 					Removes the last semicolon of a property set
 					<div class='example'>{margin: 2px; color: blue;} -&gt; {margin: 2px; color: blue}</div>
 				</label>
+				<label>
+					<input type='checkbox' name='rm-multi-define' checked='checked' />
+					Removes multiply defined properties within rule sets. If you enable any of the combinations,
+					it is <b>strongly</b> recomended to check this one off.
+				</label>
 			</div>
 			<textarea name='css'></textarea>
 		</form>

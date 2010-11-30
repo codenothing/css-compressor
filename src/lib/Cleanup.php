@@ -12,6 +12,7 @@ Class CSSCompression_Cleanup
 	 * Cleanup patterns
 	 *
 	 * @class $Control: Compression Controller
+	 * @param (array) options: Reference to options
 	 * @param (regex) rsemi: Checks for last semit colon in details
 	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
 	 * @param (regex) rcolon: Checks for colon without an escape '\' character before it
@@ -19,17 +20,18 @@ Class CSSCompression_Cleanup
 	 * @param (array) escaped: Contains patterns and replacements for espaced characters
 	 */
 	private $Control;
+	private $options = array();
 	private $rsemi = "/;$/";
 	private $rsemicolon = "/(?<!\\\);/";
 	private $rcolon = "/(?<!\\\):/";
 	private $rescape = array(
 		"/(url\()(.*?)(\))/",
-		"/(\")(.*?)(\")/",
+		"/(\")(.*?)((?<!\\\)\")/",
 		"/(')(.*?)(')/",
 	);
 	private $escaped = array(
-		'patterns'=> array( "\\:", "\\;", "\\ " ),
-		'replacements' => array( ':', ';', ' ' )
+		'search' => array( "\\:", "\\;", "\\ ", "\\}", "\\{", "\\@" ),
+		'replace' => array( ':', ';', ' ', '}', '{', '@' ),
 	);
 
 	/**
@@ -39,6 +41,7 @@ Class CSSCompression_Cleanup
 	 */
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
+		$this->options = &$control->Option->options;
 	}
 
 	/**
@@ -49,7 +52,9 @@ Class CSSCompression_Cleanup
 	 */
 	public function cleanup( &$selectors, &$details ) {
 		foreach ( $details as &$value ) {
-			$value = $this->removeMultipleDefinitions( $value );
+			if ( $this->options['rm-multi-define'] ) {
+				$value = $this->removeMultipleDefinitions( $value );
+			}
 			$value = $this->removeUnnecessarySemicolon( $value );
 		}
 
@@ -66,7 +71,7 @@ Class CSSCompression_Cleanup
 			$start = 0;
 			while ( preg_match( $regex, $css, $match, PREG_OFFSET_CAPTURE, $start ) ) {
 				$value = $match[ 1 ][ 0 ]
-					. str_replace( $this->escaped['patterns'], $this->escaped['replacements'], $match[ 2 ][ 0 ] )
+					. str_replace( $this->escaped['search'], $this->escaped['replace'], $match[ 2 ][ 0 ] )
 					. $match[ 3 ][ 0 ];
 				$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
 				$start = $match[ 0 ][ 1 ] + strlen( $value ) + 1;

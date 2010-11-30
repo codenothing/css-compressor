@@ -96,6 +96,11 @@ Class CSSCompression
 		// ({margin: 2px; color: blue;} -> {margin: 2px; color: blue})
 		'unnecessary-semicolons' => true,
 
+		// Removes multiply defined properties
+		// STRONGLY suggested to keep this true, unless you have
+		// a box model or other hacks
+		'rm-multi-define' => true,		
+
 		// Readibility of Compressed Output, Defaults to none
 		'readability' => 0,
 	);
@@ -133,6 +138,7 @@ Class CSSCompression
 			'font-combine' => false,
 			'background-combine' => false,
 			'list-combine' => false,
+			'rm-multi-define' => false,		
 		),
 		'sane' => array(
 			'color-hex2shortcolor' => false,

@@ -1,0 +1,15 @@
+/*
+
+Thanks to yuicompressor for this test case: http://developer.yahoo.com/yui/compressor/css.html
+
+*/
+#elem {
+	width: 100px; /* IE */
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	width: 200px; /* others */
+}
+
+html > body #elem {
+	width: 200px; /* others */
+}

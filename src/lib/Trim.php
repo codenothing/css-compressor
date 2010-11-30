@@ -13,14 +13,19 @@ Class CSSCompression_Trim
 	 * @class Control: Compression Controller
 	 * @param (array) options: Reference to options
 	 * @param (array) rescape: Array of patterns of groupings that should be escaped
+	 * @param (array) escaped: Array of characters that need to be escaped
 	 * @param (array) trimmings: Stylesheet trimming patterns/replacements
 	 */
 	private $Control;
 	private $options = array();
 	private $rescape = array(
 		"/(url\()(.*?)(\))/",
-		"/(\")(.*?)(\")/",
+		"/(\")(.*?)((?<!\\\)\")/",
 		"/(')(.*?)(')/",
+	);
+	private $escaped = array(
+		'search' => array( ':', ';', ' ', '}', '{', '@' ),
+		'replace' => array( "\\:", "\\;", "\\ ", "\\}", "\\{", "\\@" ),
 	);
 	private $trimmings = array(
 		'patterns' => array(
@@ -76,12 +81,12 @@ Class CSSCompression_Trim
 	 * @param (string) css: Full stylesheet
 	 */
 	private function escape( $css ) {
-		$search = array( ':', ';', ' ' );
-		$replace = array( "\\:", "\\;", "\\ " );
 		foreach ( $this->rescape as $regex ) {
 			$start = 0;
 			while ( preg_match( $regex, $css, $match, PREG_OFFSET_CAPTURE, $start ) ) {
-				$value = $match[ 1 ][ 0 ] . str_replace( $search, $replace, $match[ 2 ][ 0 ] ) . $match[ 3 ][ 0 ];
+				$value = $match[ 1 ][ 0 ]
+					. str_replace( $this->escaped['search'], $this->escaped['replace'], $match[ 2 ][ 0 ] )
+					. $match[ 3 ][ 0 ];
 				$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
 				$start = $match[ 0 ][ 1 ] + strlen( $value ) + 1;
 			}

@@ -41,9 +41,9 @@ Class CSSCompression_Setup
 	);
 	private $rsetup = array(
 		'patterns' => array(
-			"/{/",
-			"/}/",
-			"/@/",
+			"/(?<!\\\){/",
+			"/(?<!\\\)}/",
+			"/(?<!\\\)@/",
 			"/(@(charset|import)[^;]*;)/",
 		),
 		'replacements' => array(

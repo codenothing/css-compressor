@@ -197,11 +197,18 @@ Class CSScompressionUnitTest
 	private function testSheets(){
 		$handle = opendir( BEFORE );
 		while ( ( $file = readdir( $handle ) ) !== false ) {
+			$reset = false;
 			if ( preg_match( "/\.css$/", $file ) ) {
 				// Pit has special needs
 				if ( $file == 'pit.css' || $file == 'intros.css' ) {
 					$this->compressor->option( 'readability', CSSCompression::READ_MAX );
 					$this->compressor->option( 'pseduo-space', false );
+					$reset = true;
+				}
+				// Box-model hacks are only supported in safe mode
+				else if ( $file == 'box-model.css' ) {
+					$this->compressor->mode( 'safe' );
+					$reset = true;
 				}
 
 				// Mark the result
@@ -210,7 +217,7 @@ Class CSScompressionUnitTest
 				$this->mark( $file, "full", trim( $this->compressor->compress( $before ) ) === $after );
 
 				// Reset pits special needs
-				if ( $file == 'pit.css' || $file == 'intros.css' ) {
+				if ( $reset ) {
 					$this->setOptions();
 				}
 			}

@@ -63,7 +63,7 @@ Class CSSCompression_Option
 			return ( CSSCompression::$modes[ $mode ] = $config );
 		}
 		else if ( $mode ) {
-			return $this->mergeOptions( $mode );
+			return $this->merge( $mode );
 		}
 	}
 
