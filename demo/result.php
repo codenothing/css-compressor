@@ -17,9 +17,9 @@ Corey Hart @ http://www.codenothing.com
 // Run compression on passed script
 require("../src/CSSCompression.inc");
 
-// Ensure all options are set correctly
-foreach ( CSSCompression::$defaults as $key => $value ){
-	if ( $key == 'css' || $key == 'mode' || $key == 'readability' ) {
+// Make sure all options have a setting
+foreach ( CSSCompression::$defaults as $key => $value ) {
+	if ( $key == 'readability' ) {
 		continue;
 	}
 	$_POST[ $key ] = isset( $_POST[ $key ] ) && $_POST[ $key ] == 'on' ? true : false;

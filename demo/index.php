@@ -27,6 +27,7 @@ Corey Hart @ http://www.codenothing.com
 				Mode:
 				<select name='mode'>
 					<option value='safe'>Safe</option>
+					<option value='sane'>Sane</option>
 					<option value='medium'>Medium</option>
 					<option value='small'>Small</option>
 					<option value='custom'>Custom</option>
@@ -74,6 +75,11 @@ Corey Hart @ http://www.codenothing.com
 					<input type='checkbox' name='lowercase-selectors' checked='checked' />
 					Lowercase html tags from list
 					<div class='example'>BODY -&gt; body</div>
+				</label>
+				<label>
+					<input type='checkbox' name='pseduo-space' checked='checked' />
+					Add space after pseduo selectors, for ie6
+					<div class='example'>a:first-child{ -&gt; a:first-child {</div>
 				</label>
 				<label>
 					<input type='checkbox' name='directional-compress' checked='checked' />

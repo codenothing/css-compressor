@@ -130,7 +130,7 @@ Class CSSCompression
 	public static $modes = array(
 		'safe' => array(
 			'color-hex2shortcolor' => false,
-			'orgainze' => false,
+			'organize' => false,
 			'csw-combine' => false,
 			'auralcp-combine' => false,
 			'mp-combine' => false,

@@ -78,4 +78,6 @@ Credits
 
 [Phil DeJarnett](http://www.overzealous.com/) - Pointed out splitting(and numerous other) problems
 
+[Stoyan Stefanov](http://www.phpied.com/) - [At rules writeup](http://www.phpied.com/css-railroad-diagrams/) and test suite help.
+
 [Julien Deniau](http://www.jeuxvideo.fr/) - Pointed out escaped characters issue
