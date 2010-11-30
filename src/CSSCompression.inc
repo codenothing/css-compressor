@@ -126,6 +126,17 @@ Class CSSCompression
 		'safe' => array(
 			'color-hex2shortcolor' => false,
 			'orgainze' => false,
+			'csw-combine' => false,
+			'auralcp-combine' => false,
+			'mp-combine' => false,
+			'border-combine' => false,
+			'font-combine' => false,
+			'background-combine' => false,
+			'list-combine' => false,
+		),
+		'sane' => array(
+			'color-hex2shortcolor' => false,
+			'orgainze' => false,
 		),
 		'medium' => array(
 			'color-hex2shortcolor' => false,
