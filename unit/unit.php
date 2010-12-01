@@ -210,7 +210,7 @@ Class CSScompressionUnitTest
 					$reset = true;
 				}
 				// Box-model hacks are only supported in safe mode
-				else if ( $file == 'box-model.css' ) {
+				else if ( $file == 'box-model.css' || $file == 'preserve-strings.css' ) {
 					$this->compressor->mode( 'safe' );
 					$reset = true;
 				}

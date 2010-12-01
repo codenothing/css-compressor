@@ -4,17 +4,12 @@
 # Corey Hart @ http://www.codenothing.com
 #
 
-# New Features
+# New Features and Ehancements
 - Configuration Modes
-- pseduo-space, add space after pseduo selectors for ie6
+- pseduo-space, add space between pseduo selectors and comman/brace for ie6
 - removing leading 0 of a decimal, 0.633px -> .633px
+- handling all At Rules (charsets,media,imports,font-family,etc..)
 - handling ms filter paths
-
-# Enhancements
-- Now handling all '@' prefixes (charsets,media,imports,font-family,etc..)
+- More css hacks support, including box-modal hack
 - Removed sketchy include method in unit testing, all selectors/details defined inside function
 - Helper conversion definitions(long2hex, hex2short) are now in JSON based files.
-
-
-# Possible Breaks
-- Removing 'rm-multi-define' option, compression is worthless without it.
