@@ -28,8 +28,8 @@ Class CSSCompression_Trim
 			"/(\s+)?([,{};>\~\+])(\s+)?/s", // Remove un-needed spaces around special characters
 			"/url\((?<!\\\)\"(.*?)(?<!\\\)\"\)/s", // Remove quotes from urls
 			"/url\((?<!\\\)'(.*?)(?<!\\\)'\)/s", // Remove quotes from urls
-			"/;{2,}/", // Remove unecessary semi-colons
-			"/\s+/s", // Compress all spaces into single space
+			"/(?<!\\\);{2,}/", // Remove unecessary semi-colons
+			"/(?<!\\\)\s+/s", // Compress all spaces into single space
 		),
 		'replacements' => array(
 			'$2',
@@ -41,32 +41,38 @@ Class CSSCompression_Trim
 	);
 	private $escaped = array(
 		'search' => array(
-			':',
-			';',
-			'}',
-			'{',
-			'@',
-			',',
-			'>',
-			'+',
-			'~',
-			'/',
-			'*',
-			' ',
+			":",
+			";",
+			"}",
+			"{",
+			"@",
+			",",
+			">",
+			"+",
+			"~",
+			"/",
+			"*",
+			"\r",
+			"\n",
+			"\t",
+			" ",
 		),
 		'replace' => array(
-			'\\:',
-			'\\;',
-			'\\}',
-			'\\{',
-			'\\@',
-			'\\,',
-			'\\>',
-			'\\+',
-			'\\~',
-			'\\/',
-			'\\*',
-			'\\ ',
+			"\\:",
+			"\\;",
+			"\\}",
+			"\\{",
+			"\\@",
+			"\\,",
+			"\\>",
+			"\\+",
+			"\\~",
+			"\\/",
+			"\\*",
+			"\\r",
+			"\\n",
+			"\\t",
+			"\\ ",
 		),
 	);
 

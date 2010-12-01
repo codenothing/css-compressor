@@ -29,6 +29,17 @@ Class CSScompressionUnitTest
 	private $passes = 0;
 	private $sandbox = array();
 	private $instances = array();
+	private $sheetspecials = array(
+		'maxread' => array(
+			'pit.css',
+			'intros.css',
+		),
+		'safe' => array(
+			'box-model.css',
+			'preserve-strings.css',
+			'preserve-newline.css',
+		),
+	);
 	private $doubles = array(
 		'csszengarden.com.177.css' // Invalid css
 	);
@@ -203,14 +214,14 @@ Class CSScompressionUnitTest
 		while ( ( $file = readdir( $handle ) ) !== false ) {
 			$reset = false;
 			if ( preg_match( "/\.css$/", $file ) ) {
-				// Pit has special needs
-				if ( $file == 'pit.css' || $file == 'intros.css' ) {
+				// Sheets that require full readability
+				if ( in_array( $file, $this->sheetspecials['maxread'] ) ) {
 					$this->compressor->option( 'readability', CSSCompression::READ_MAX );
 					$this->compressor->option( 'pseduo-space', false );
 					$reset = true;
 				}
-				// Box-model hacks are only supported in safe mode
-				else if ( $file == 'box-model.css' || $file == 'preserve-strings.css' ) {
+				// Sheets requiring safe mode
+				else if ( in_array( $file, $this->sheetspecials['safe'] ) ) {
 					$this->compressor->mode( 'safe' );
 					$reset = true;
 				}
