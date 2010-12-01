@@ -330,33 +330,33 @@
 
 		// IE coughs up if there is no space after a pseduo selector
 		"pseduoSpace": {
-			"first-child comma": {
-				"params": [ "a:first-child,a,b" ],
-				"expect": "a:first-child ,a,b"
+			"first-letter comma": {
+				"params": [ "a:first-letter,a,b" ],
+				"expect": "a:first-letter ,a,b"
 			},
-			"first-child tree": {
-				"params": [ "a:first-child>a" ],
-				"expect": "a:first-child>a"
+			"first-line tree": {
+				"params": [ "a:first-line>a" ],
+				"expect": "a:first-line>a"
 			},
-			"first-child adds": {
-				"params": [ "a:first-child+a" ],
-				"expect": "a:first-child+a"
+			"first-letter adds": {
+				"params": [ "a:first-letter+a" ],
+				"expect": "a:first-letter+a"
 			},
-			"first-child empty": {
-				"params": [ "a:first-child" ],
-				"expect": "a:first-child "
+			"first-line empty": {
+				"params": [ "a:first-line" ],
+				"expect": "a:first-line "
 			},
-			"first-child space": {
-				"params": [ "a:first-child b" ],
-				"expect": "a:first-child b"
+			"first-letter space": {
+				"params": [ "a:first-letter b" ],
+				"expect": "a:first-letter b"
 			},
 			"multiple": {
-				"params": [ "a:hover>b:hover.test+pre.old:hover" ],
-				"expect": "a:hover>b:hover.test+pre.old:hover "
+				"params": [ "a:hover>b:first-letter.test+pre.old:first-line" ],
+				"expect": "a:hover>b:first-letter.test+pre.old:first-line "
 			},
 			"nothing": {
-				"params": [ "a:hover.test" ],
-				"expect": "a:hover.test"
+				"params": [ "a:first-line.test" ],
+				"expect": "a:first-line.test"
 			},
 			"empty": {
 				"params": [ "" ],
@@ -368,10 +368,10 @@
 		"selectors": {
 			"Lowercase and pseduo": {
 				"params": [
-					[ "A:hover>B:hover.test+PRE.old:hover", "A:first-child B" ]
+					[ "A:first-line>B:first-letter.test+PRE.old:first-letter", "A:first-line B" ]
 				],
 				"join": "|",
-				"expect": "a:hover>b:hover.test+pre.old:hover |a:first-child b"
+				"expect": "a:first-line>b:first-letter.test+pre.old:first-letter |a:first-line b"
 			}
 		}
 	},

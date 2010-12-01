@@ -20,14 +20,14 @@ Class CSSCompression_Selectors
 	private $lowercase = "/([^a-zA-Z])?([a-zA-Z]+)/i";
 	private $pseudos = array(
 		'patterns' => array(
-			"/(\:[a-z-]+)([,])/i",
+			"/\:first-(letter|line)[,]/i",
 			"/  /",
-			"/(\:[a-z-]+)$/i",
+			"/:first-(letter|line)$/i",
 		),
 		'replacements' => array(
-			"$1 $2",
+			":first-$1 ,",
 			" ",
-			"$1 ",
+			":first-$1 ",
 		)
 	);
 
