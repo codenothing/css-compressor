@@ -1,11 +1,11 @@
-/**
- * CSS Compressor [VERSION] - Test Suite
- * [DATE]
- * Corey Hart @ http://www.codenothing.com
- *
- * Holds array of all unit tests needed to be done
- * on all methods possible.
- */
+ //
+ // CSS Compressor [VERSION]
+ // [DATE]
+ // Corey Hart @ http://www.codenothing.com
+ //
+
+ // Holds array of all unit tests needed to be done
+ // on all methods possible.
 {
 	// Numeric Handler
 	"Numeric": {
@@ -950,6 +950,28 @@
 
 	// Trimming Handler
 	"Trim": {
+		// Stripping comments out from stylesheet
+		"comments": {
+			"basic": {
+				"params": [
+					"te/*abc*/st"
+				],
+				"expect": "test"
+			},
+			"escaped": {
+				"params": [
+					"te/*abc\\*/def*/st"
+				],
+				"expect": "test"
+			},
+			"in a string": {
+				"params": [
+					"t\"/*e\"/*ab\"c\\*/def*/st"
+				],
+				"expect": "t\"/*e\"st"
+			}
+		},
+
 		// Trimming down the stylesheet, removing all whitespace possible
 		"strip": {
 			"simple": {
@@ -977,7 +999,7 @@
 			// Single property with URL
 			"single": {
 				"params": [ "#one{background:url(http://www.example1.com?a=semi;);}" ],
-				"expect": "#one{background:url(http\\://www.example1.com?a=semi\\;);}"
+				"expect": "#one{background:url(http\\:\\/\\/www.example1.com?a=semi\\;);}"
 			},
 
 			// Many properties with URL
@@ -990,10 +1012,10 @@
 					"#four{background:url(http://www.example4.com?a=semi;);}"
 				],
 				"expect": [
-					"#one{background:url(http\\://www.example1.com?a=semi\\;);}",
-					"#two{background:url(http\\://www.example2.com?a=semi\\;);}",
-					"#three{background:url(http\\://www.example3.com?a=semi\\;);}",
-					"#four{background:url(http\\://www.example4.com?a=semi\\;);}"
+					"#one{background:url(http\\:\\/\\/www.example1.com?a=semi\\;);}",
+					"#two{background:url(http\\:\\/\\/www.example2.com?a=semi\\;);}",
+					"#three{background:url(http\\:\\/\\/www.example3.com?a=semi\\;);}",
+					"#four{background:url(http\\:\\/\\/www.example4.com?a=semi\\;);}"
 				]
 			}
 		},
@@ -1015,12 +1037,12 @@
 				],
 				"expect": [
 					"#red>div.today+b.old,body.broken,#wtf{",
-					"background: url(http\\://www.example1.com?a=semi\\;);",
+					"background: url(http\\:\\/\\/www.example1.com?a=semi\\;);",
 					"border: 1px solid red;",
 					"color: white;",
 					"}",
 					"#next{",
-					"background: url(http\\://www.example2.com?a=semi\\;);",
+					"background: url(http\\:\\/\\/www.example2.com?a=semi\\;);",
 					"}"
 				]
 			}

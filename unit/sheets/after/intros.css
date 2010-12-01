@@ -25,6 +25,7 @@
 }
 
 @media print {
+	margin: 1cm;
 	@page mine :left {
 		@bottom-left-corner {
 			margin: 2cm

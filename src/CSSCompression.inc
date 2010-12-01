@@ -99,7 +99,11 @@ Class CSSCompression
 		// Removes multiply defined properties
 		// STRONGLY suggested to keep this true, unless you have
 		// a box model or other hacks
-		'rm-multi-define' => true,		
+		'rm-multi-define' => true,
+
+		// Adds all unknown blocks to the top of the output in a comment strip
+		// Purely for bug reporting, but also useful to know what isn't being handled
+		'add-unknown' => true,
 
 		// Readibility of Compressed Output, Defaults to none
 		'readability' => 0,
@@ -142,7 +146,7 @@ Class CSSCompression
 		),
 		'sane' => array(
 			'color-hex2shortcolor' => false,
-			'orgainze' => false,
+			'organize' => false,
 		),
 		'medium' => array(
 			'color-hex2shortcolor' => false,
@@ -158,21 +162,11 @@ Class CSSCompression
 	 *
 	 * @instance express: Use a separate instance from singleton access 
 	 * @instance instance: Saved instance of CSSCompression
-	 * @param (array) rjson: Array of patterns and their 
-	 *     replacements to clean out comments in a josn file
+	 * @param (regex) rjson: Simple single line comment cleaner for json files
 	 */
 	private static $express;
 	private static $instance;
-	private static $rjson = array(
-		'patterns' => array(
-			"/\/\*(.*?)\*\//s",
-			"/(\t|\s)+\/\/.*/"
-		),
-		'replacements' => array(
-			'',
-			''
-		),
-	);
+	private static $rjson = "/(\t|\s)+\/\/.*/";
 
 	/**
 	 * Controller Instance
@@ -328,7 +322,7 @@ Class CSSCompression
 		$file = $file[ 0 ] == '/' ? $file : dirname(__FILE__) . '/helpers/' . $file;
 
 		// Strip comments
-		$json = preg_replace( self::$rjson['patterns'], self::$rjson['replacements'], file_get_contents( $file ) );
+		$json = preg_replace( self::$rjson, '', file_get_contents( $file ) );
 
 		// Decode json
 		$json = json_decode( $json, true );

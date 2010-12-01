@@ -96,12 +96,14 @@ Class CSSCompression_Setup
 			if ( $row == '' ) {
 				continue;
 			}
+			// Font-face
 			else if ( strpos( $row, '@font-face' ) === 0 && count( $css ) >= 3 ) {
 				$setup['fontface'] .= $row . $this->fontface( trim( $css[ 1 ] ) ) . $newline;
 
 				// drop the details from the stack
 				$css = array_slice( $css, 3 );
 			}
+			// Single block At-Rule set
 			else if ( $row[ 0 ] == '@' && $css[ 0 ] == '{' && trim( $css[ 1 ] ) != '' && $css[ 2 ] == '}' ) {
 				// Stash selector
 				array_unshift( $setup['selectors'], $row );
@@ -112,18 +114,23 @@ Class CSSCompression_Setup
 				// drop the details from the stack
 				$css = array_slice( $css, 3 );
 			}
+			// Nested declaration blocks (media and keyframes)
 			else if ( preg_match( $this->rnested, $row, $match ) ) {
 				$setup[ $match[ 1 ] ] .= $row . $this->nested( $css, $match[ 1 ] == 'media' ) . $newline;
 			}
+			// Single line At-Rules (import/charset/namespace)
 			else if ( preg_match( $this->rliner, $row, $match ) ) {
 				$setup[ $match[ 1 ] ] .= $row . $newline;
 			}
+			// Unknown nested block At-Rules
 			else if ( $row[ 0 ] == '@' && $css[ 0 ] == '{' ) {
 				$setup[ 'intro' ] .= $row . $this->nested( $css ) . $newline;
 			}
+			// Unknown single line At-Rules
 			else if ( $row[ 0 ] == '@' && substr( $row, -1 ) == ';' ) {
 				$setup[ 'introliner' ] .= $row . $newline;
 			}
+			// Declaration Block
 			else if ( count( $css ) >= 3 && $css[ 0 ] == '{' && $css[ 2 ] == '}' ) {
 				// Stash selector
 				array_push( $setup['selectors'], $row );
@@ -134,6 +141,7 @@ Class CSSCompression_Setup
 				// drop the details from the stack
 				$css = array_slice( $css, 3 );
 			}
+			// Last catch
 			else {
 				array_push( $setup['unknown'], $row );
 			}
@@ -153,19 +161,27 @@ Class CSSCompression_Setup
 		$left = 0;
 		$right = 0;
 		$row = '';
+		$independent = '';
 		$content = '';
-		$newline = '';
 		$spacing = '';
+		$newline = $this->options['readability'] > CSSCompression::READ_NONE ? "\n" : '';
 
 		// Find the end of the nested section
 		while ( count( $css ) && ( $left < 1 || $left > $right ) ) {
 			$row = trim( array_shift( $css ) );
 
-			if ( $row == '{' ) {
+			if ( $row == '' ) {
+				continue;
+			}
+			else if ( $row == '{' ) {
 				$left++;
 			}
 			else if ( $row == '}' ) {
 				$right++;
+			}
+			else if ( count( $css ) && substr( $row, 0, 1 ) != '@' && substr( $css[ 0 ], 0, 1 ) == '@' && substr( $row, -1 ) == ';' ) {
+				$independent .= $row;
+				continue;
 			}
 
 			$content .= $row;
@@ -176,12 +192,13 @@ Class CSSCompression_Setup
 		if ( $options['organize'] == true && $organize == false ) {
 			$options['organize'] = false;
 		}
-		$content = CSSCompression::express( substr( $content, 1, -1 ), $options );
+		// Independent sections should be prepended to the next compressed section
+		$content = ( $independent == '' ? '' : $independent . $newline )
+			. CSSCompression::express( substr( $content, 1, -1 ), $options, true );
 
 		// Formatting for anything higher then 0 readability
-		if ( $this->options['readability'] > CSSCompression::READ_NONE ) {
+		if ( $newline == "\n" ) {
 			$content = "\n\t" . str_replace( "\n", "\n\t", $content ) . "\n";
-			$newline = "\n";
 			$spacing = $this->options['readability'] > CSSCompression::READ_MIN ? ' ' : '';
 		}
 

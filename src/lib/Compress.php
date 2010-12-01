@@ -98,6 +98,16 @@ Class CSSCompression_Compress
 		// Remove escapables
 		$css = $this->Cleanup->removeEscapedCharacters( $css );
 
+		// Attach plea to top of page with unknown blocks
+		if ( $this->options['add-unknown'] && count( $setup['unknown'] ) ) {
+			$css = "/*\nThere are unknown blocks in the sheet, please please please open an issue with your sheet attached to it:\n"
+				. "https://github.com/codenothing/css-compressor/issues\n"
+				. "Thank You --\n\n"
+				. implode( "\n", $setup['unknown'] )
+				. "\n*/\n"
+				. $css;
+		}
+
 		// Mark final file size
 		$this->stats['after']['size'] = strlen( $css = trim( $css ) );
 
@@ -126,7 +136,7 @@ Class CSSCompression_Compress
 		}
 
 		// Final count for stats
-		$this->stats['after']['time'] = array_sum( explode( ' ', microtime() ) );
+		$this->stats['after']['time'] = microtime( true );
 	}
 
 	/**

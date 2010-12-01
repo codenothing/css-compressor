@@ -168,7 +168,7 @@ Class CSSCompression_Control
 		$this->Option->merge( $options );
 
 		// Initial stats
-		$this->stats['before']['time'] = array_sum( explode( ' ', microtime() ) );
+		$this->stats['before']['time'] = microtime( true );
 		$this->stats['before']['size'] = strlen( $css );
 
 		// Initial trimming
