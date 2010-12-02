@@ -991,14 +991,14 @@
 					"\n\t\t\t\t\t#red > div.today + b.old, body.broken, #wtf {\n\n",
 					"\t\n\tbackground: url(\"someimg.jpg\");;;;\n\n\n",
 					"\t\tborder: 1px solid red;;;;;\n\t\n\t",
-					"\tcolor: white;;;;;\n\t\n",
+					"\tcolor: white !important;;;;;\n\t\n",
 					"}\n\n\n"
 				],
 				"expect": [
 					"#red>div.today+b.old,body.broken,#wtf{",
 					"background: url(someimg.jpg);",
 					"border: 1px solid red;",
-					"color: white;",
+					"color: white!important;",
 					"}"
 				]
 			}
@@ -1039,7 +1039,7 @@
 					"\n\t\t\t\t\t#red > div.today + b.old, body.broken, #wtf {\n\n",
 					"\t\n\tbackground: url(\"http://www.example1.com?a=semi;\");;;;\n\n\n",
 					"\t\tborder: 1px solid red;;;;;\n\t\n\t",
-					"\tcolor: white;;;;;\n\t\n",
+					"\tcolor: white !important;;;;;\n\t\n",
 					"\n\t}\n\n\n",
 					"#next \t\t {\n",
 					"\t\n\tbackground: url(\"http://www.example2.com?a=semi;\");;;;\n\n\n",
@@ -1049,7 +1049,7 @@
 					"#red>div.today+b.old,body.broken,#wtf{",
 					"background: url(http\\:\\/\\/www.example1.com?a=semi\\;);",
 					"border: 1px solid red;",
-					"color: white;",
+					"color: white!important;",
 					"}",
 					"#next{",
 					"background: url(http\\:\\/\\/www.example2.com?a=semi\\;);",
