@@ -6,7 +6,7 @@
  */
 
 // Before/After directories
-// $root is borrowed from index.php
+$root = dirname(__FILE__) . '/';
 define('BEFORE', $root . '/sheets/before/');
 define('AFTER', $root . '/sheets/after/');
 define('BENCHMARK', $root . '/benchmark/src/');
@@ -18,6 +18,7 @@ Class CSScompressionUnitTest
 	 * Class Variables
 	 *
 	 * @class compressor: CSSCompression Instance
+	 * @param (string) root: Root path to this file
 	 * @param (int) errors: Number of errors found
 	 * @param (int) passes: Number of tests passed
 	 * @param (array) sandbox: Array containing test suite
@@ -25,23 +26,35 @@ Class CSScompressionUnitTest
 	 * @param (array) doubles: Array of known zengarden files that fail (unknown fix|too hacky|invalid css)
 	 */
 	private $compressor;
+	private $root = '';
 	private $errors = 0;
 	private $passes = 0;
 	private $sandbox = array();
 	private $instances = array();
-	private $sheetspecials = array(
-		'maxread' => array(
-			'pit.css',
-			'intros.css',
-		),
-		'safe' => array(
-			'box-model.css',
-			'preserve-strings.css',
-			'preserve-newline.css',
-		),
-	);
 	private $doubles = array(
 		'csszengarden.com.177.css' // Invalid css
+	);
+	private $sheetspecials = array(
+		'maxread' => array(
+			'files' => array(
+				'pit.css',
+				'intros.css',
+			),
+			'mode' => NULL,
+			'options' => array(
+				'readability' => CSSCompression::READ_MAX,
+			),
+		),
+		'safe' => array(
+			'files' => array(
+				'box-model.css',
+				'preserve-strings.css',
+				'preserve-newline.css',
+				'font-face.css',
+			),
+			'mode' => 'safe',
+			'options' => array(),
+		),
 	);
 
 	/**
@@ -50,9 +63,15 @@ Class CSScompressionUnitTest
 	 * @params none
 	 */ 
 	public function __construct(){
+		// Rootpath
+		$this->root = dirname(__FILE__) . '/';
+
+		// Clean out the errors directory
+		$this->clean( $this->root . 'errors/' );
+
 		// Reset the local class vars
 		$this->compressor = new CSSCompression();
-		$this->sandbox = CSSCompression::getJSON( dirname(__FILE__) . '/sandbox.json' );
+		$this->sandbox = CSSCompression::getJSON( $this->root . 'sandbox.json' );
 		$this->errors = 0;
 
 		// CSS Compressor doesn't currently throw exceptions, so we have to
@@ -214,22 +233,35 @@ Class CSScompressionUnitTest
 		while ( ( $file = readdir( $handle ) ) !== false ) {
 			$reset = false;
 			if ( preg_match( "/\.css$/", $file ) ) {
-				// Sheets that require full readability
-				if ( in_array( $file, $this->sheetspecials['maxread'] ) ) {
-					$this->compressor->option( 'readability', CSSCompression::READ_MAX );
-					$this->compressor->option( 'pseduo-space', false );
-					$reset = true;
-				}
-				// Sheets requiring safe mode
-				else if ( in_array( $file, $this->sheetspecials['safe'] ) ) {
-					$this->compressor->mode( 'safe' );
-					$reset = true;
+				foreach ( $this->sheetspecials as $config ) {
+					if ( in_array( $file, $config['files'] ) ) {
+						// Use default mode if wanted
+						if ( $config['mode'] ) {
+							$this->compressor->mode( $config['mode'] );
+						}
+
+						// Use custom options
+						if ( $config['options'] ) {
+							$this->compressor->option( $config['options'] );
+						}
+
+						$reset = true;
+						break;
+					}
 				}
 
 				// Mark the result
 				$before = trim( file_get_contents( BEFORE . $file ) );
-				$after = trim( file_get_contents( AFTER . $file ) );
-				$this->mark( $file, "full", trim( $this->compressor->compress( $before ) ) === $after );
+				$expected = trim( file_get_contents( AFTER . $file ) );
+				$result = trim( $this->compressor->compress( $before ) );
+				$this->mark( $file, "full", $result === $expected );
+
+				// Stash errors for diff tooling
+				if ( $result !== $expected ) {
+					file_put_contents( $this->root . "errors/$file-before.css", $before );
+					file_put_contents( $this->root . "errors/$file-expected.css", $expected );
+					file_put_contents( $this->root . "errors/$file-result.css", $result );
+				}
 
 				// Reset pits special needs
 				if ( $reset ) {
@@ -246,16 +278,34 @@ Class CSScompressionUnitTest
 	 * @params none
 	 */
 	private function testDoubles(){
+		// Max readability for diff tooling
+		foreach ( $this->instances as $mode => $instance ) {
+			$instance->option( 'readability', CSSCompression::READ_MAX );
+		}
+
+		// Read each file in the direcotry
 		$handle = opendir( BENCHMARK );
 		while ( ( $file = readdir( $handle ) ) !== false ) {
 			if ( preg_match( "/\.css$/", $file ) && ! in_array( $file, $this->doubles ) ) {
 				$before = trim( file_get_contents( BENCHMARK . $file ) );
 				foreach ( $this->instances as $mode => $instance ) {
+					// Media elements should not be organized, so skip them if instance does that
+					if ( strpos( $before, '@media' ) !== false && $instance->option('organize') ) {
+						continue;
+					}
+
+					// Double compression
 					$first = $instance->compress( $before );
 					$size = $instance->stats['after']['size'];
 					$second = $instance->compress( $first );
 					$this->mark( 'Double CSS ' . $file, $mode, $first === $second );
 					$this->mark( 'Double Size ' . $file, $mode, $size === $instance->stats['after']['size'] );
+
+					// Store inaccuracies
+					if ( $first !== $second ) {
+						file_put_contents( $this->root . "errors/$file-$mode-first", $first );
+						file_put_contents( $this->root . "errors/$file-$mode-second", $second );
+					}
 				}
 			}
 		}
@@ -270,6 +320,24 @@ Class CSScompressionUnitTest
 		$content = file_get_contents( BEFORE . 'pit.css' );
 		foreach ( $this->instances as $mode => $instance ) {
 			$this->mark( "CSSCompression.express", $mode, CSSCompression::express( $content, $mode ) === $instance->compress( $content ) );
+		}
+	}
+
+	/**
+	 * Removes all files in a directory (NOT RECURSIVE)
+	 *
+	 * @param (string) dir: Full directory path
+	 */
+	private function clean( $dir ) {
+		if ( ! is_dir( $dir ) ) {
+			return mkdir( $dir );
+		}
+
+		$handle = opendir( $dir );
+		while ( ( $file = readdir( $handle ) ) !== false ) {
+			if ( $file != '.' && $file != '..' && strpos( $file, 'README' ) === false ) {
+				unlink( $dir . $file );
+			}
 		}
 	}
 

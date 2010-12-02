@@ -26,15 +26,6 @@ This is just a cluster of various templates that can be compressed
 	}
 }
 
-
-/* Thank you Paul Irish - http://paulirish.com/2009/bulletproof-font-face-implementation-syntax/ */
-@font-face {
-	font-family: 'Graublau Web';
-	src: url('GraublauWeb.eot');
-	src: local('☺'),
-		url('GraublauWeb.otf') format('opentype');
-}
-
 /* basic elements */
 body > div + a :first-child {
 	color: black;

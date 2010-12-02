@@ -12,6 +12,7 @@ Class CSSCompression_Cleanup
 	 * Cleanup patterns
 	 *
 	 * @class $Control: Compression Controller
+	 * @param (string) token: Copy of the injection token
 	 * @param (array) options: Reference to options
 	 * @param (regex) rsemi: Checks for last semit colon in details
 	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
@@ -20,6 +21,7 @@ Class CSSCompression_Cleanup
 	 * @param (array) escaped: Contains patterns and replacements for espaced characters
 	 */
 	private $Control;
+	private $token = '';
 	private $options = array();
 	private $rsemi = "/;$/";
 	private $rsemicolon = "/(?<!\\\);/";
@@ -73,6 +75,7 @@ Class CSSCompression_Cleanup
 	 */
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
+		$this->token = $control->token;
 		$this->options = &$control->Option->options;
 	}
 
@@ -83,10 +86,17 @@ Class CSSCompression_Cleanup
 	 * @param (array) details: Array of details
 	 */
 	public function cleanup( &$selectors, &$details ) {
-		foreach ( $details as &$value ) {
+		foreach ( $details as $i => &$value ) {
+			// Auto skip sections
+			if ( isset( $selectors[ $i ] ) && strpos( $selectors[ $i ], $this->token ) === 0 ) {
+				continue;
+			}
+
+			// Removing dupes
 			if ( $this->options['rm-multi-define'] ) {
 				$value = $this->removeMultipleDefinitions( $value );
 			}
+
 			$value = $this->removeUnnecessarySemicolon( $value );
 		}
 

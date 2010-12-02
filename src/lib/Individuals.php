@@ -83,7 +83,7 @@ Class CSSCompression_Individuals
 
 		// Font-weight converter
 		if ( $this->options['fontweight2num'] && ( $prop == 'font-weight' || $prop == 'font' ) ) {
-			$val = $this->fontweight( strtolower( $val ) );
+			$val = $this->fontweight( $val );
 		}
 
 		// None to 0 converter
@@ -148,14 +148,15 @@ Class CSSCompression_Individuals
 		if ( preg_match( $this->rspace, $val ) ) {
 			$parts = preg_split( $this->rspace, $val );
 			foreach ( $parts as &$item ) {
-				if ( isset( $this->weights[ $item ] ) && $item != 'normal' ) {
-					$item = $this->weights[ $item ];
+				$lower = strtolower( $item );
+				if ( isset( $this->weights[ $lower ] ) && $lower != 'normal' ) {
+					$item = $this->weights[ $lower ];
 				}
 			}
 			$val = implode( ' ', $parts );
 		}
-		else if ( isset( $this->weights[ $val ] ) ) {
-			$val = $this->weights[ $val ];
+		else if ( isset( $this->weights[ strtolower( $val ) ] ) ) {
+			$val = $this->weights[ strtolower( $val ) ];
 		}
 
 		return $val;

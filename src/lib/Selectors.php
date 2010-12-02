@@ -11,13 +11,15 @@ Class CSSCompression_Selectors
 	 * Selector patterns
 	 *
 	 * @class Control: Compression Controller
+	 * @param (string) token: Copy of the injection token
 	 * @param (array) options: Reference to options
 	 * @param (regex) lowercase: Looks for element selectors
 	 * @param (array) pseudos: Contains pattterns and replacments to space out pseudo selectors
 	 */
 	private $Control;
+	private $token = '';
 	private $options = array();
-	private $lowercase = "/([^a-zA-Z])?([a-zA-Z]+)/i";
+	private $rlowercase = "/([^a-zA-Z])?([a-zA-Z]+)/i";
 	private $pseudos = array(
 		'patterns' => array(
 			"/\:first-(letter|line)[,]/i",
@@ -38,6 +40,7 @@ Class CSSCompression_Selectors
 	 */
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
+		$this->token = $control->token;
 		$this->options = &$control->Option->options;
 	}
 
@@ -48,6 +51,11 @@ Class CSSCompression_Selectors
 	 */
 	public function selectors( &$selectors = array() ) {
 		foreach ( $selectors as &$selector ) {
+			// Auto ignore sections
+			if ( strpos( $selector, $this->token ) === 0 ) {
+				continue;
+			}
+
 			// Lowercase selectors for combining
 			if ( $this->options['lowercase-selectors'] ) {
 				$selector = $this->lowercaseSelectors( $selector );
@@ -68,7 +76,7 @@ Class CSSCompression_Selectors
 	 * @param (string) selector: CSS Selector
 	 */ 
 	private function lowercaseSelectors( $selector ) {
-		preg_match_all( $this->lowercase, $selector, $matches, PREG_OFFSET_CAPTURE );
+		preg_match_all( $this->rlowercase, $selector, $matches, PREG_OFFSET_CAPTURE );
 		for ( $i = 0, $imax = count( $matches[0] ); $i < $imax; $i++ ) {
 			if ( $matches[1][$i][0] !== '.' && $matches[1][$i][0] !== '#' ) {
 				$match = $matches[2][$i];

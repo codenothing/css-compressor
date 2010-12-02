@@ -11,12 +11,14 @@ Class CSSCompression_Format
 	 * Format Patterns
 	 *
 	 * @class Control: Compression Controller
+	 * @param (string) token: Copy of the injection token
 	 * @param (array) options: Reference to options
 	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
 	 * @param (regex) rcolon: Checks for colon without an escape '\' character before it
 	 * @param (array) readability: Mapping to readability functions
 	 */
 	private $Control;
+	private $token = '';
 	private $options = array();
 	private $rsemicolon = "/(?<!\\\);/";
 	private $rcolon = "/(?<!\\\):/";
@@ -34,6 +36,7 @@ Class CSSCompression_Format
 	 */
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
+		$this->token = $control->token;
 		$this->options = &$control->Option->options;
 	}
 
@@ -67,6 +70,11 @@ Class CSSCompression_Format
 		$css = '';
 		foreach ( $selectors as $k => $v ) {
 			if ( ! $details[ $k ] || trim( $details[ $k ] ) == '' ) {
+				continue;
+			}
+			else if ( strpos( $v, $this->token ) === 0 ) {
+				$css .= substr( $v, strlen( $this->token ) );
+				$css .= $details[ $k ];
 				continue;
 			}
 
@@ -106,7 +114,12 @@ Class CSSCompression_Format
 	private function medium( $selectors, $details ) {
 		$css = '';
 		foreach ( $selectors as $k => $v ) {
-			if ( $details[ $k ] && $details[ $k ] != '' ) {
+			if ( strpos( $v, $this->token ) === 0 ) {
+				$css .= substr( $v, strlen( $this->token ) );
+				$css .= $details[ $k ];
+				continue;
+			}
+			else if ( $details[ $k ] && $details[ $k ] != '' ) {
 				$css .= "$v {\n\t" . $details[ $k ] . "\n}\n";
 			}
 		}
@@ -124,7 +137,12 @@ Class CSSCompression_Format
 	private function minimum( $selectors, $details ) {
 		$css = '';
 		foreach ( $selectors as $k => $v ) {
-			if ( $details[ $k ] && $details[ $k ] != '' ) {
+			if ( strpos( $v, $this->token ) === 0 ) {
+				$css .= substr( $v, strlen( $this->token ) );
+				$css .= $details[ $k ];
+				continue;
+			}
+			else if ( $details[ $k ] && $details[ $k ] != '' ) {
 				$css .= "$v{" . $details[ $k ] . "}\n";
 			}
 		}
@@ -141,7 +159,12 @@ Class CSSCompression_Format
 	private function none( $selectors, $details ) {
 		$css = '';
 		foreach ( $selectors as $k => $v ) {
-			if ( isset( $details[ $k ] ) && $details[ $k ] != '' ) {
+			if ( strpos( $v, $this->token ) === 0 ) {
+				$css .= substr( $v, strlen( $this->token ) );
+				$css .= $details[ $k ];
+				continue;
+			}
+			else if ( $details[ $k ] && $details[ $k ] != '' ) {
 				$css .= trim( "$v{" . $details[ $k ] . "}" );
 			}
 		}

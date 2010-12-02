@@ -11,6 +11,7 @@ Class CSSCompression_Combine
 	 * Combine Patterns
 	 *
 	 * @class Control: Compression Controller
+	 * @param (string) token: Copy of the injection token
 	 * @param (array) options: Reference to options
 	 * @param (regex) rcsw: Border/Outline matching
 	 * @param (regex) raural: Aurual matching
@@ -23,7 +24,8 @@ Class CSSCompression_Combine
 	 * @param (array) methods: List of options with their corresponding handler
 	 */
 	private $Control;
-	private $options;
+	private $token = '';
+	private $options = array();
 	private $rcsw = "/(border|outline)-(color|style|width):(.*?)(?<!\\\);/";
 	private $raural = "/(cue|pause)-(before|after):(.*?)(?<!\\\);/";
 	private $rmp = "/(margin|padding)-(top|right|bottom|left):(.*?)(?<!\\\);/";
@@ -49,6 +51,7 @@ Class CSSCompression_Combine
 	 */
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
+		$this->token = $control->token;
 		$this->options = &$control->Option->options;
 	}
 
@@ -59,7 +62,11 @@ Class CSSCompression_Combine
 	 * @param (array) details: Array of details
 	 */
 	public function combine( &$selectors = array(), &$details = array() ) {
-		foreach ( $details as &$value ) {
+		foreach ( $details as $i => &$value ) {
+			if ( isset( $selectors[ $i ] ) && strpos( $selectors[ $i ], $this->token ) === 0 ) {
+				continue;
+			}
+
 			foreach ( $this->methods as $option => $fn ) {
 				if ( $this->options[ $option ] ) {
 					$value = $this->$fn( $value );

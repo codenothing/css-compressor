@@ -14,11 +14,13 @@ Class CSSCompression_Control
 	 * @param (string) mode: Current compression mode state
 	 * @param (array) options: Holds compression options
 	 * @param (array) stats: Holds compression stats
+	 * @param (string) token: Special injection token
 	 */ 
 	public $css = '';
 	public $mode = 'custom';
 	public $options = array();
 	public $stats = array();
+	public $token = '@___CSSCOMPRESSION_TOKEN___';
 
 	/**
 	 * Subclasses that do the ground work for this compressor

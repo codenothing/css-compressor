@@ -237,8 +237,8 @@ Class CSSCompression
 	 * @param (string) mode: Name of the mode
 	 * @param (array) config: Configuration of the mode
 	 */
-	public static function addMode( $mode = NULL, $config = array() ) {
-		return is_string( $mode ) ? CSSCompression::$modes[ $mode ] = $config : NULL;
+	public static function addMode( $mode = '', $config = array() ) {
+		return strlen( $mode ) ? CSSCompression::$modes[ $mode ] = $config : NULL;
 	}
 
 	/**

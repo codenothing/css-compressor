@@ -12,33 +12,24 @@ Class CSSCompression_Setup
 	 *
 	 * @class Control: Compression Controller
 	 * @class Individuals: Individuals Instance
+	 * @param (string) token: Copy of the injection token
 	 * @param (array) options: Reference to options
 	 * @param (array) stats: Reference to stats
 	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
 	 * @param (regex) rcolon: Checks for colon without an escape '\' character before it
 	 * @param (regex) rliner: Matching known 1-line intros
 	 * @param (regex) rnested: Matching known subsection handlers
-	 * @param (array) rfontface: Array of patterns and replacements
 	 * @param (array) rsetup: Expanding stylesheet for semi-tokenizing
 	 */
 	private $Control;
 	private $Individuals;
+	private $token = '';
 	private $options = array();
 	private $stats = array();
 	private $rsemicolon = "/(?<!\\\);/";
 	private $rcolon = "/(?<!\\\):/";
-	private $rliner = "/^@(import|charset|namespace)/";
-	private $rnested = "/^@(media|keyframes|-webkit-keyframes)/";
-	private $rfontface = array(
-		'patterns' => array(
-			"/(\s+)?:(\s+)?/s",
-			"/;$/",
-		),
-		'replacements' => array(
-			":",
-			"",
-		),
-	);
+	private $rliner = "/^@(import|charset|namespace)/i";
+	private $rmedia = "/^@media/i";
 	private $rsetup = array(
 		'patterns' => array(
 			"/(?<!\\\){/",
@@ -62,6 +53,7 @@ Class CSSCompression_Setup
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
 		$this->Individuals = $control->Individuals;
+		$this->token = $control->token;
 		$this->options = &$control->Option->options;
 		$this->stats = &$control->stats;
 	}
@@ -79,11 +71,6 @@ Class CSSCompression_Setup
 			'selectors' => array(),
 			'details' => array(),
 			'unknown' => array(),
-			'intro' => '',
-			'-webkit-keyframes' => '',
-			'keyframes' => '',
-			'media' => '',
-			'fontface' => '',
 			'introliner' => '',
 			'namespace' => '',
 			'import' => '',
@@ -96,35 +83,28 @@ Class CSSCompression_Setup
 			if ( $row == '' ) {
 				continue;
 			}
-			// Font-face
-			else if ( strpos( $row, '@font-face' ) === 0 && count( $css ) >= 3 ) {
-				$setup['fontface'] .= $row . $this->fontface( trim( $css[ 1 ] ) ) . $newline;
-
-				// drop the details from the stack
-				$css = array_slice( $css, 3 );
-			}
 			// Single block At-Rule set
 			else if ( $row[ 0 ] == '@' && $css[ 0 ] == '{' && trim( $css[ 1 ] ) != '' && $css[ 2 ] == '}' ) {
 				// Stash selector
-				array_unshift( $setup['selectors'], $row );
+				array_push( $setup['selectors'], $row );
 
 				// Stash details (after the opening brace)
-				array_unshift( $setup['details'], $this->details( trim( $css[ 1 ] ) ) );
+				array_push( $setup['details'], $this->details( trim( $css[ 1 ] ) ) );
 
 				// drop the details from the stack
 				$css = array_slice( $css, 3 );
-			}
-			// Nested declaration blocks (media and keyframes)
-			else if ( preg_match( $this->rnested, $row, $match ) ) {
-				$setup[ $match[ 1 ] ] .= $row . $this->nested( $css, $match[ 1 ] == 'media' ) . $newline;
 			}
 			// Single line At-Rules (import/charset/namespace)
 			else if ( preg_match( $this->rliner, $row, $match ) ) {
 				$setup[ $match[ 1 ] ] .= $row . $newline;
 			}
-			// Unknown nested block At-Rules
+			// Nested At-Rule declaration blocks
 			else if ( $row[ 0 ] == '@' && $css[ 0 ] == '{' ) {
-				$setup[ 'intro' ] .= $row . $this->nested( $css ) . $newline;
+				// Stash atrule as selector
+				array_push( $setup['selectors'], $this->token . $row );
+
+				// Stash details (after the opening brace)
+				array_push( $setup['details'], $this->nested( $css, preg_match( $this->rmedia, $row ) ) . $newline );
 			}
 			// Unknown single line At-Rules
 			else if ( $row[ 0 ] == '@' && substr( $row, -1 ) == ';' ) {
@@ -204,24 +184,6 @@ Class CSSCompression_Setup
 
 		// Stash the compressed nested script
 		return "$spacing{" . $content . "}$newline";
-	}
-
-	/**
-	 * Fontface only has whitespace compression
-	 *
-	 * @param (string) row: Font-face properties
-	 */
-	private function fontface( $row ) {
-		$row = preg_replace( $this->rfontface['patterns'], $this->rfontface['replacements'], $row );
-
-		if ( $this->options['readability'] > CSSCompression::READ_NONE ) {
-			$row = " {\n\t" . preg_replace( $this->rsemicolon, ";\n\t", $row ) . "\n}\n";
-		}
-		else {
-			$row = "{" . $row . "}";
-		}
-
-		return preg_replace( "/;}$/", "}", $row );
 	}
 
 	/**

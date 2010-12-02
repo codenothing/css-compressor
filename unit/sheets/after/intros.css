@@ -10,29 +10,6 @@
 @namespace empty "";
 @namespace "";
 @somefuturehack "testing.spec";
-@media print and (color),projection and (device-aspect-ratio: 16/9) {
-	@page :left {
-		@bottom-left-corner {
-			margin: 2cm
-		}
-	}
-}
-
-@media only screen and (max-device-width: 480px) {
-	#bigbanner {
-		display: none
-	}
-}
-
-@media print {
-	margin: 1cm;
-	@page mine :left {
-		@bottom-left-corner {
-			margin: 2cm
-		}
-	}
-}
-
 @keyframes 'diagonal-slide' {
 	from {
 		left: 0;
@@ -71,14 +48,37 @@
 	}
 }
 
-@page {
-	size: A4 landscape
-}
-
 @media screen {
 	margin: 20px
 }
 
+@media print and (color),projection and (device-aspect-ratio: 16/9) {
+	@page :left {
+		@bottom-left-corner {
+			margin: 2cm
+		}
+	}
+}
+
+@media only screen and (max-device-width: 480px) {
+	#bigbanner {
+		display: none
+	}
+}
+
 #mydiv {
 	color: red
+}
+
+@media print {
+	margin: 1cm;
+	@page mine :left {
+		@bottom-left-corner {
+			margin: 2cm
+		}
+	}
+}
+
+@page {
+	size: A4 landscape
 }
