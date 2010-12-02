@@ -226,6 +226,16 @@
 			"blah": {
 				"params": [ "blah" ],
 				"expect": "blah"
+			},
+			"font-bold": {
+				"params": [ "bold 12pt" ],
+				"expect": "700 12pt"
+			},
+			// We don't convert normal in expanded font properties
+			// as normal is used in font-style and font-varient
+			"font-normal": {
+				"params": [ "normal 12pt" ],
+				"expect": "normal 12pt"
 			}
 		},
 
