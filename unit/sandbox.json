@@ -239,6 +239,18 @@
 			}
 		},
 
+		// Special font property conversions
+		"font": {
+			"font-size/line-height": {
+				"params": [ "normal 0.5px/10.0em Georgia, sans-serif" ],
+				"expect": "normal .5px/10em Georgia, sans-serif"
+			},
+			"font-size/line-height start": {
+				"params": [ "0.5px/10.0em Georgia, sans-serif" ],
+				"expect": ".5px/10em Georgia, sans-serif"
+			}
+		},
+
 		// Converting none values to 0
 		"none": {
 			"background": {

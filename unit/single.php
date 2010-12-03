@@ -9,12 +9,12 @@ error_reporting( E_ALL );
 // Access Setup
 $config = array(
 	'options' => 'small',
-	'class' => 'Trim',
-	'method' => 'comments',
+	'class' => 'Individuals',
+	'method' => 'font',
 	'params' => array(
-		"t\"/*e\"/*ab\"c\\*/def*/st",
+		"0.5px/10.0em Georgia, sans-serif",
 	),
-	'expect' => "t\"/*e\"st"
+	'expect' => ".5px/10em Georgia, sans-serif"
 );
 
 

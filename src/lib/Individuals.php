@@ -17,6 +17,7 @@ Class CSSCompression_Individuals
 	 * @param (regex) rdirectional: Properties that may have multiple directions
 	 * @param (regex) rnoneprop: Properties that can have none as their value(will be converted to 0)
 	 * @param (regex) rnone: Looks for a none value in shorthand notations
+	 * @param (regex) rsplitter: Checks font properties for font-size/line-height split
 	 * @param (regex) rfilter: Special alpha filter for msie
 	 * @param (regex) rspace: Checks for space without an escape '\' character before it
 	 * @param (array) weights: Array of font-weight name conversions to their numeric counterpart
@@ -28,6 +29,7 @@ Class CSSCompression_Individuals
 	private $rdirectional = "/^(margin|padding)$/";
 	private $rnoneprop = "/^(border|background)/";
 	private $rnone = "/\snone\s/";
+	private $rsplitter = "/(^|(?<!\\\)\s)([^\/ ]+)\/([^\/ ]+)((?<!\\\)\s|$)/";
 	private $rfilter = "/[\"']?PROGID\\\?:DXImageTransform.Microsoft.Alpha\(Opacity=(\d+)\)[\"']?/i";
 	private $rspace = "/(?<!\\\)\s/";
 	private $weights = array(
@@ -84,6 +86,11 @@ Class CSSCompression_Individuals
 		// Font-weight converter
 		if ( $this->options['fontweight2num'] && ( $prop == 'font-weight' || $prop == 'font' ) ) {
 			$val = $this->fontweight( $val );
+		}
+
+		// Special font value conversions
+		if ( $prop == 'font' ) {
+			$val = $this->font( $val );
 		}
 
 		// None to 0 converter
@@ -157,6 +164,23 @@ Class CSSCompression_Individuals
 		}
 		else if ( isset( $this->weights[ strtolower( $val ) ] ) ) {
 			$val = $this->weights[ strtolower( $val ) ];
+		}
+
+		return $val;
+	}
+
+	/**
+	 * Special font conversions
+	 *
+	 * @param (string) val: property value
+	 */
+	private function font( $val ) {
+		// Split out the font-size/line-height split and run through numerical handlers
+		if ( preg_match( $this->rsplitter, $val, $match, PREG_OFFSET_CAPTURE ) ) {
+			$size = $this->Numeric->numeric( $match[ 2 ][ 0 ] );
+			$height = $this->Numeric->numeric( $match[ 3 ][ 0 ] );
+			$concat = $match[ 1 ][ 0 ] . $size . '/' . $height . $match[ 4 ][ 0 ];
+			$val = substr_replace( $val, $concat, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] )  );
 		}
 
 		return $val;
