@@ -29,6 +29,7 @@ Class CSScompressionUnitTest
 	private $root = '';
 	private $errors = 0;
 	private $passes = 0;
+	private $errorstack = '';
 	private $sandbox = array();
 	private $instances = array();
 	private $doubles = array(
@@ -360,6 +361,7 @@ Class CSScompressionUnitTest
 		}
 		else{
 			$this->errors++;
+			$this->errorstack .= Color::red( "Failed: ${method}[$entry]" ) . "\r\n";
 			echo Color::red( "Failed: ${method}[$entry]" ) . "\r\n";
 		}
 	}
@@ -371,7 +373,7 @@ Class CSScompressionUnitTest
 	 */ 
 	public function __destruct(){
 		if ( $this->errors > 0 ) {
-			$final = Color::boldred( "Test Failed: " . $this->errors . " total errors." );
+			$final = Color::boldred( "Test Failed: " . $this->errors . " total errors. -- " ) . "\r\n" . $this->errorstack;
 			$exit = 1;
 		}
 		else {

@@ -148,11 +148,11 @@ Class CSSCompression
 			'color-hex2shortcolor' => false,
 			'organize' => false,
 		),
-		'medium' => array(
+		'small' => array(
 			'color-hex2shortcolor' => false,
 			'pseduo-space' => false
 		),
-		'small' => array(
+		'full' => array(
 			'pseduo-space' => false
 		),
 	);

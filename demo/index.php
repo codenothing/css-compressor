@@ -28,8 +28,8 @@ Corey Hart @ http://www.codenothing.com
 				<select name='mode'>
 					<option value='safe'>Safe</option>
 					<option value='sane'>Sane</option>
-					<option value='medium'>Medium</option>
 					<option value='small'>Small</option>
+					<option value='full'>Full</option>
 					<option value='custom'>Custom</option>
 				</select>
 				Readability:
