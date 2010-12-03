@@ -69,12 +69,12 @@ Class CSSCompression_Format
 	private function maximum( $selectors, $details ) {
 		$css = '';
 		foreach ( $selectors as $k => $v ) {
-			if ( ! $details[ $k ] || trim( $details[ $k ] ) == '' ) {
-				continue;
-			}
-			else if ( strpos( $v, $this->token ) === 0 ) {
+			if ( strpos( $v, $this->token ) === 0 ) {
 				$css .= substr( $v, strlen( $this->token ) );
 				$css .= $details[ $k ];
+				continue;
+			}
+			else if ( ! $details[ $k ] || trim( $details[ $k ] ) == '' ) {
 				continue;
 			}
 

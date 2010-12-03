@@ -121,9 +121,17 @@ Class CSSCompression_Setup
 				// drop the details from the stack
 				$css = array_slice( $css, 3 );
 			}
-			// Last catch
+			// Last catch, store unknown artifacts as selectors with a token
+			// and give it an empty rule set
 			else {
+				// Still add to unknown stack, for notification
 				array_push( $setup['unknown'], $row );
+
+				// Stash unknown artifacts as selectors with a token
+				array_push( $setup['selectors'], $this->token . $row );
+
+				// Give it an empty rule set
+				array_push( $setup['details'], '' );
 			}
 		}
 
