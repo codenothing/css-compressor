@@ -96,7 +96,7 @@ Class CSSCompression_Compress
 		}
 
 		// Remove escapables
-		$css = $this->Cleanup->removeEscapedCharacters( $css );
+		$css = $this->Cleanup->removeInjections( $css );
 
 		// Attach plea to top of page with unknown blocks
 		if ( $this->options['add-unknown'] && count( $setup['unknown'] ) ) {

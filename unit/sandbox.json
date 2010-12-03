@@ -323,7 +323,7 @@
 	// Selectors subclass
 	"Selectors": {
 		// All element selectors should be lowercase
-		"lowercaseSelectors": {
+		"parse": {
 			"input": {
 				"params": [ "INPUT" ],
 				"expect": "input"
@@ -409,7 +409,7 @@
 		},
 
 		// Escaped character removal
-		"removeEscapedCharacters": {
+		"removeInjections": {
 			"multiple": {
 				"params": [ "background:url(http\\://www.codenothing.com/random.php?foo=bar\\;&colon=te\\:st\\;)" ],
 				"expect": "background:url(http://www.codenothing.com/random.php?foo=bar;&colon=te:st;)"

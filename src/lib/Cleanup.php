@@ -22,6 +22,7 @@ Class CSSCompression_Cleanup
 	 */
 	private $Control;
 	private $token = '';
+	private $rtoken = '';
 	private $options = array();
 	private $rsemi = "/;$/";
 	private $rsemicolon = "/(?<!\\\);/";
@@ -77,6 +78,10 @@ Class CSSCompression_Cleanup
 		$this->Control = $control;
 		$this->token = $control->token;
 		$this->options = &$control->Option->options;
+
+		// Have to build the token regexs after initialization
+		$this->rtoken = "/($this->token)(.*?)($this->token)/";
+		array_push( $this->rescape, $this->rtoken );
 	}
 
 	/**
@@ -108,16 +113,25 @@ Class CSSCompression_Cleanup
 	 *
 	 * @params none
 	 */ 
-	public function removeEscapedCharacters( $css ) {
+	public function removeInjections( $css ) {
+		// Remove escaped characters
 		foreach ( $this->rescape as $regex ) {
-			$start = 0;
-			while ( preg_match( $regex, $css, $match, PREG_OFFSET_CAPTURE, $start ) ) {
+			$pos = 0;
+			while ( preg_match( $regex, $css, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
 				$value = $match[ 1 ][ 0 ]
 					. str_replace( $this->escaped['search'], $this->escaped['replace'], $match[ 2 ][ 0 ] )
 					. $match[ 3 ][ 0 ];
 				$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
-				$start = $match[ 0 ][ 1 ] + strlen( $value ) + 1;
+				$pos = $match[ 0 ][ 1 ] + strlen( $value ) + 1;
 			}
+		}
+
+		// Remove token injections
+		$pos = 0;
+		while ( preg_match( $this->rtoken, $css, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$value = $match[ 2 ][ 0 ];
+			$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+			$pos = $match[ 0 ][ 1 ] + strlen( $value ) + 1;
 		}
 
 		return $css;

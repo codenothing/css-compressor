@@ -151,6 +151,11 @@ Class CSScompressionUnitTest
 
 					// Mark the result
 					$this->mark( "${class}.${method}", $name, $result == $row['expect'] );
+
+					// Output failures
+					if ( $result != $row['expect'] ) {
+						echo "Expecting:\n" . $row['expect'] . "\n======\nResult:\n$result\n";
+					}
 				}
 			}
 		}
