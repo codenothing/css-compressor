@@ -472,10 +472,15 @@
 		"combineAuralCuePause": {
 			"cue": {
 				"params": [ "cue-before:url(sound.wav);cue-after:url(after.wav);" ],
-				"expect": [
-					"cue:url(sound.wav) url(after.wav);",
-					"cue:url(sound.wav) url(after.wav);"
-				]
+				"expect": "cue:url(sound.wav) url(after.wav);"
+			},
+			"pause": {
+				"params": [ "pause-before:2s;pause-after:3s;" ],
+				"expect": "pause:2s 3s;"
+			},
+			"do nothing": {
+				"params": [ "pause-before:2s;color:red;" ],
+				"expect": "pause-before:2s;color:red;"
 			}
 		},
 
