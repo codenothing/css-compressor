@@ -10,11 +10,11 @@ error_reporting( E_ALL );
 $config = array(
 	'options' => 'small',
 	'class' => 'Combine',
-	'method' => 'combineMPproperties',
+	'method' => 'combineCSWproperties',
 	'params' => array(
-		"color:red;margin:0;color:white;margin-left:10px;",
+		"border-color:red;border-style:solid;border-width:2px;",
 	),
-	'expect' => "color:red;margin:0 0 0 10px;color:white;",
+	'expect' => "border:2px solid red;",
 );
 
 

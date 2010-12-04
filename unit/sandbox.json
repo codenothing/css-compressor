@@ -452,19 +452,19 @@
 		"combineCSWproperties": {
 			"border": {
 				"params": [ "border-color:red;border-style:solid;border-width:2px;" ],
-				"expect": [
-					"border:2px solid red;",
-					"border:2px solid red;",
-					"border:2px solid red;"
-				]
+				"expect": "border:2px solid red;"
 			},
 			"outline": {
 				"params": [ "outline-color:blue;outline-style:thin;outline-width:1px;" ],
-				"expect": [
-					"outline:1px thin blue;",
-					"outline:1px thin blue;",
-					"outline:1px thin blue;"
-				]
+				"expect": "outline:1px thin blue;"
+			},
+			"inbetween": {
+				"params": [ "border-color:red;color:red;border-style:solid;color:white;border-width:2px;" ],
+				"expect": "border:2px solid red;color:red;color:white;"
+			},
+			"do nothing": {
+				"params": [ "border-color:red;color:red;border-style:solid;color:white;" ],
+				"expect": "border-color:red;color:red;border-style:solid;color:white;"
 			}
 		},
 

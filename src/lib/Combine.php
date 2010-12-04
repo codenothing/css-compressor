@@ -29,7 +29,7 @@ Class CSSCompression_Combine
 	private $token = '';
 	private $options = array();
 	private $rspace = "/(?<!\\\)\s/";
-	private $rcsw = "/(border|outline)-(color|style|width):(.*?)(?<!\\\);/";
+	private $rcsw = "/(^|(?<!\\\);)(border|outline)-(color|style|width):(.*?)(?<!\\\);/";
 	private $raural = "/(cue|pause)-(before|after):(.*?)(?<!\\\);/";
 	private $rmp = "/(^|(?<!\\\);)(margin|padding)-(top|right|bottom|left):(.*?)(?<!\\\);/";
 	private $rmpbase = "/(margin|padding):(.*?)(?<!\\\);/";
@@ -37,7 +37,7 @@ Class CSSCompression_Combine
 	private $rfont = "/(font|line)-(style|variant|weight|size|height|family):(.*?)(?<!\\\);/";
 	private $rbackground = "/background-(color|image|repeat|attachment|position):(.*?)(?<!\\\);/";
 	private $rlist = "/list-style-(type|position|image):(.*?)(?<!\\\);/";
-	private $rimportant = "/inherit|\!important|\s/i";
+	private $rimportant = "/inherit|\!important|!ie|\s/i";
 	private $methods = array(
 		'csw-combine' => 'combineCSWproperties',
 		'auralcp-combine' => 'combineAuralCuePause',
@@ -88,29 +88,42 @@ Class CSSCompression_Combine
 	 */ 
 	private function combineCSWproperties( $val ) {
 		$storage = array();
-		preg_match_all( $this->rcsw, $val, $matches );
 
-		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
-			$a = strtolower( $matches[ 1 ][ $i ] );
-			$b = strtolower( $matches[ 2 ][ $i ] );
-
-			if ( ! isset( $storage[ $a ] ) ) {
-				$storage[ $a ] = array();
+		// Find all possible occurences and build the replacement
+		$pos = 0;
+		while ( preg_match( $this->rcsw, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			if ( ! isset( $storage[ $match[ 2 ][ 0 ] ] ) ) {
+				$storage[ $match[ 2 ][ 0 ] ] = array( $match[ 3 ][ 0 ] => $match[ 4 ][ 0 ] );
 			}
 
-			$storage[ $a ][ $b ] = $matches[ 3 ][ $i ];
+			// Override double written properties
+			$storage[ $match[ 2 ][ 0 ] ][ $match[ 3 ][ 0 ] ] = $match[ 4 ][ 0 ];
+			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
 		}
 
 		// Go through each tag for possible combination
 		foreach ( $storage as $tag => $arr ) {
-			// Make sure all 3 are defined and they aren't directionals
+			// All three have to be defined
 			if ( count( $arr ) == 3 && ! $this->checkUncombinables( $arr ) ) {
-				// String to replace each instance with
-				$replace = "$tag:" . $arr['width'] . ' ' . $arr['style'] . ' ' . $arr['color'];
-				// Replace every instance, as multiple declarations removal will correct it
-				foreach ( $arr as $x => $y ) {
-					$val = str_ireplace( "$tag-$x:$y", $replace, $val );
-				}
+				$storage[ $tag ] = "$tag:" . $arr['width'] . ' ' . $arr['style'] . ' ' . $arr['color'] . ';';
+			}
+			else {
+				unset( $storage[ $tag ] );
+			}
+		}
+
+		// Now rebuild the string replacing all instances
+		$pos = 0;
+		while ( preg_match( $this->rcsw, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$prop = $match[ 2 ][ 0 ];
+			if ( isset( $storage[ $prop ] ) ) {
+				$colon = strlen( $match[ 1 ][ 0 ] );
+				$val = substr_replace( $val, $storage[ $prop ], $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
+				$pos = $match[ 0 ][ 1 ] + strlen( $storage[ $prop ] ) - $colon - 1;
+				$storage[ $prop ] = '';
+			}
+			else {
+				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
 			}
 		}
 

@@ -151,16 +151,6 @@ Class CSSCompression_Trim
 	}
 
 	/**
-	 * Runs initial formatting to setup for compression
-	 *
-	 * @param (string) css: CSS Contents
-	 */ 
-	private function strip( $css ) {
-		// Run replacements
-		return trim( preg_replace( $this->trimmings['patterns'], $this->trimmings['replacements'], $css ) );
-	}
-
-	/**
 	 * Escape out possible splitter characters within urls
 	 *
 	 * @param (string) css: Full stylesheet
@@ -178,6 +168,16 @@ Class CSSCompression_Trim
 		}
 
 		return $css;
+	}
+
+	/**
+	 * Runs initial formatting to setup for compression
+	 *
+	 * @param (string) css: CSS Contents
+	 */ 
+	private function strip( $css ) {
+		// Run replacements
+		return trim( preg_replace( $this->trimmings['patterns'], $this->trimmings['replacements'], $css ) );
 	}
 
 	/**
