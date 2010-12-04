@@ -13,9 +13,11 @@ Class CSSCompression_Combine
 	 * @class Control: Compression Controller
 	 * @param (string) token: Copy of the injection token
 	 * @param (array) options: Reference to options
+	 * @param (regex) rspace: Checks for space without an escape '\' character before it
 	 * @param (regex) rcsw: Border/Outline matching
 	 * @param (regex) raural: Aurual matching
 	 * @param (regex) rmp: Margin/Padding matching
+	 * @param (regex) rmpbase: Margin/Padding base match
 	 * @param (regex) rborder: Border matching
 	 * @param (regex) rfont: Font matching
 	 * @param (regex) rbackground: Background matching
@@ -26,9 +28,11 @@ Class CSSCompression_Combine
 	private $Control;
 	private $token = '';
 	private $options = array();
+	private $rspace = "/(?<!\\\)\s/";
 	private $rcsw = "/(border|outline)-(color|style|width):(.*?)(?<!\\\);/";
 	private $raural = "/(cue|pause)-(before|after):(.*?)(?<!\\\);/";
-	private $rmp = "/(margin|padding)-(top|right|bottom|left):(.*?)(?<!\\\);/";
+	private $rmp = "/(^|(?<!\\\);)(margin|padding)-(top|right|bottom|left):(.*?)(?<!\\\);/";
+	private $rmpbase = "/(margin|padding):(.*?)(?<!\\\);/";
 	private $rborder = "/(border)-(top|right|bottom|left):(.*?)(?<!\\\);/";
 	private $rfont = "/(font|line)-(style|variant|weight|size|height|family):(.*?)(?<!\\\);/";
 	private $rbackground = "/background-(color|image|repeat|attachment|position):(.*?)(?<!\\\);/";
@@ -151,6 +155,59 @@ Class CSSCompression_Combine
 	}
 
 	/**
+	 * Explodes shorthanded margin/padding properties for later combination
+	 *
+	 * @param (string) val: Rule set
+	 */
+	private function mpbuild( $val ) {
+		$pos = 0;
+		while ( preg_match( $this->rmpbase, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$replace = '';
+			$prop = $match[ 1 ][ 0 ];
+			$value = preg_split( $this->rspace, trim( $match[ 2 ][ 0 ] ) );
+			$positions = array(
+				'top' => 0,
+				'right' => 0,
+				'bottom' => 0,
+				'left' => 0
+			);
+
+			// Each position needs a value
+			switch ( count( $value ) ) {
+				case 1:
+					$positions['top'] = $positions['right'] = $positions['bottom'] = $positions['left'] = $value[ 0 ];
+					break;
+				case 2:
+					$positions['top'] = $positions['bottom'] = $value[ 0 ];
+					$positions['right'] = $positions['left'] = $value[ 1 ];
+					break;
+				case 3:
+					$positions['top'] = $value[ 0 ];
+					$positions['right'] = $positions['left'] = $value[ 1 ];
+					$positions['bottom'] = $value[ 2 ];
+					break;
+				case 4:
+					$positions['top'] = $value[ 0 ];
+					$positions['right'] = $value[ 1 ];
+					$positions['bottom'] = $value[ 2 ];
+					$positions['left'] = $value[ 3 ];
+					break;
+				default:
+					continue;
+			}
+
+			// Build the replacement
+			foreach ( $positions as $p => $v ) {
+				$replace .= "$prop-$p:$v;";
+			}
+			$pos += strlen( $replace );
+			$val = substr_replace( $val, $replace, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+		}
+
+		return $val;
+	}
+
+	/**
 	 * Combines multiple directional properties of 
 	 * margin/padding into single definition.
 	 *
@@ -158,51 +215,58 @@ Class CSSCompression_Combine
 	 */ 
 	private function combineMPproperties( $val ) {
 		$storage = array();
-		preg_match_all( $this->rmp, $val, $matches );
+		$val = $this->mpbuild( $val );
 
-		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++){
-			if ( ! isset( $storage[ $matches[1][$i] ] ) ) {
-				$storage[ $matches[1][$i] ] = array( $matches[2][$i] => $matches[3][$i] );
+		// Find all possible occurences of margin/padding and mark their directional value
+		$pos = 0;
+		while ( preg_match( $this->rmp, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			if ( ! isset( $storage[ $match[ 2 ][ 0 ] ] ) ) {
+				$storage[ $match[ 2 ][ 0 ] ] = array( $match[ 3 ][ 0 ] => $match[ 4 ][ 0 ] );
 			}
 
 			// Override double written properties
-			$storage[$matches[1][$i]][$matches[2][$i]] = $matches[3][$i];
+			$storage[ $match[ 2 ][ 0 ] ][ $match[ 3 ][ 0 ] ] = $match[ 4 ][ 0 ];
+			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
 		}
 
 		// Go through each tag for possible combination
 		foreach ( $storage as $tag => $arr ) {
-			// Drop capitols
-			$tag = strtolower( $tag );
-
 			// Only combine if all 4 definitions are found
 			if ( count( $arr ) == 4 && ! $this->checkUncombinables( $arr ) ) {
-				// If all definitions are the same, combine into single definition
+				// All 4 are the same
 				if ( $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['left'] ) {
-					// String to replace each instance with
-					$replace = "$tag:" . $arr['top'];
-
-					// Replace every instance, as multiple declarations removal will correct it
-					foreach ( $arr as $a => $b ) {
-						$val = str_ireplace( "$tag-$a:$b", $replace, $val );
-					}
+					$storage[ $tag ] = "$tag:" . $arr['top'] . ';';
 				}
-				// If opposites are the same, combine into single definition
+				// Opposites are the same
 				else if ( $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] ) {
-					// String to replace each instance with
-					$replace = "$tag:" . $arr['top'] . ' ' . $arr['left'];
-					// Replace every instance, as multiple declarations removal will correct it
-					foreach ( $arr as $a => $b ) {
-						$val = str_ireplace( "$tag-$a:$b", $replace, $val );
-					}
+					$storage[ $tag ] = "$tag:" . $arr['top'] . ' ' . $arr['left'] . ';';
 				}
-				else{
-					// String to replace each instance with
-					$replace = "$tag:" . $arr['top'] . ' ' . $arr['right'] . ' ' . $arr['bottom'] . ' ' . $arr['left'];
-					// Replace every instance, as multiple declarations removal will correct it
-					foreach ( $arr as $a => $b ) {
-						$val = str_ireplace( "$tag-$a:$b", $replace, $val );
-					}
+				// 3-point directional
+				else if ( $arr['right'] == $arr['left'] ) {
+					$storage[ $tag ] = "$tag:" . $arr['top'] . ' ' . $arr['right'] . ' ' . $arr['bottom'] . ';';
 				}
+				// none are the same, but can still use shorthand notation
+				else {
+					$storage[ $tag ] = "$tag:" . $arr['top'] . ' ' . $arr['right'] . ' ' . $arr['bottom'] . ' ' . $arr['left'] . ';';
+				}
+			}
+			else {
+				unset( $storage[ $tag ] );
+			}
+		}
+
+		// Now rebuild the string replacing all instances of margin/padding if shorthand exists
+		$pos = 0;
+		while ( preg_match( $this->rmp, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$prop = $match[ 2 ][ 0 ];
+			if ( isset( $storage[ $prop ] ) ) {
+				$colon = strlen( $match[ 1 ][ 0 ] );
+				$val = substr_replace( $val, $storage[ $prop ], $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
+				$pos = $match[ 0 ][ 1 ] + strlen( $storage[ $prop ] ) - $colon - 1;
+				$storage[ $prop ] = '';
+			}
+			else {
+				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
 			}
 		}
 

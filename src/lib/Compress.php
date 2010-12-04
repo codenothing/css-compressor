@@ -77,6 +77,7 @@ Class CSSCompression_Compress
 		if ( $this->options['organize'] ) {
 			$this->Cleanup->cleanup( $setup['selectors'], $setup['details'] );
 			$this->Organize->organize( $setup['selectors'], $setup['details'] );
+			$this->Combine->combine( $setup['selectors'], $setup['details'] );
 		}
 
 		// Do final maintenace work, remove injected property/values

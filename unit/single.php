@@ -9,12 +9,12 @@ error_reporting( E_ALL );
 // Access Setup
 $config = array(
 	'options' => 'small',
-	'class' => 'Selectors',
-	'method' => 'parse',
+	'class' => 'Combine',
+	'method' => 'combineMPproperties',
 	'params' => array(
-		"BODY>div:FIRST-letter.STRANGEcl\.as\.S A[HREF=\"http://www.example.com/TESTING\\\"quotes\"] p",
+		"color:red;margin:0;color:white;margin-left:10px;",
 	),
-	'expect' => "body>div:first-letter.STRANGEcl\.as\.S a[href=\"http://www.example.com/TESTING\\\"quotes\"] p"
+	'expect' => "color:red;margin:0 0 0 10px;color:white;",
 );
 
 

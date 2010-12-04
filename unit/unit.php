@@ -155,7 +155,9 @@ Class CSScompressionUnitTest
 
 					// Output failures
 					if ( $result != $row['expect'] ) {
-						echo "Expecting:\n" . $row['expect'] . "\n======\nResult:\n$result\n";
+						$this->errorstack .= "Sent:\n" . print_r( $row['params'], true ) 
+							. "\n======\nExpecting:\n" . $row['expect']
+							. "\n======\nResult:\n$result\n";
 					}
 				}
 			}
@@ -309,8 +311,8 @@ Class CSScompressionUnitTest
 
 					// Store inaccuracies
 					if ( $first !== $second ) {
-						file_put_contents( $this->root . "errors/$file-$mode-first", $first );
-						file_put_contents( $this->root . "errors/$file-$mode-second", $second );
+						file_put_contents( $this->root . "errors/$file-$mode-first.css", $first );
+						file_put_contents( $this->root . "errors/$file-$mode-second.css", $second );
 					}
 				}
 			}

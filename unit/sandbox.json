@@ -479,6 +479,30 @@
 			}
 		},
 
+		// Expanding margin/padding beforce combinations
+		"mpbuild": {
+			"expand 1": {
+				"params": [ "margin:10px;" ],
+				"expect": "margin-top:10px;margin-right:10px;margin-bottom:10px;margin-left:10px;"
+			},
+			"expand 2": {
+				"params": [ "color:red;padding:0 10px;" ],
+				"expect": "color:red;padding-top:0;padding-right:10px;padding-bottom:0;padding-left:10px;"
+			},
+			"expand 3": {
+				"params": [ "margin:0 10px 2px;color:white;" ],
+				"expect": "margin-top:0;margin-right:10px;margin-bottom:2px;margin-left:10px;color:white;"
+			},
+			"expand 4": {
+				"params": [ "color:red;padding:0 5px 10px 2px;color:white;" ],
+				"expect": "color:red;padding-top:0;padding-right:5px;padding-bottom:10px;padding-left:2px;color:white;"
+			},
+			"no expand": {
+				"params": [ "color:red;margin-top:20px;margin-left:10px;color:white;" ],
+				"expect": "color:red;margin-top:20px;margin-left:10px;color:white;"
+			}
+		},
+
 		// Margin/Padding combinations
 		"combineMPproperties": {
 			"top-left": {
@@ -491,21 +515,15 @@
 			},
 			"4 to 1": {
 				"params": [ "margin-top:10px;margin-left:10px;margin-right:10px;margin-bottom:10px;" ],
-				"expect": [
-					"margin:10px;",
-					"margin:10px;",
-					"margin:10px;",
-					"margin:10px;"
-				]
+				"expect": "margin:10px;"
 			},
 			"4 to 2": {
 				"params": [ "padding-top:12px;padding-left:10px;padding-right:10px;padding-bottom:12px;" ],
-				"expect": [
-					"padding:12px 10px;",
-					"padding:12px 10px;",
-					"padding:12px 10px;",
-					"padding:12px 10px;"
-				]
+				"expect": "padding:12px 10px;"
+			},
+			"overwrite": {
+				"params": [ "margin:0;margin-left:10px;margin-right:10px;" ],
+				"expect": "margin:0 10px;"
 			}
 		},
 
@@ -878,9 +896,6 @@
 					"background:green url(images/img.gif);"
 				],
 				[
-					"margin:10px;",
-					"margin:10px;",
-					"margin:10px;",
 					"margin:10px;"
 				]
 			]
