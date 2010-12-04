@@ -35,7 +35,7 @@ Class CSSCompression_Combine
 	private $rmp = "/(^|(?<!\\\);)(margin|padding)-(top|right|bottom|left):(.*?)(?<!\\\);/";
 	private $rborder = "/(^|(?<!\\\);)(border)-(top|right|bottom|left):(.*?)(?<!\\\);/";
 	private $rfont = "/(^|(?<!\\\);)(font|line)-(style|variant|weight|size|height|family):(.*?)(?<!\\\);/";
-	private $rbackground = "/background-(color|image|repeat|attachment|position):(.*?)(?<!\\\);/";
+	private $rbackground = "/(^|(?<!\\\);)background-(color|image|repeat|attachment|position):(.*?)(?<!\\\);/";
 	private $rlist = "/list-style-(type|position|image):(.*?)(?<!\\\);/";
 	private $rimportant = "/inherit|\!important|!ie|\s/i";
 	private $methods = array(
@@ -359,7 +359,6 @@ Class CSSCompression_Combine
 	private function combineFontDefinitions( $val ) {
 		$storage = array();
 
-
 		// Find all possible occurences and build the replacement
 		$pos = 0;
 		while ( preg_match( $this->rfont, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
@@ -400,7 +399,7 @@ Class CSSCompression_Combine
 			}
 		}
 
-		// If replacement string found, run it on all options
+		// If replacement string found, run it on all declarations
 		if ( $replace ) {
 			$pos = 0;
 			while ( preg_match( $this->rfont, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
@@ -426,11 +425,12 @@ Class CSSCompression_Combine
 	 */ 
 	private function combineBackgroundDefinitions( $val ) {
 		$storage = array();
-		preg_match_all( $this->rbackground, $val, $matches );
 
-		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
-			// Store each property in it's full state
-			$storage[ $matches[1][$i] ] = $matches[2][$i];
+		// Find all possible occurences and build the replacement
+		$pos = 0;
+		while ( preg_match( $this->rbackground, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$storage[ $match[ 2 ][ 0 ] ] = $match[ 3 ][ 0 ];
+			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
 		}
 
 		// List of background props to check
@@ -463,10 +463,14 @@ Class CSSCompression_Combine
 			}
 		}
 
-		// If replacement string found, run it on all options
+		// If replacement string found, run it on all declarations
 		if ( $replace ) {
-			for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
-				$val = str_ireplace( $matches[0][$i], $replace, $val );
+			$pos = 0;
+			while ( preg_match( $this->rbackground, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+				$colon = strlen( $match[ 1 ][ 0 ] );
+				$val = substr_replace( $val, $replace, $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
+				$pos = $match[ 0 ][ 1 ] + strlen( $replace ) - $colon - 1;
+				$replace = '';
 			}
 		}
 
