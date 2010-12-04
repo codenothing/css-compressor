@@ -84,9 +84,9 @@ Lowercases html tags from list
 pseudo-space
 ------------
 
-Add space after pseudo selectors, for ie6
+Add space after :first-letter and :first-line pseudo selectors, for ie6
 
- - *a:first-child{ -> a:first-child {*
+ - *a:first-line{ -> a:first-line {*
 
 
 directional-compress

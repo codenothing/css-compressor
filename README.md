@@ -93,7 +93,7 @@ The compressor class provides static integers that map to the internal readabili
 
 	// Or, just pass it in as another option
 	$options = array(
-		'readability' =>CSSCompression::READ_MAX,
+		'readability' => CSSCompression::READ_MAX,
 		// Other options ...
 	);
 	// Get full readability through express
