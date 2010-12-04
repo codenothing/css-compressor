@@ -16,8 +16,8 @@ Class CSSCompression_Combine
 	 * @param (regex) rspace: Checks for space without an escape '\' character before it
 	 * @param (regex) rcsw: Border/Outline matching
 	 * @param (regex) raural: Aurual matching
-	 * @param (regex) rmp: Margin/Padding matching
 	 * @param (regex) rmpbase: Margin/Padding base match
+	 * @param (regex) rmp: Margin/Padding matching
 	 * @param (regex) rborder: Border matching
 	 * @param (regex) rfont: Font matching
 	 * @param (regex) rbackground: Background matching
@@ -31,9 +31,9 @@ Class CSSCompression_Combine
 	private $rspace = "/(?<!\\\)\s/";
 	private $rcsw = "/(^|(?<!\\\);)(border|outline)-(color|style|width):(.*?)(?<!\\\);/";
 	private $raural = "/(^|(?<!\\\);)(cue|pause)-(before|after):(.*?)(?<!\\\);/";
-	private $rmp = "/(^|(?<!\\\);)(margin|padding)-(top|right|bottom|left):(.*?)(?<!\\\);/";
 	private $rmpbase = "/(margin|padding):(.*?)(?<!\\\);/";
-	private $rborder = "/(border)-(top|right|bottom|left):(.*?)(?<!\\\);/";
+	private $rmp = "/(^|(?<!\\\);)(margin|padding)-(top|right|bottom|left):(.*?)(?<!\\\);/";
+	private $rborder = "/(^|(?<!\\\);)(border)-(top|right|bottom|left):(.*?)(?<!\\\);/";
 	private $rfont = "/(font|line)-(style|variant|weight|size|height|family):(.*?)(?<!\\\);/";
 	private $rbackground = "/background-(color|image|repeat|attachment|position):(.*?)(?<!\\\);/";
 	private $rlist = "/list-style-(type|position|image):(.*?)(?<!\\\);/";
@@ -308,29 +308,42 @@ Class CSSCompression_Combine
 	 */
 	private function combineBorderDefinitions( $val ) {
 		$storage = array();
-		preg_match_all( $this->rborder, $val, $matches );
 
-		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
-			$a = $matches[1][$i];
-			$b = $matches[2][$i];
+		// Find all possible occurences and build the replacement
+		$pos = 0;
+		while ( preg_match( $this->rborder, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			if ( ! isset( $storage[ $match[ 2 ][ 0 ] ] ) ) {
+				$storage[ $match[ 2 ][ 0 ] ] = array( $match[ 3 ][ 0 ] => $match[ 4 ][ 0 ] );
+			}
 
-			if ( ! isset( $storage[ $a ] ) ) {
-				$storage[ $a ] = array(  $b => $matches[ 3 ][ $i ] );
+			// Override double written properties
+			$storage[ $match[ 2 ][ 0 ] ][ $match[ 3 ][ 0 ] ] = $match[ 4 ][ 0 ];
+			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
+		}
+
+		// Go through each tag for possible combination
+		foreach ( $storage as $tag => $arr ) {
+			// All 4 have to be defined
+			if ( count( $arr ) == 4 && $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['right'] ) {
+				$storage[ $tag ] = "$tag:" . $arr['top'] . ';';
 			}
 			else {
-				$storage[ $a ][ $b ] = $matches[ 3 ][ $i ];
+				unset( $storage[ $tag ] );
 			}
 		}
 
-		foreach ( $storage as $tag => $arr ) {
-			if ( count( $arr ) == 4 && $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['right'] ) {
-				// String to replace each instance with
-				$replace = "$tag:" . $arr['top'];
-
-				// Replace every instance, as multiple declarations removal will correct it
-				foreach ( $arr as $a => $b ) {
-					$val = str_ireplace( "$tag-$a:$b", $replace, $val );
-				}
+		// Now rebuild the string replacing all instances
+		$pos = 0;
+		while ( preg_match( $this->rborder, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$prop = $match[ 2 ][ 0 ];
+			if ( isset( $storage[ $prop ] ) ) {
+				$colon = strlen( $match[ 1 ][ 0 ] );
+				$val = substr_replace( $val, $storage[ $prop ], $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
+				$pos = $match[ 0 ][ 1 ] + strlen( $storage[ $prop ] ) - $colon - 1;
+				$storage[ $prop ] = '';
+			}
+			else {
+				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
 			}
 		}
 
