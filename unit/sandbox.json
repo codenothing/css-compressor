@@ -471,12 +471,12 @@
 		// Sound props
 		"combineAuralCuePause": {
 			"cue": {
-				"params": [ "cue-before:url(sound.wav);cue-after:url(after.wav);" ],
-				"expect": "cue:url(sound.wav) url(after.wav);"
+				"params": [ "cue-before:url(sound.wav);color:red;cue-after:url(after.wav);" ],
+				"expect": "cue:url(sound.wav) url(after.wav);color:red;"
 			},
 			"pause": {
-				"params": [ "pause-before:2s;pause-after:3s;" ],
-				"expect": "pause:2s 3s;"
+				"params": [ "color:white;pause-before:2s;pause-after:3s;" ],
+				"expect": "color:white;pause:2s 3s;"
 			},
 			"do nothing": {
 				"params": [ "pause-before:2s;color:red;" ],
