@@ -12,12 +12,20 @@ Class CSSCompression_Trim
 	 *
 	 * @class Control: Compression Controller
 	 * @param (array) options: Reference to options
+	 * @param (regex) rcmark: Marking point when traversing through sheet for comments
+	 * @param (regex) rendcomment: Finds the ending comment point
+	 * @param (regex) rendquote: Finds the ending quote point
+	 * @param (regex) rendsinglequote: Finds the ending single quote point
 	 * @param (array) rescape: Array of patterns of groupings that should be escaped
 	 * @param (array) trimmings: Stylesheet trimming patterns/replacements
 	 * @param (array) escaped: Array of characters that need to be escaped
 	 */
 	private $Control;
 	private $options = array();
+	private $rcmark = "/((?<!\\\)\/\*|(?<!\\\)\"|(?<!\\\)')/";
+	private $rendcomment = "/(?<!\\\)\*\//";
+	private $rendquote = "/(?<!\\\)\"/";
+	private $rendsinglequote = "/(?<!\\\)'/";
 	private $rescape = array(
 		"/(url\()([^'\"].*?)(\))/s",
 		"/((?<!\\\)\")(.*?)((?<!\\\)\")/s",
@@ -104,44 +112,42 @@ Class CSSCompression_Trim
 	 * @param (string) css: Stylesheet to trim
 	 */
 	private function comments( $css ) {
-		$length = strlen( $css );
-		$i = -1;
-		$instring = false;
-		$incomment = false;
-		$match = '';
-		$clean = '';
-		$row = '';
-
-		while ( ++$i < $length ) {
-			$row = $css[ $i ];
-
-			if ( $incomment ) {
-				if ( $row == "*" && $css[ $i - 1 ] != "\\" && $css[ $i + 1 ] == "/" ) {
-					$i++;
-					$incomment = false;
-				}
-				continue;
+		$pos = 0;
+		while ( preg_match( $this->rcmark, $css, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			switch ( $match[ 1 ][ 0 ] ) {
+				case "/*":
+					if ( preg_match( $this->rendcomment, $css, $m, PREG_OFFSET_CAPTURE, $match[ 1 ][ 1 ] + 1 ) ) {
+						$end = $m[ 0 ][ 1 ] - $match[ 1 ][ 1 ] + strlen( $m[ 0 ][ 0 ] );
+						$css = substr_replace( $css, '', $match[ 1 ][ 1 ], $end );
+						$pos = $match[ 0 ][ 1 ];
+					}
+					else {
+						$css = substr( $css, 0, $match[ 1 ][ 1 ] );
+						break 2;
+					}
+					break;
+				case "\"":
+					if ( preg_match( $this->rendquote, $css, $m, PREG_OFFSET_CAPTURE, $match[ 1 ][ 1 ] + 1 ) ) {
+						$pos = $m[ 0 ][ 1 ] + strlen( $m[ 0 ][ 0 ] );
+					}
+					else {
+						break 2;
+					}
+					break;
+				case "'":
+					if ( preg_match( $this->rendsinglequote, $css, $m, PREG_OFFSET_CAPTURE, $match[ 1 ][ 1 ] + 1 ) ) {
+						$pos = $m[ 0 ][ 1 ] + strlen( $m[ 0 ][ 0 ] );
+					}
+					else {
+						break 2;
+					}
+					break;
+				default:
+					break 2;
 			}
-			else if ( $row == "\\" ) {
-				$clean .= $row . $css[ ++$i ];
-				continue;
-			}
-			else if ( $instring ) {
-				$instring = $row != $match;
-			}
-			else if ( $row == "\"" || $row == "'" ) {
-				$match = $row;
-				$instring = true;
-			}
-			else if ( $row == "/" && $css[ $i + 1 ] == "*" ) {
-				$incomment = true;
-				continue;
-			}
-
-			$clean .= $row;
 		}
 
-		return $clean;
+		return $css;
 	}
 
 	/**
