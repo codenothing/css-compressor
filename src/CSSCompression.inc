@@ -162,11 +162,20 @@ Class CSSCompression
 	 *
 	 * @instance express: Use a separate instance from singleton access 
 	 * @instance instance: Saved instance of CSSCompression
-	 * @param (regex) rjson: Simple single line comment cleaner for json files
+	 * @param (array) rjson: Comment removal before json decoding
 	 */
 	private static $express;
 	private static $instance;
-	private static $rjson = "/(\t|\s)+\/\/.*/";
+	private static $rjson = array(
+		'patterns' => array(
+			"/^(.*?){/s", 
+			"/(\t|\s)+\/\/.*/",
+		),
+		'replacements' => array(
+			'{',
+			'',
+		),
+	);
 
 	/**
 	 * Controller Instance
@@ -322,7 +331,8 @@ Class CSSCompression
 		$file = $file[ 0 ] == '/' ? $file : dirname(__FILE__) . '/helpers/' . $file;
 
 		// Strip comments
-		$json = preg_replace( self::$rjson, '', file_get_contents( $file ) );
+		$json = preg_replace( self::$rjson['patterns'], self::$rjson['replacements'], file_get_contents( $file ) );
+		echo $json;
 
 		// Decode json
 		$json = json_decode( $json, true );

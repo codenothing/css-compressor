@@ -1,11 +1,11 @@
- //
- // CSS Compressor [VERSION]
- // [DATE]
- // Corey Hart @ http://www.codenothing.com
- //
-
- // Holds array of all unit tests needed to be done
- // on all methods possible.
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * Holds array of all unit tests needed to be done
+ * on all methods possible.
+ */
 {
 	// Numeric Handler
 	"Numeric": {
