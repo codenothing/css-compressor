@@ -77,8 +77,8 @@ Corey Hart @ http://www.codenothing.com
 					<div class='example'>BODY -&gt; body</div>
 				</label>
 				<label>
-					<input type='checkbox' name='pseduo-space' checked='checked' />
-					Add space after pseduo selectors, for ie6
+					<input type='checkbox' name='pseudo-space' checked='checked' />
+					Add space after pseudo selectors, for ie6
 					<div class='example'>a:first-child{ -&gt; a:first-child {</div>
 				</label>
 				<label>
@@ -138,12 +138,12 @@ Corey Hart @ http://www.codenothing.com
 				<label>
 					<input type='checkbox' name='unnecessary-semicolons' checked='checked' />
 					Removes the last semicolon of a property set
-					<div class='example'>{margin: 2px; color: blue;} -&gt; {margin: 2px; color: blue}</div>
+					<div class='example'>margin: 2px; color: blue; -&gt; margin: 2px; color: blue</div>
 				</label>
 				<label>
 					<input type='checkbox' name='rm-multi-define' checked='checked' />
-					Removes multiply defined properties within rule sets. If you enable any of the combinations,
-					it is <b>strongly</b> recomended to check this one off.
+					Removes multiple declarations within the same rule set
+					<div class='example'>color:black;font-size:12pt;color:red; -&gt; color:red;font-size:12pt;</div>
 				</label>
 			</div>
 			<textarea name='css'></textarea>

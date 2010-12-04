@@ -1,6 +1,29 @@
 Options
 =========
 
+Here's a few different ways to set options.
+
+	// Set an array of options
+	$options = array( 'color-long2hex' => false, 'readability' => CSSCompression::READ_MAX );
+
+	// Pass directly into express compression
+	$compressed = CSSCompression::express( $css, $options );
+
+	// Create an instance based on the predefined set of options
+	$CSSC = new CSSCompression( $options );
+
+	// Set a batch of options on an instance
+	$CSSC->option( $options );
+
+	// Set a single option on an instance
+	$CSSC->option( 'readability', CSSCompression::READ_MAX );
+
+	// Or, if you just want to read an option
+	$readability = $CSSC->option( 'readability' );
+
+	// Also, you can look at the current options
+	$options = $CSSC->option();
+
 
 color-long2hex
 --------------
@@ -58,10 +81,10 @@ Lowercases html tags from list
  - *BODY -> body*
 
 
-pseduo-space
+pseudo-space
 ------------
 
-Add space after pseduo selectors, for ie6
+Add space after pseudo selectors, for ie6
 
  - *a:first-child{ -> a:first-child {*
 
@@ -148,7 +171,26 @@ Removes the last semicolon of a property set
  - *{margin: 2px; color: blue;} -> {margin: 2px; color: blue}*
 
 
+rm-multi-define
+---------------
+
+Removes multiple declarations within the same rule set
+
+ - *{color:black;font-size:12pt;color:red;} -> {color:red;font-size:12pt;}*
+
+
+add-unknown
+-----------
+
+Adds unknown artifacts to a comment block at the top of output.
+
+
 readability
 -----------
 
-Readibility of Compressed Output, Defaults to none
+Readibility of Compressed Output.
+
+	CSSCompression::READ_MAX; // Maximum readability
+	CSSCompression::READ_MED; // Medium readability
+	CSSCompression::READ_MIN; // Minimum readability
+	CSSCompression::READ_NONE; // No readability

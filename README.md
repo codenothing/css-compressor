@@ -7,13 +7,43 @@ PHP Based CSS Compressor.
 Usage
 -----
 
-	$compressed = CSSCompression::express( $css, $options );
+	$compressed = CSSCompression::express( $css, 'safe' );
 
 
 Or, if you need to run it multiple times
 
-	$CSSC = new CSSCompression( $options );
+	$CSSC = new CSSCompression( 'safe' );
 	$compressed = $CSSC->compress( $css );
+
+
+Modes
+-----
+
+Modes are pre-defined sets of options that can be set by passing in the mode name.
+
+ - **safe**: Safe mode does zero combinations or organizing. It's the best mode if you use a lot of hacks
+
+ - **sane**: Sane mode does all combinations(multiple long hand notations to single shorthand), but still keeps most declarations in their place.
+
+ - **small**: Small mode reorganizes the whole sheet, combines as much as it can, and will break most comment hacks. 
+
+ - **full**: Full does everything small does, but also converts hex codes to their short color name alternatives. This is only safe for latest browsers.
+
+
+Here's a few different ways to initiate a mode.
+
+	// Express with safe mode
+	$compressed = CSSCompression::express( $css, 'safe' );
+
+	// Creating new instance with sane mode
+	$CSSC = new CSSCompression( 'sane' );
+
+	// Setting an instance with small mode
+	$CSSC->mode( 'small' );
+
+	// Or compressing with the current instance, and setting full mode
+	$compressed = $CSSC->compress( $css, 'full' );
+	
 
 
 Singleton Instances

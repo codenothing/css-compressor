@@ -51,9 +51,9 @@ Class CSSCompression
 		// (BODY -> body)
 		'lowercase-selectors' => true,
 
-		// Add space after pseduo selectors, for ie6
+		// Add space after pseudo selectors, for ie6
 		// (a:first-child{ -> a:first-child {)
-		'pseduo-space' => false,
+		'pseudo-space' => false,
 
 		// Compresses single defined multi-directional properties
 		// (margin: 15px 25px 15px 25px -> margin:15px 25px)
@@ -96,9 +96,7 @@ Class CSSCompression
 		// ({margin: 2px; color: blue;} -> {margin: 2px; color: blue})
 		'unnecessary-semicolons' => true,
 
-		// Removes multiply defined properties
-		// STRONGLY suggested to keep this true, unless you have
-		// a box model or other hacks
+		// Removes multiple declarations within the same rule set
 		'rm-multi-define' => true,
 
 		// Adds all unknown blocks to the top of the output in a comment strip
@@ -150,10 +148,10 @@ Class CSSCompression
 		),
 		'small' => array(
 			'color-hex2shortcolor' => false,
-			'pseduo-space' => false
+			'pseudo-space' => false
 		),
 		'full' => array(
-			'pseduo-space' => false
+			'pseudo-space' => false
 		),
 	);
 
@@ -266,7 +264,7 @@ Class CSSCompression
 	}
 
 	/**
-	 * (Proxy function) Run compression on the sheet passed
+	 * (Proxy function) Run compression on the sheet passed.
 	 *
 	 * @param (string) css: Stylesheet to be compressed
 	 * @param (array|string) options: Array of options or mode to use.

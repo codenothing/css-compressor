@@ -63,9 +63,9 @@ Class CSSCompression_Selectors
 			// Smart casing and token injection
 			$selector = $this->parse( $selector );
 
-			// Add space after pseduo selectors (so ie6 doesn't complain)
-			if ( $this->options['pseduo-space'] ) {
-				$selector = $this->pseduoSpace( $selector );
+			// Add space after pseudo selectors (so ie6 doesn't complain)
+			if ( $this->options['pseudo-space'] ) {
+				$selector = $this->pseudoSpace( $selector );
 			}
 		}
 
@@ -117,11 +117,11 @@ Class CSSCompression_Selectors
 	}
 
 	/**
-	 * Adds space after pseduo selector for ie6 like a:first-child{ => a:first-child {
+	 * Adds space after pseudo selector for ie6 like a:first-child{ => a:first-child {
 	 *
 	 * @param (string) selector: CSS Selector
 	 */ 
-	private function pseduoSpace( $selector ) {
+	private function pseudoSpace( $selector ) {
 		return preg_replace( $this->pseudos['patterns'], $this->pseudos['replacements'], $selector );
 	}
 

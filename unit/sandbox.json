@@ -350,8 +350,8 @@
 			}
 		},
 
-		// IE coughs up if there is no space after a pseduo selector
-		"pseduoSpace": {
+		// IE coughs up if there is no space after a pseudo selector
+		"pseudoSpace": {
 			"first-letter comma": {
 				"params": [ "a:first-letter,a,b" ],
 				"expect": "a:first-letter ,a,b"
@@ -388,7 +388,7 @@
 
 		// Combination of all Selectors methods
 		"selectors": {
-			"Lowercase and pseduo": {
+			"Lowercase and pseudo": {
 				"params": [
 					[ "A:first-line>B:first-letter.test+PRE.old:first-letter", "A:first-line B" ]
 				],
@@ -737,36 +737,23 @@
 		"combineListProperties": {
 			"1": {
 				"params": [ "list-style-type:none;list-style-position:inline;list-style-image:url(images/img.gif);" ],
-				"expect": [
-					"list-style:none inline url(images/img.gif);",
-					"list-style:none inline url(images/img.gif);",
-					"list-style:none inline url(images/img.gif);"
-				]
+				"expect": "list-style:none inline url(images/img.gif);"
 			},
 			"2": {
-				"params": [ "list-style-type:none;list-style-position:inline;" ],
-				"expect": [
-					"list-style:none inline;",
-					"list-style:none inline;"
-				]
+				"params": [ "list-style-type:none;color:white;list-style-position:inline;" ],
+				"expect": "list-style:none inline;color:white;"
 			},
 			"3": {
-				"params": [ "list-style-type:none;list-style-image:url(images/img.gif);" ],
-				"expect": [
-					"list-style:none url(images/img.gif);",
-					"list-style:none url(images/img.gif);"
-				]
+				"params": [ "color:red;list-style-type:none;list-style-image:url(images/img.gif);" ],
+				"expect": "color:red;list-style:none url(images/img.gif);"
 			},
 			"4": {
 				"params": [ "list-style-position:inline;list-style-image:url(images/img.gif);" ],
-				"expect": [
-					"list-style:inline url(images/img.gif);",
-					"list-style:inline url(images/img.gif);"
-				]
+				"expect": "list-style:inline url(images/img.gif);"
 			},
 			"5": {
-				"params": [ "list-style-type:none;" ],
-				"expect": "list-style:none;"
+				"params": [ "list-style-type:none;color:black;" ],
+				"expect": "list-style:none;color:black;"
 			},
 			"6": {
 				"params": [ "list-style-position:inline;" ],
@@ -784,20 +771,14 @@
 			"params": [
 				"font-size:12pt;list-style-type:none;font-family:arial;list-style-position:inline;",
 				"background-color:green;background-image:url(images/img.gif);",
-				"margin-top:10px;margin-left:10px;margin-right:10px;margin-bottom:10px;"
+				"margin-top:10px;margin-left:10px;margin-right:10px;margin-bottom:10px;",
+				"margin-top:10px;color:white;margin-right:10px;color:red;"
 			],
 			"expect": [
-				[
-					"font:12pt arial;",
-					"list-style:none inline;",
-					"list-style:none inline;"
-				],
-				[
-					"background:green url(images/img.gif);"
-				],
-				[
-					"margin:10px;"
-				]
+				"font:12pt arial;list-style:none inline;",
+				"background:green url(images/img.gif);",
+				"margin:10px;",
+				"margin-top:10px;color:white;margin-right:10px;color:red;"
 			]
 		}
 	},
