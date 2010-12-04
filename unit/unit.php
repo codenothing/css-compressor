@@ -286,6 +286,8 @@ Class CSScompressionUnitTest
 					file_put_contents( $this->root . "errors/$file-before.css", $before );
 					file_put_contents( $this->root . "errors/$file-expected.css", $expected );
 					file_put_contents( $this->root . "errors/$file-result.css", $result );
+					$this->errorstack .= "diff " . $this->root . "errors/$file-expected.css "
+						. $this->root . "errors/$file-result.css\n";
 				}
 
 				// Reset pits special needs
@@ -330,6 +332,8 @@ Class CSScompressionUnitTest
 					if ( $first !== $second ) {
 						file_put_contents( $this->root . "errors/$file-$mode-first.css", $first );
 						file_put_contents( $this->root . "errors/$file-$mode-second.css", $second );
+						$this->errorstack .= "diff " . $this->root . "errors/$file-$mode-first.css "
+							. $this->root . "errors/$file-$mode-second.css\n";
 					}
 				}
 			}
