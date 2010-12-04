@@ -33,7 +33,12 @@ Class CSScompressionUnitTest
 	private $sandbox = array();
 	private $instances = array();
 	private $doubles = array(
-		'csszengarden.com.177.css' // Invalid css
+		// Special case of doubling organization actually does make it smaller
+		// (multiple defines of the same selector)
+		'csszengarden.com.167.css',
+
+		// Invalid css
+		'csszengarden.com.177.css',
 	);
 	private $sheetspecials = array(
 		'maxread' => array(

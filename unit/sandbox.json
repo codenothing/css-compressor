@@ -524,6 +524,10 @@
 			"overwrite": {
 				"params": [ "margin:0;margin-left:10px;margin-right:10px;" ],
 				"expect": "margin:0 10px;"
+			},
+			"remain the same": {
+				"params": [ "margin:0;color:blue;" ],
+				"expect": "margin:0;color:blue;"
 			}
 		},
 
