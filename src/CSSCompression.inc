@@ -332,7 +332,6 @@ Class CSSCompression
 
 		// Strip comments
 		$json = preg_replace( self::$rjson['patterns'], self::$rjson['replacements'], file_get_contents( $file ) );
-		echo $json;
 
 		// Decode json
 		$json = json_decode( $json, true );

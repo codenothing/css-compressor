@@ -228,12 +228,24 @@ Class CSScompressionUnitTest
 
 				// Mark the result
 				$this->mark( "$class.$method", $i, $details[ $i ] === $tests[ 'expect' ][ $i ] );
+
+				// Show the discrepency
+				if ( $details[ $i ] !== $tests[ 'expect' ][ $i ] ) {
+					$this->errorstack .= "Expecting:\n" . $tests[ 'expect' ][ $i ]
+						. "\n=====\nResult:\n" . $details[ $i ] . "\n=======\n";
+				}
 			}
 			else {
 				$this->mark( "$class.$method", $i, false );
+				$this->errorstack .= "Expected test $i not found.\n";
 			}
 		}
 		$this->mark( "$class.$method", 'Details Counted', count( $details ) === count( $tests['expect'] ) );
+
+		// Have to eyeball full counts
+		if ( count( $details ) !== count( $tests['expect'] ) ) {
+			$this->errorstack .= print_r( $details, true ) . print_r( $tests['expect'], true );
+		}
 	}
 
 	/**

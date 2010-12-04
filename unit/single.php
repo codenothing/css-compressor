@@ -10,11 +10,11 @@ error_reporting( E_ALL );
 $config = array(
 	'options' => 'small',
 	'class' => 'Combine',
-	'method' => 'combineCSWproperties',
+	'method' => 'combineFontDefinitions',
 	'params' => array(
-		"border-color:red;border-style:solid;border-width:2px;",
+		"font-size:12pt;line-height:20px;font-family:arial;",
 	),
-	'expect' => "border:2px solid red;",
+	'expect' => "font:12pt/20px arial;",
 );
 
 

@@ -11,5 +11,8 @@ test:
 test-all:
 	@php unit/start.php all
 
+single:
+	@php unit/single.php
+
 benchmark:
 	@php unit/benchmark/benchmark.php

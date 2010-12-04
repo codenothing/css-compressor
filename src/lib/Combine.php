@@ -34,7 +34,7 @@ Class CSSCompression_Combine
 	private $rmpbase = "/(margin|padding):(.*?)(?<!\\\);/";
 	private $rmp = "/(^|(?<!\\\);)(margin|padding)-(top|right|bottom|left):(.*?)(?<!\\\);/";
 	private $rborder = "/(^|(?<!\\\);)(border)-(top|right|bottom|left):(.*?)(?<!\\\);/";
-	private $rfont = "/(font|line)-(style|variant|weight|size|height|family):(.*?)(?<!\\\);/";
+	private $rfont = "/(^|(?<!\\\);)(font|line)-(style|variant|weight|size|height|family):(.*?)(?<!\\\);/";
 	private $rbackground = "/background-(color|image|repeat|attachment|position):(.*?)(?<!\\\);/";
 	private $rlist = "/list-style-(type|position|image):(.*?)(?<!\\\);/";
 	private $rimportant = "/inherit|\!important|!ie|\s/i";
@@ -358,11 +358,13 @@ Class CSSCompression_Combine
 	 */ 
 	private function combineFontDefinitions( $val ) {
 		$storage = array();
-		preg_match_all( $this->rfont, $val, $matches );
 
-		for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
-			// Store each property in it's full state
-			$storage[ $matches[1][$i] . '-' . $matches[2][$i] ] = $matches[3][$i];
+
+		// Find all possible occurences and build the replacement
+		$pos = 0;
+		while ( preg_match( $this->rfont, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$storage[ $match[ 2 ][ 0 ] . '-' . $match[ 3 ][ 0 ] ] = $match[ 4 ][ 0 ];
+			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
 		}
 
 		// Combine font-size & line-height if possible
@@ -400,11 +402,16 @@ Class CSSCompression_Combine
 
 		// If replacement string found, run it on all options
 		if ( $replace ) {
-			for ( $i = 0, $imax = count( $matches[1] ); $i < $imax; $i++ ) {
-				if ( ! isset( $storage['line-height'] ) || 
-					( isset( $storage['line-height'] ) && stripos( $matches[0][$i], 'line-height') !== 0 ) ) {
-						$val = str_ireplace( $matches[0][$i], $replace, $val );
+			$pos = 0;
+			while ( preg_match( $this->rfont, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+				if ( ! isset( $storage['line-height'] ) && stripos( $match[ 0 ][ 0 ], 'line-height') === 0 ) {
+					$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
+					continue;
 				}
+				$colon = strlen( $match[ 1 ][ 0 ] );
+				$val = substr_replace( $val, $replace, $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
+				$pos = $match[ 0 ][ 1 ] + strlen( $replace ) - $colon - 1;
+				$replace = '';
 			}
 		}
 
