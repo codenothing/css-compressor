@@ -173,19 +173,6 @@ Class CSSCompression_Format
 	}
 
 	/**
-	 * Byte format return of file sizes
-	 *
-	 * @param (int) size: File size in Bytes
-	 */ 
-	public function size( $size = 0 ) {
-		$ext = array( 'B', 'K', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
-		for( $c = 0; $size > 1024; $c++ ) {
-			$size /= 1024;
-		}
-		return round( $size, 2 ) . $ext[ $c ];
-	}
-
-	/**
 	 * Access to private methods for testing
 	 *
 	 * @param (string) method: Method to be called

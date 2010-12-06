@@ -1,3 +1,8 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 body {
 	font-size: 10pt;
 }
@@ -31,8 +36,10 @@ textarea{
 }
 
 iframe {
-	width: 95%;
+	display: none;
+	width: 85%;
 	height: 475px;
+	margin: 10px auto;
 }
 
 button.compress {
@@ -40,24 +47,25 @@ button.compress {
 	padding: 2px 5px;
 }
 
-div.example {
+span.example {
+	display: block;
 	padding-left: 25px;
 	font-style: italic;
 }
 
 div.control {
 	background: #DADAE7;
-	border: 2px solid #ADC6F0;
+	border: 1px solid #0f2852;
 	padding: 5px;
+	margin-top: 1px;
 }
 
 div.options {
-	display: none;
-	height: 400px;
+	height: 420px;
 	overflow: auto;
-	border-right: 2px solid #ADC6F0;
-	border-left: 2px solid #ADC6F0;
-	border-bottom: 2px solid #ADC6F0;
+	border-right: 1px solid #0f2852;
+	border-left: 1px solid #0f2852;
+	border-bottom: 1px solid #0f2852;
 }
 
 #results {

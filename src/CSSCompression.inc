@@ -140,18 +140,19 @@ Class CSSCompression
 			'font-combine' => false,
 			'background-combine' => false,
 			'list-combine' => false,
-			'rm-multi-define' => false,		
+			'rm-multi-define' => false,
 		),
 		'sane' => array(
 			'color-hex2shortcolor' => false,
 			'organize' => false,
+			'rm-multi-define' => false,
 		),
 		'small' => array(
 			'color-hex2shortcolor' => false,
-			'pseudo-space' => false
+			'pseudo-space' => false,
 		),
 		'full' => array(
-			'pseudo-space' => false
+			'pseudo-space' => false,
 		),
 	);
 

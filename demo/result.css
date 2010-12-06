@@ -1,13 +1,37 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 body {
 	background: #E8DCFF;
 	padding-top: 10px;
 	padding-left: 10px;
 	padding-right: 10px;
+	font-size: 14px;
 }
 
 textarea {
 	width: 100%;
 	border: 1px solid #989898;
-	height: 425px;
+	height: 275px;
 	font-size: 8pt;
+}
+
+table {
+	margin-bottom: 20px;
+	min-width: 400px;
+}
+
+th, td {
+	padding: 5px;
+	text-align: center;
+}
+
+th {
+	background-color: #d1d1d1;
+}
+
+td {
+	background-color: #f1f1f1;
 }
