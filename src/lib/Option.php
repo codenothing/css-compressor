@@ -58,16 +58,16 @@ Class CSSCompression_Option
 	 *
 	 * @param (boolean) clear: When true, options array is cleared
 	 */ 
-	public function reset( $clear = false ) {
+	public function reset(){
 		// Reset and return the new options
-		return ( $this->options = $clear ? array() : CSSCompression::$defaults );
+		return $this->options = CSSCompression::$defaults;
 	}
 
 	/**
 	 * Extend like function to merge an array of preferences into
 	 * the options array.
 	 *
-	 * @param (array) options: Array of preferences to merge into options
+	 * @param (mixed) options: Array of preferences to merge into options
 	 */ 
 	public function merge( $options = array() ) {
 		$modes = CSSCompression::modes();
@@ -77,10 +77,10 @@ Class CSSCompression_Option
 				if ( ! isset( $options[ $key ] ) ) {
 					continue;
 				}
-				else if ( $options[ $key ] && $options[ $key ] == 'on' ) {
+				else if ( strtolower( $options[ $key ] ) == 'on' ) {
 					$this->options[ $key ] = true;
 				}
-				else if ( $options[ $key ] && $options[ $key ] == 'off' ) {
+				else if ( strtolower( $options[ $key ] ) == 'off' ) {
 					$this->options[ $key ] = false;
 				}
 				else {

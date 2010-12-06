@@ -22,12 +22,6 @@ const int READ_MAX, int READ_MED, int READ_MIN, int READ_NONE
 Readability constants. Tells what format to return the css back after compression.
 
 
-public static array modes
--------------------------
-
-Group of predefined sets of options
-
-
 Getters
 =======
 
