@@ -67,18 +67,18 @@ Builds the subclasses first, then does one of the following
 
 	// Create an instance in 'safe' mode
 	$CSSC = new CSSCompression( 'safe' );
-
+	
 	// Create an instance with a custom set of options
 	$CSSC = new CSSCompression( array( 'readability' => CSSCompression::READ_MAX ) );
-
+	
 	// Creates a new instance, then runs compression on the css passed
 	$CSSC = new CSSCompression( $css );
 	echo $CSSC->css;
-
+	
 	// Creates a new instance in 'safe' mode, then runs compression on the css passed
 	$CSSC = new CSSCompression( $css, 'safe' );
 	echo $CSSC->css;
-
+	
 	// Creates a new instance with a custom set of options, then runs compression on the css passed
 	$CSSC = new CSSCompression( $css, array( 'readability' => CSSCompression::READ_MAX ) );
 	echo $CSSC->css;
@@ -141,13 +141,13 @@ Custom option handling, any one of the following may happen
 
 	// Get the entire options array for this instance
 	$options = $CSSC->option();
-
+	
 	// Get the current readability value for this instance
 	$readability = $CSSC->option( 'readability' );
-
+	
 	// Merge a set of options into the current instance
 	$CSSC->option( array( 'organize' => false, 'readability' => CSSCompression::READ_MAX ) );
-
+	
 	// Set the readability of the current object to full
 	$CSSC->option( 'readability', CSSCompression::READ_MAX );
 
