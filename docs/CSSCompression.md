@@ -65,6 +65,8 @@ Builds the subclasses first, then does one of the following
 
  - Passing a long string argument, and an array of options argument, merges those with default options, and runs compression on the css string.
 
+Here's a few examples
+
 	// Create an instance in 'safe' mode
 	$CSSC = new CSSCompression( 'safe' );
 	
@@ -138,6 +140,8 @@ Custom option handling, any one of the following may happen
  - Passing a single array argument merges those into the current options of the instance.
 
  - Passing a string name argument, and a value argument sets the value to it's corresponding option name.
+
+Here's a few examples.
 
 	// Get the entire options array for this instance
 	$options = $CSSC->option();
