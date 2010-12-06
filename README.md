@@ -98,3 +98,16 @@ The compressor class provides static integers that map to the internal readabili
 	);
 	// Get full readability through express
 	$compressed = CSSCompression::express( $css, $options );
+
+
+Contributors
+------------
+[Corey Hart](http://www.codenothing.com) - Creator
+
+[Martin Zvarík](http://www.teplaky.net/) - Pointed out the url and empty definition bug.
+
+[Phil DeJarnett](http://www.overzealous.com/) - Pointed out splitting(and numerous other) problems
+
+[Stoyan Stefanov](http://www.phpied.com/) - [At rules writeup](http://www.phpied.com/css-railroad-diagrams/) and test suite help.
+
+[Julien Deniau](http://www.jeuxvideo.fr/) - Pointed out escaped characters issue
