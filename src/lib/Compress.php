@@ -11,6 +11,7 @@ Class CSSCompression_Compress
 	 * Trim Patterns
 	 *
 	 * @class Control: Compression Controller
+	 * @class Trim: Trim Instance
 	 * @class Setup: Setup Instance
 	 * @class Format: Formatting Instance
 	 * @class Combine: Combine Instance
@@ -24,6 +25,7 @@ Class CSSCompression_Compress
 	 * @param (regex) rspace: Checks for space without an escape '\' character before it
 	 */
 	private $Control;
+	private $Trim;
 	private $Setup;
 	private $Format;
 	private $Combine;
@@ -43,6 +45,7 @@ Class CSSCompression_Compress
 	 */
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
+		$this->Trim = $control->Trim;
 		$this->Setup = $control->Setup;
 		$this->Format = $control->Format;
 		$this->Combine = $control->Combine;
@@ -60,6 +63,13 @@ Class CSSCompression_Compress
 	 * @param (string) css: CSS Contents
 	 */ 
 	public function compress( $css ) {
+		// Initial stats
+		$this->stats['before']['time'] = microtime( true );
+		$this->stats['before']['size'] = strlen( $css );
+
+		// Initial trimming
+		$css = $this->Trim->trim( $css );
+
 		// Do a little tokenizing, compress each property individually
 		$setup = $this->Setup->setup( $css );
 

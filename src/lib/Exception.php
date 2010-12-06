@@ -5,9 +5,7 @@
  * Corey Hart @ http://www.codenothing.com
  */
 
-/**
- * Make a custom exception handler for CSSCompression
- */
+// Custom exception handler for CSSCompression
 Class CSSCompression_Exception extends Exception
 {
 	public function __construct( $message = 'Unknown Exception', $code = 0, Exception $previous = NULL ) {

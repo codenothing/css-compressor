@@ -129,7 +129,7 @@ Class CSSCompression
 	 * @mode medium: Prevents hex to shortname conversion
 	 * @mode small: Full compression
 	 */
-	public static $modes = array(
+	private static $modes = array(
 		'safe' => array(
 			'color-hex2shortcolor' => false,
 			'organize' => false,
@@ -160,10 +160,12 @@ Class CSSCompression
 	 *
 	 * @instance express: Use a separate instance from singleton access 
 	 * @instance instance: Saved instance of CSSCompression
+	 * @param (array) instances: Array of stored instances
 	 * @param (array) rjson: Comment removal before json decoding
 	 */
 	private static $express;
 	private static $instance;
+	private static $instances = array();
 	private static $rjson = array(
 		'patterns' => array(
 			"/^(.*?){/s", 
@@ -192,11 +194,11 @@ Class CSSCompression
 		// Autorun against css passed
 		if ( $css ) {
 			// Allow passing options/mode only
-			if ( is_array( $css ) || ( strlen( $css ) < 15 && array_key_exists( $css, self::$modes ) ) ) {
+			if ( is_array( $css ) || array_key_exists( $css, self::$modes ) ) {
 				$this->Control->Option->merge( $css );
 			}
 			else {
-				$this->css = $this->Control->compress( $css, $options );
+				$this->Control->compress( $css, $options );
 			}
 		}
 		// Merge passed options
@@ -235,17 +237,28 @@ Class CSSCompression
 	 * @param (string) mode: Name of mode to use.
 	 */
 	public function mode( $mode = NULL ) {
-		return $this->Control->Option->mode( $mode );
+		return $this->Control->Option->merge( $mode );
 	}
 
 	/**
 	 * Creates a new mode, or overwrites existing mode
 	 *
-	 * @param (string) mode: Name of the mode
+	 * @param (mixed) mode: Name of the mode, or array of modes
 	 * @param (array) config: Configuration of the mode
 	 */
-	public static function addMode( $mode = '', $config = array() ) {
-		return strlen( $mode ) ? CSSCompression::$modes[ $mode ] = $config : NULL;
+	public static function modes( $mode = NULL, $config = NULL ) {
+		if ( $mode === NULL ) {
+			return self::$modes;
+		}
+		else if ( is_array( $mode ) ) {
+			return array_merge( self::$modes, $mode );
+		}
+		else if ( $config === NULL ) {
+			return isset( self::$modes[ $mode ] ) ? self::$modes[ $mode ] : NULL;
+		}
+		else {
+			return self::$modes[ $mode ] = $config;
+		}
 	}
 
 	/**
@@ -256,7 +269,7 @@ Class CSSCompression
 	 *	- Passing an array will merge the options with the array passed, for object like extension
 	 * 	- Passing both a name and value, sets the value to the name key, and returns the value
 	 *
-	 * @param (string|array) name: The key name of the option
+	 * @param (mixed) name: The key name of the option
 	 * @param (any) value: Value to set the option
 	 */
 	public function option( $name = NULL, $value = NULL ) {
@@ -267,7 +280,7 @@ Class CSSCompression
 	 * (Proxy function) Run compression on the sheet passed.
 	 *
 	 * @param (string) css: Stylesheet to be compressed
-	 * @param (array|string) options: Array of options or mode to use.
+	 * @param (mixed) options: Array of options or mode to use.
 	 */
 	public function compress( $css = NULL, $options = NULL ) {
 		return $this->Control->compress( $css, $options );
@@ -277,19 +290,18 @@ Class CSSCompression
 	 * Static access for direct compression
 	 *
 	 * @param (string) css: Stylesheet to be compressed
-	 * @param (array|string) options: Array of options or mode to use.
+	 * @param (mixed) options: Array of options or mode to use.
 	 */
 	public static function express( $css = NULL, $options = NULL ) {
 		if ( ! self::$express ) {
 			self::$express = new CSSCompression();
 		}
 
-		self::$express->reset();
 		return self::$express->compress( $css, $options );
 	}
 
 	/**
-	 * Cleans out compressor and it's subclasses to defaults
+	 * (Proxy Function) Cleans out compressor and it's subclasses to defaults
 	 *
 	 * @params none
 	 */
@@ -298,7 +310,7 @@ Class CSSCompression
 	}
 
 	/**
-	 * Cleans out class variables for next run
+	 * (Proxy Function) Cleans out class variables for next run
 	 *
 	 * @params none
 	 */
@@ -309,10 +321,17 @@ Class CSSCompression
 	/**
 	 * The Singleton access method (for those that want it)
 	 *
-	 * @params none
+	 * @param (string) name: Name of the stored instance
 	 */
-	public static function getInstance(){
-		if ( ! self::$instance ) {
+	public static function getInstance( $name = NULL ) {
+		if ( $name !== NULL ) {
+			if ( ! isset( self::$instances[ $name ] ) ) {
+				self::$instances[ $name ] = new self;
+			}
+
+			return self::$instances[ $name ];
+		}
+		else if ( ! self::$instance ) {
 			self::$instance = new self;
 		}
 

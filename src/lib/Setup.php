@@ -182,7 +182,7 @@ Class CSSCompression_Setup
 		}
 		// Independent sections should be prepended to the next compressed section
 		$content = ( $independent == '' ? '' : $independent . $newline )
-			. CSSCompression::express( substr( $content, 1, -1 ), $options, true );
+			. CSSCompression::express( substr( $content, 1, -1 ), $options );
 
 		// Formatting for anything higher then 0 readability
 		if ( $newline == "\n" ) {

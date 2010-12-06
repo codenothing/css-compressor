@@ -19,7 +19,8 @@ Class CompressionBenchmark
 		$this->root = dirname(__FILE__) . '/';
 
 		// Create the basice mode instances
-		foreach( CSSCompression::$modes as $mode => $config ) {
+		$modes = CSSCompression::modes();
+		foreach( $modes as $mode => $config ) {
 			$this->instances[ $mode ] = new CSSCompression( NULL, $mode );
 			$this->averages[ $mode ] = array(
 				'size-before' => 0,

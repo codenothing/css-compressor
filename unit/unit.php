@@ -23,6 +23,7 @@ Class CSScompressionUnitTest
 	 * @param (int) passes: Number of tests passed
 	 * @param (array) sandbox: Array containing test suite
 	 * @param (array) instances: Array of default instance modes
+	 * @param (array) modes: Copy of default modes
 	 * @param (array) doubles: Array of known zengarden files that fail (unknown fix|too hacky|invalid css)
 	 */
 	private $compressor;
@@ -32,6 +33,7 @@ Class CSScompressionUnitTest
 	private $errorstack = '';
 	private $sandbox = array();
 	private $instances = array();
+	private $modes = array();
 	private $doubles = array(
 		// Special case of doubling organization actually does make it smaller
 		// (multiple defines of the same selector)
@@ -77,6 +79,7 @@ Class CSScompressionUnitTest
 
 		// Reset the local class vars
 		$this->compressor = new CSSCompression();
+		$this->modes = CSSCompression::modes();
 		$this->sandbox = CSSCompression::getJSON( $this->root . 'sandbox.json' );
 		$this->errors = 0;
 
@@ -86,7 +89,7 @@ Class CSScompressionUnitTest
 		}
 
 		// Stash copies of each of the common modes
-		foreach ( CSSCompression::$modes as $mode => $options ) {
+		foreach ( $this->modes as $mode => $options ) {
 			$this->instances[ $mode ] = new CSSCompression( $mode );
 		}
 
@@ -256,8 +259,8 @@ Class CSScompressionUnitTest
 	private function testSheets(){
 		$handle = opendir( BEFORE );
 		while ( ( $file = readdir( $handle ) ) !== false ) {
-			$reset = false;
 			if ( preg_match( "/\.css$/", $file ) ) {
+				$this->setOptions();
 				foreach ( $this->sheetspecials as $config ) {
 					if ( in_array( $file, $config['files'] ) ) {
 						// Use default mode if wanted
@@ -270,7 +273,6 @@ Class CSScompressionUnitTest
 							$this->compressor->option( $config['options'] );
 						}
 
-						$reset = true;
 						break;
 					}
 				}
@@ -278,7 +280,7 @@ Class CSScompressionUnitTest
 				// Mark the result
 				$before = trim( file_get_contents( BEFORE . $file ) );
 				$expected = trim( file_get_contents( AFTER . $file ) );
-				$result = trim( $this->compressor->compress( $before ) );
+				$result = trim( $this->compressor->compress( $before, NULL,  $file === 'color.css'  ) );
 				$this->mark( $file, "full", $result === $expected );
 
 				// Stash errors for diff tooling
@@ -288,11 +290,6 @@ Class CSScompressionUnitTest
 					file_put_contents( $this->root . "errors/$file-result.css", $result );
 					$this->errorstack .= "diff " . $this->root . "errors/$file-expected.css "
 						. $this->root . "errors/$file-result.css\n";
-				}
-
-				// Reset pits special needs
-				if ( $reset ) {
-					$this->setOptions();
 				}
 			}
 		}
@@ -328,7 +325,7 @@ Class CSScompressionUnitTest
 					$this->mark( 'Double CSS ' . $file, $mode, $first === $second );
 					$this->mark( 'Double Size ' . $file, $mode, $size === $instance->stats['after']['size'] );
 
-					// Store inaccuracies
+					// Store inaccuracies for diff'ing
 					if ( $first !== $second ) {
 						file_put_contents( $this->root . "errors/$file-$mode-first.css", $first );
 						file_put_contents( $this->root . "errors/$file-$mode-second.css", $second );

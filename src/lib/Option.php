@@ -48,22 +48,8 @@ Class CSSCompression_Option
 			return isset( $this->options[ $name ] ) ? $this->options[ $name ] : NULL;
 		}
 		else {
-			return $this->options[ $name ] = $value;
-		}
-	}
-
-	/**
-	 * Adds or sets the current instances mode
-	 *
-	 * @param (string) mode: Name of the mode to use
-	 * @param (array) config: Array of config values to assign to a mode
-	 */
-	public function mode( $mode = NULL, $config = array() ) {
-		if ( $config && $mode && is_array( $config ) && count( $config ) ) {
-			return ( CSSCompression::$modes[ $mode ] = $config );
-		}
-		else if ( $mode ) {
-			return $this->merge( $mode );
+			$this->mode = '__custom';
+			return ( $this->options[ $name ] = $value );
 		}
 	}
 
@@ -84,8 +70,9 @@ Class CSSCompression_Option
 	 * @param (array) options: Array of preferences to merge into options
 	 */ 
 	public function merge( $options = array() ) {
+		$modes = CSSCompression::modes();
 		if ( $options && is_array( $options ) && count( $options ) ) {
-			$this->Control->mode = 'custom';
+			$this->Control->mode = '__custom';
 			foreach ( $this->options as $key => $value ) {
 				if ( ! isset( $options[ $key ] ) ) {
 					continue;
@@ -101,7 +88,7 @@ Class CSSCompression_Option
 				}
 			}
 		}
-		else if ( $options && is_string( $options ) && array_key_exists( $options, CSSCompression::$modes ) ) {
+		else if ( $options && is_string( $options ) && array_key_exists( $options, $modes ) ) {
 			$this->Control->mode = $options;
 
 			// Default all to true, the mode has to force false
@@ -112,7 +99,7 @@ Class CSSCompression_Option
 			}
 
 			// Merge mode into options
-			foreach ( CSSCompression::$modes[ $options ] as $key => $value ) {
+			foreach ( $modes[ $options ] as $key => $value ) {
 				$this->options[ $key ] = $value;
 			}
 		}

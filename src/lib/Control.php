@@ -12,15 +12,13 @@ Class CSSCompression_Control
 	 *
 	 * @param (string) css: Holds compressed css string
 	 * @param (string) mode: Current compression mode state
-	 * @param (array) options: Holds compression options
-	 * @param (array) stats: Holds compression stats
 	 * @param (string) token: Special injection token
+	 * @param (array) stats: Holds compression stats
 	 */ 
 	public $css = '';
-	public $mode = 'custom';
-	public $options = array();
-	public $stats = array();
+	public $mode = '__custom';
 	public $token = '@___CSSCOMPRESSION_TOKEN___';
+	public $stats = array();
 
 	/**
 	 * Subclasses that do the ground work for this compressor
@@ -162,22 +160,28 @@ Class CSSCompression_Control
 	 * Proxy to run Compression on the sheet passed
 	 *
 	 * @param (string) css: Stylesheet to be compressed
-	 * @param (array|string) options: Array of options or mode to use.
+	 * @param (mixed) options: Array of options or mode to use.
 	 */
 	public function compress( $css = NULL, $options = NULL ) {
-		// Reset and merge options
+		// Flush out old stats and variables
 		$this->flush();
+
+		// If no additional options, just run compression
+		if ( $options === NULL ) {
+			return $this->css = $this->Compress->compress( $css );
+		}
+
+		// Store old params
+		$old = $this->mode == '__custom' ? $this->Option->option() : $this->mode;
+		$readability = $this->Option->option( 'readability' );
+
+		// Compress with new set of options
 		$this->Option->merge( $options );
+		$css = $this->Compress->compress( $css );
 
-		// Initial stats
-		$this->stats['before']['time'] = microtime( true );
-		$this->stats['before']['size'] = strlen( $css );
-
-		// Initial trimming
-		$css = $this->Trim->trim( $css );
-
-		// Run compression
-		$css = $this->Compress->compress( $css, $options );
+		// Reset original options
+		$this->reset();
+		$this->Option->merge( $old );
 
 		// Return the compressed css
 		return $this->css = $css;
