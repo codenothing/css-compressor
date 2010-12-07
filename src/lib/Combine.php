@@ -199,6 +199,12 @@ Class CSSCompression_Combine
 				'left' => 0
 			);
 
+			// Skip uncombinables
+			if ( $this->checkUncombinables( $value ) ) {
+				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] );
+				continue;
+			}
+
 			// Each position needs a value
 			switch ( count( $value ) ) {
 				case 1:
