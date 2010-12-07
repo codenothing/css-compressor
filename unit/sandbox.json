@@ -39,6 +39,10 @@
 				"params": [ "0.8px" ],
 				"expect": ".8px"
 			},
+			"-0.5px": {
+				"params": [ "-0.5px" ],
+				"expect": "-.5px"
+			},
 			"0.2983%": {
 				"params": [ "0.2983%" ],
 				"expect": ".2983%"

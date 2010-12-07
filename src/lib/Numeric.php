@@ -20,7 +20,7 @@ Class CSSCompression_Numeric
 	private $options = array();
 	private $rdecimal = "/^(\d+\.0*)(\%|[a-z]{2})$/i";
 	private $runit = "/^0(\%|[a-z]{2})$/i";
-	private $rzero = "/^0(\.\d+)(\%|[a-z]{2})?$/i";
+	private $rzero = "/^(\-)?0(\.\d+)(\%|[a-z]{2})?$/i";
 
 	/**
 	 * Stash a reference to the controller on each instantiation
@@ -78,7 +78,7 @@ Class CSSCompression_Numeric
 	 */
 	private function zeroes( $str ) {
 		if ( preg_match( $this->rzero, $str, $match ) ) {
-			$str = $match[ 1 ] . ( isset( $match[ 2 ] ) ? $match[ 2 ] : '' );
+			$str = $match[ 1 ] . $match[ 2 ] . ( isset( $match[ 3 ] ) ? $match[ 3 ] : '' );
 		}
 
 		return $str;
