@@ -27,7 +27,7 @@ This is just a cluster of various templates that can be compressed
 }
 
 /* basic elements */
-body > div + a :first-child {
+body > div[title='spacing test'] + a[href$='nospace'] :first-child {
 	color: black;
 	background-color: white;
 	background-image: url(http://www.example.com/body-bg.png?a=semi;);

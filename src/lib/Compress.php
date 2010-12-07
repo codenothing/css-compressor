@@ -63,18 +63,7 @@ Class CSSCompression_Compress
 	 * @param (string) css: CSS Contents
 	 */ 
 	public function compress( $css ) {
-		// Initial stats
-		$this->stats['before']['time'] = microtime( true );
-		$this->stats['before']['size'] = strlen( $css );
-
-		// Initial trimming
-		$css = $this->Trim->trim( $css );
-
-		// Do a little tokenizing, compress each property individually
-		$setup = $this->Setup->setup( $css );
-
-		// Mark number of selectors pre-combine
-		$this->stats['before']['selectors'] = count( $setup['selectors'] );
+		$setup = $this->setup( $css );
 
 		// Do selector specific compressions
 		$this->Selectors->selectors( $setup['selectors'] );
@@ -127,9 +116,32 @@ Class CSSCompression_Compress
 	}
 
 	/**
+	 * Runs css through initial setup handlers
+	 *
+	 * @param (string) css: Sheet to compress
+	 */
+	private function setup( $css ) {
+		// Initial stats
+		$this->stats['before']['time'] = microtime( true );
+		$this->stats['before']['size'] = strlen( $css );
+
+		// Initial trimming
+		$css = $this->Trim->trim( $css );
+
+		// Do a little tokenizing, compress each property individually
+		$setup = $this->Setup->setup( $css );
+
+		// Mark number of selectors pre-combine
+		$this->stats['before']['selectors'] = count( $setup['selectors'] );
+
+		return $setup;
+	}
+
+	/**
 	 * Runs final counts on selectors and props
 	 *
-	 * @params none
+	 * @param (array) selectors: Selector rules
+	 * @param (array) details: Rule sets
 	 */ 
 	private function finalCount( $selectors, $details ) {
 		// Selectors and props

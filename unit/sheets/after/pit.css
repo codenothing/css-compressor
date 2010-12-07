@@ -17,7 +17,7 @@
 	}
 }
 
-body > div + a :first-child {
+body > div[title='spacing test'] + a[href$=nospace] :first-child {
 	color: #000;
 	background: #fff url(http://www.example.com/body-bg.png?a=semi;);
 	margin: 0 auto;

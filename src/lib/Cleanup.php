@@ -16,7 +16,9 @@ Class CSSCompression_Cleanup
 	 * @param (array) options: Reference to options
 	 * @param (regex) rsemi: Checks for last semit colon in details
 	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
+	 * @param (regex) rspace: Checks for space without an escape '\' character before it
 	 * @param (regex) rcolon: Checks for colon without an escape '\' character before it
+	 * @param (regex) rquote: Checks for quote (') without an escape '\' character before it
 	 * @param (array) rescape: Array of patterns for groupings that should be escaped
 	 * @param (array) escaped: Contains patterns and replacements for espaced characters
 	 */
@@ -26,7 +28,9 @@ Class CSSCompression_Cleanup
 	private $options = array();
 	private $rsemi = "/;$/";
 	private $rsemicolon = "/(?<!\\\);/";
+	private $rspace = "/(?<!\\\)\s/";
 	private $rcolon = "/(?<!\\\):/";
+	private $rquote = "/(?<!\\\)'/";
 	private $rescape = array(
 		"/((?<!\\\)\")(.*?)((?<!\\\)\")/",
 		"/((?<!\\\)')(.*?)((?<!\\\)')/",
@@ -132,8 +136,16 @@ Class CSSCompression_Cleanup
 		$pos = 0;
 		while ( preg_match( $this->rtoken, $css, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
 			$value = $match[ 2 ][ 0 ];
-			$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
-			$pos = $match[ 0 ][ 1 ] + strlen( $value ) + 1;
+			if ( preg_match( $this->rspace, $value ) ) {
+				$quote = preg_match( $this->rquote, $value ) ? "\"" : "'";
+				$value = "$quote$value$quote";
+				$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+				$pos = $match[ 0 ][ 1 ] + strlen( $value ) + 1;
+			}
+			else {
+				$css = substr_replace( $css, $value, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+				$pos = $match[ 0 ][ 1 ] + strlen( $value ) + 1;
+			}
 		}
 
 		return $css;

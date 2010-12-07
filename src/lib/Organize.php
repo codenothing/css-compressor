@@ -48,8 +48,8 @@ Class CSSCompression_Organize
 	}
 
 	/**
-	 * Combines multiply defined selectors by merging the definitions,
-	 * latter definitions overide definitions at top of file
+	 * Combines multiply defined selectors by merging the rule sets,
+	 * latter declarations overide declaratins at top of file
 	 *
 	 * @param (array) selectors: Array of selectors broken down by setup
 	 * @param (array) details: Array of details broken down by setup
@@ -93,7 +93,7 @@ Class CSSCompression_Organize
 	}
 
 	/**
-	 * Combines multiply defined details by merging the selectors
+	 * Combines multiply defined rule sets by merging the selectors
 	 * in comma seperated format
 	 *
 	 * @param (array) selectors: Array of selectors broken down by setup

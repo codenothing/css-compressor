@@ -24,7 +24,7 @@ $select .= "<option value='custom'>Custom</option>";
 <body>
 
 
-<h2>CSS Compressor [VERSION]</h2>
+<h2 title='testingspaces'>CSS Compressor [VERSION]</h2>
 
 
 <iframe name='compression'></iframe>
