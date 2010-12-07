@@ -57,9 +57,11 @@ Yes the compressor provides singleton access(separate from express), but use it 
 Option Handling
 ---------------
 
-The compressor has an option function attached to it, that has multiple functionalities. If no arguments are passed in,
-the entire options array is returned. If a single name argument is passed, then the value of that key name in the options
-array is returned. If both a name and value are passed, then that value is set to it's corresponding key in the array.
+The compressor has an option function attached to it, that has multiple functionalities.
+
+ - If no arguments are passed in, the entire options array is returned.
+ - If a single name argument is passed, then the value of that key name in the options array is returned.
+ - If both a name and value are passed, then that value is set to it's corresponding key in the array.
 
 	// Returns entire options array
 	$options = $CSSC->option();
