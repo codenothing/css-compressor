@@ -7,12 +7,12 @@ PHP Based CSS Compressor.
 Usage
 -----
 
-	$compressed = CSSCompression::express( $css, 'safe' );
+	$compressed = CSSCompression::express( $css, 'sane' );
 
 
 Or, if you need to run it multiple times
 
-	$CSSC = new CSSCompression( 'safe' );
+	$CSSC = new CSSCompression( 'sane' );
 	$compressed = $CSSC->compress( $css );
 
 
@@ -21,7 +21,7 @@ Modes
 
 Modes are pre-defined sets of options that can be set by passing in the mode name.
 
- - **safe**: Safe mode does zero combinations or organizing. It's the best mode if you use a lot of hacks
+ - **safe**: Safe mode does zero combinations or organizing. It's the best mode if you use a lot of hacks.
 
  - **sane**: Sane mode does all combinations(multiple long hand notations to single shorthand), but still keeps most declarations in their place.
 

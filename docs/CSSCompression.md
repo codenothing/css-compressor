@@ -61,8 +61,8 @@ Builds the subclasses first, then does one of the following
 
 Here's a few examples
 
-	// Create an instance in 'safe' mode
-	$CSSC = new CSSCompression( 'safe' );
+	// Create an instance in 'sane' mode
+	$CSSC = new CSSCompression( 'sane' );
 	
 	// Create an instance with a custom set of options
 	$CSSC = new CSSCompression( array( 'readability' => CSSCompression::READ_MAX ) );
@@ -71,8 +71,8 @@ Here's a few examples
 	$CSSC = new CSSCompression( $css );
 	echo $CSSC->css;
 	
-	// Creates a new instance in 'safe' mode, then runs compression on the css passed
-	$CSSC = new CSSCompression( $css, 'safe' );
+	// Creates a new instance in 'sane' mode, then runs compression on the css passed
+	$CSSC = new CSSCompression( $css, 'sane' );
 	echo $CSSC->css;
 	
 	// Creates a new instance with a custom set of options, then runs compression on the css passed
@@ -107,8 +107,8 @@ Here's a few demo examples
 	// Returns the entire list of modes
 	$modes = CSSCompression::modes();
 	
-	// Returns 'safe' mode configuration
-	$safe = CSSCompression::modes( 'safe' );
+	// Returns 'sane' mode configuration
+	$sane = CSSCompression::modes( 'sane' );
 	
 	// Add 'rose' mode to the list of modes
 	CSSCompression::modes( 'rose', array( 'organize' => false, 'readability' => CSSCompression::READ_MAX ) );
@@ -158,8 +158,8 @@ Compresses the given string with the given options/mode. $options can be the nam
 	// Compress the css passed
 	$compressed = $CSSC->comrpess( $css );
 
-	// Compress the css in 'safe' mode
-	$compressed = $CSSC->comrpess( $css, 'safe' );
+	// Compress the css in 'sane' mode
+	$compressed = $CSSC->comrpess( $css, 'sane' );
 
 	// Compress the css with a custom set of options
 	$compressed = $CSSC->comrpess( $css, array( 'readability' => CSSCompression::READ_MAX ) );
@@ -173,8 +173,8 @@ Use's it's own singleton instance to return compressed css sheets.  $options can
 	// Compress the css passed
 	$compressed = CSSCompression::express( $css );
 
-	// Compress the css in 'safe' mode
-	$compressed = CSSCompression::express( $css, 'safe' );
+	// Compress the css in 'sane' mode
+	$compressed = CSSCompression::express( $css, 'sane' );
 
 	// Compress the css with a custom set of options
 	$compressed = CSSCompression::express( $css, array( 'readability' => CSSCompression::READ_MAX ) );
