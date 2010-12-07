@@ -17,6 +17,8 @@ Class CSSCompression_Setup
 	 * @param (array) stats: Reference to stats
 	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
 	 * @param (regex) rcolon: Checks for colon without an escape '\' character before it
+	 * @param (regex) rbang: Checks for '!' without an escape '\' character before it
+	 * @param (regex) rspacebank: Checks for an unescaped space before a bang character
 	 * @param (regex) rliner: Matching known 1-line intros
 	 * @param (regex) rnested: Matching known subsection handlers
 	 * @param (array) rsetup: Expanding stylesheet for semi-tokenizing
@@ -28,6 +30,8 @@ Class CSSCompression_Setup
 	private $stats = array();
 	private $rsemicolon = "/(?<!\\\);/";
 	private $rcolon = "/(?<!\\\):/";
+	private $rbang = "/(?<!\\\)\!/";
+	private $rspacebang = "/(?<!\\\)\s\!/";
 	private $rliner = "/^@(import|charset|namespace)/i";
 	private $rmedia = "/^@media/i";
 	private $rsetup = array(
@@ -217,7 +221,7 @@ Class CSSCompression_Setup
 
 			// Value
 			if ( isset( $parts[ 1 ] ) && ( $parts[ 1 ] = trim( $parts[ 1 ] ) ) != '' ) {
-				$value = $parts[1];
+				$value = preg_replace( $this->rbang, ' !', $parts[ 1 ] );
 			}
 
 			// Fail safe, remove unspecified property/values
@@ -232,7 +236,7 @@ Class CSSCompression_Setup
 			$this->stats['before']['props']++;
 
 			// Store the compressed element
-			$details .= "$prop:$value;";
+			$details .= "$prop:" . preg_replace( $this->rspacebang, '!', $value ) . ";";
 		}
 
 		return $details;

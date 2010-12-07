@@ -18,7 +18,7 @@ This is just a cluster of various templates that can be compressed
 	}
 
 	div > p.example {
-		font-size: 15px;
+		font-size: 15.0px !important;
 	}
 
 	h1, h2, h3 > a {
@@ -69,4 +69,5 @@ div.same {
 div.same {
 	margin: 20.0px 20px;
 	background: red;
+	content: 0px !important;
 }

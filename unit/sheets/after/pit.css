@@ -9,7 +9,7 @@
 	}
 	
 	div > p.example {
-		font-size: 15px
+		font-size: 15px!important
 	}
 	
 	h1, h2, h3 > a {
@@ -39,5 +39,6 @@ div.same {
 	color: blue;
 	font-size: 15.2%;
 	margin: 20px;
-	background: red
+	background: red;
+	content: 0!important
 }
