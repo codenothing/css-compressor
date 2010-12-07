@@ -15,17 +15,33 @@
 				"params": [ "1.0em" ],
 				"expect": "1em"
 			},
+			"negative remove": {
+				"params": [ "-1.0em" ],
+				"expect": "-1em"
+			},
 			"long decimal int": {
 				"params": [ "1.00000em" ],
 				"expect": "1em"
+			},
+			"negative long decimal int": {
+				"params": [ "-1.00000em" ],
+				"expect": "-1em"
 			},
 			"long decimal": {
 				"params": [ "1.10000em" ],
 				"expect": "1.1em"
 			},
+			"negative long decimal": {
+				"params": [ "-1.10000em" ],
+				"expect": "-1.1em"
+			},
 			"keep": {
 				"params": [ "1.059em" ],
 				"expect": "1.059em"
+			},
+			"negative keep": {
+				"params": [ "-1.059em" ],
+				"expect": "-1.059em"
 			}
 		},
 

@@ -18,7 +18,7 @@ Class CSSCompression_Numeric
 	 */
 	private $Control;
 	private $options = array();
-	private $rdecimal = "/^(\d+\.[1-9]*0*)(\%|[a-z]{2})$/i";
+	private $rdecimal = "/^(\-?\d+\.[1-9]*0*)(\%|[a-z]{2})$/i";
 	private $runit = "/^0(\%|[a-z]{2})$/i";
 	private $rzero = "/^(\-)?0(\.\d+)(\%|[a-z]{2})?$/i";
 
@@ -39,8 +39,8 @@ Class CSSCompression_Numeric
 	 */
 	public function numeric( $str ) {
 		$str = $this->decimal( $str );
-		$str = $this->units( $str );
 		$str = $this->zeroes( $str );
+		$str = $this->units( $str );
 		return $str;
 	}
 
