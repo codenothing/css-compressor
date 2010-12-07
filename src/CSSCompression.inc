@@ -35,6 +35,10 @@ Class CSSCompression
 		// Only works on latest browsers, careful when using
 		'color-hex2shortcolor' => false,
 
+		// Converts hex codes to safe CSS Level 1 color names
+		// (#F00 -> red)
+		'color-hex2safe' => true,
+
 		// Converts long hex codes to short hex codes
 		// (#44ff11 -> #4f1)
 		'color-hex2shorthex' => true,

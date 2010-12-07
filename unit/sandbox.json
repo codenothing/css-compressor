@@ -125,6 +125,26 @@
 			}
 		},
 
+		// Long hex to short name conversions
+		"hex2safe": {
+			"green": {
+				"params": [ "#008000" ],
+				"expect": "green"
+			},
+			"olive": {
+				"params": [ "#808000" ],
+				"expect": "olive"
+			},
+			"peru": {
+				"params": [ "#cd853f" ],
+				"expect": "#cd853f"
+			},
+			"no change": {
+				"params": [ "#cd8599" ],
+				"expect": "#cd8599"
+			}
+		},
+
 		// Long hex to short hex conversions
 		"hex2short": {
 			// Long hex to short hex conversions
