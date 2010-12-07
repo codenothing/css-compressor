@@ -58,9 +58,8 @@ Class CSSCompression_Compress
 
 	/**
 	 * Centralized function to run css compression.
-	 * Assumes trimming has already been done.
 	 *
-	 * @param (string) css: CSS Contents
+	 * @param (string) css: Stylesheet to compresss
 	 */ 
 	public function compress( $css ) {
 		$setup = $this->setup( $css );

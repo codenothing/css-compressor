@@ -34,8 +34,8 @@ Class CSSCompression_Option
 	 * 	- Passing both a name and value, sets the value to the name key, and returns the value
 	 *	- Passing an array will merge the options with the array passed, for object like extension
 	 *
-	 * @param (string|array) name: The key name of the option
-	 * @param (any) value: Value to set the option
+	 * @param (mixed) name: The key name of the option
+	 * @param (mixed) value: Value to set the option
 	 */
 	public function option( $name = NULL, $value = NULL ) {
 		if ( $name === NULL ) {
@@ -56,7 +56,7 @@ Class CSSCompression_Option
 	/**
 	 * Reset's the default options
 	 *
-	 * @param (boolean) clear: When true, options array is cleared
+	 * @params none;
 	 */ 
 	public function reset(){
 		// Reset and return the new options

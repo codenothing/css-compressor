@@ -11,8 +11,9 @@ Class CSSCompression_Cleanup
 	/**
 	 * Cleanup patterns
 	 *
-	 * @class $Control: Compression Controller
+	 * @class Control: Compression Controller
 	 * @param (string) token: Copy of the injection token
+	 * @param (regex) rtoken: Token regex built upon instantiation
 	 * @param (array) options: Reference to options
 	 * @param (regex) rsemi: Checks for last semit colon in details
 	 * @param (regex) rsemicolon: Checks for semicolon without an escape '\' character before it
@@ -117,7 +118,7 @@ Class CSSCompression_Cleanup
 	/**
 	 * Removes '\' from possible splitter characters in URLs
 	 *
-	 * @params none
+	 * @param (string) css: Full css sheet
 	 */ 
 	public function removeInjections( $css ) {
 		// Remove escaped characters
@@ -181,7 +182,7 @@ Class CSSCompression_Cleanup
 	/**
 	 * Removes last semicolons on the final property of a set
 	 *
-	 * @params none
+	 * @param (string) value: rule set
 	 */ 
 	private function removeUnnecessarySemicolon( $value ) {
 		return preg_replace( $this->rsemi, '', $value );

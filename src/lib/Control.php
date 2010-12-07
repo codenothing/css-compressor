@@ -103,7 +103,7 @@ Class CSSCompression_Control
 	 * The setter method only allows access to setting values in the options array
 	 *
 	 * @param (string) name: Key name of the option you want to set
-	 * @param (any) value: Value of the option you want to set
+	 * @param (mixed) value: Value of the option you want to set
 	 */ 
 	public function set( $name, $value ) {
 		// Allow for passing array of options to merge into current ones
@@ -157,7 +157,7 @@ Class CSSCompression_Control
 	}
 
 	/**
-	 * Proxy to run Compression on the sheet passed
+	 * Proxy to run Compression on the sheet passed. Handle options here.
 	 *
 	 * @param (string) css: Stylesheet to be compressed
 	 * @param (mixed) options: Array of options or mode to use.

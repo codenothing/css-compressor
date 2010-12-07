@@ -84,7 +84,7 @@ Class CSSCompression_Combine
 	/**
 	 * Combines color/style/width of border/outline properties
 	 *
-	 * @param (string) val: CSS Selector Properties
+	 * @param (string) val: Rule Set
 	 */ 
 	private function combineCSWproperties( $val ) {
 		$storage = array();
@@ -134,7 +134,7 @@ Class CSSCompression_Combine
 	/**
 	 * Combines Aural properties (currently being depreciated in W3C Standards)
 	 *
-	 * @param (string) val: CSS Selector Properties
+	 * @param (string) val: Rule Set
 	 */ 
 	private function combineAuralCuePause( $val ) {
 		$storage = array();
@@ -244,7 +244,7 @@ Class CSSCompression_Combine
 	 * Combines multiple directional properties of 
 	 * margin/padding into single definition.
 	 *
-	 * @param (string) val: CSS Selector Properties
+	 * @param (string) val: Rule Set
 	 */ 
 	private function combineMPproperties( $val ) {
 		$storage = array();
@@ -310,7 +310,7 @@ Class CSSCompression_Combine
 	/**
 	 * Combines multiple border properties into single definition
 	 *
-	 * @param (string) val: CSS Selector Properties
+	 * @param (string) val: Rule Set
 	 */
 	private function combineBorderDefinitions( $val ) {
 		$storage = array();
@@ -360,7 +360,7 @@ Class CSSCompression_Combine
 	/**
 	 * Combines multiple font-definitions into single definition
 	 *
-	 * @param (string) val: CSS Selector Properties
+	 * @param (string) val: Rule Set
 	 */ 
 	private function combineFontDefinitions( $val ) {
 		$storage = array();
@@ -427,7 +427,7 @@ Class CSSCompression_Combine
 	/**
 	 * Combines multiple background props into single definition
 	 *
-	 * @param (string) val: CSS Selector Properties
+	 * @param (string) val: Rule Set
 	 */ 
 	private function combineBackgroundDefinitions( $val ) {
 		$storage = array();
@@ -487,7 +487,7 @@ Class CSSCompression_Combine
 	/**
 	 * Combines multiple list style props into single definition
 	 *
-	 * @param (string) val: CSS Selector Properties
+	 * @param (string) val: Rule Set
 	 */ 
 	private function combineListProperties( $val ) {
 		$storage = array();

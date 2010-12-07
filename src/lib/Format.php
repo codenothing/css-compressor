@@ -45,9 +45,8 @@ Class CSSCompression_Format
 	 * Reformats compressed CSS into specified format
 	 *
 	 * @param (int) readability: Readability level of compressed output
-	 * @param (string) import: CSS Import property removed at beginning
 	 * @param (array) selectors: Array of selectors
-	 * @param (array) details: Array of details
+	 * @param (array) details: Array of declarations
 	 */ 
 	public function readability( $readability = CSSCompression::READ_NONE, $selectors = array(), $details = array() ) {
 		if ( isset( $this->readability[ $readability ] ) ) {
@@ -62,9 +61,8 @@ Class CSSCompression_Format
 	/**
 	 * Returns maxium readability, breaking on every selector, brace, and property
 	 *
-	 * @param (string) import: CSS Import property removed at beginning
 	 * @param (array) selectors: Array of selectors
-	 * @param (array) details: Array of details
+	 * @param (array) details: Array of declarations
 	 */ 
 	private function maximum( $selectors, $details ) {
 		$css = '';
@@ -107,9 +105,8 @@ Class CSSCompression_Format
 	/**
 	 * Returns medium readability, putting selectors and details on new lines
 	 *
-	 * @param (string) import: CSS Import property removed at beginning
 	 * @param (array) selectors: Array of selectors
-	 * @param (array) details: Array of details
+	 * @param (array) details: Array of declarations
 	 */ 
 	private function medium( $selectors, $details ) {
 		$css = '';
@@ -130,9 +127,8 @@ Class CSSCompression_Format
 	/**
 	 * Returns minimum readability, breaking after every selector and it's details
 	 *
-	 * @param (string) import: CSS Import property removed at beginning
 	 * @param (array) selectors: Array of selectors
-	 * @param (array) details: Array of details
+	 * @param (array) details: Array of declarations
 	 */ 
 	private function minimum( $selectors, $details ) {
 		$css = '';
@@ -154,7 +150,7 @@ Class CSSCompression_Format
 	 * Returns an unreadable, but fully compressed script
 	 *
 	 * @param (array) selectors: Array of selectors
-	 * @param (array) details: Array of details
+	 * @param (array) details: Array of declarations
 	 */ 
 	private function none( $selectors, $details ) {
 		$css = '';

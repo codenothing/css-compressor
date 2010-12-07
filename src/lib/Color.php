@@ -15,8 +15,9 @@ Class CSSCompression_Color
 	 * @param (regex) rrgb: Checks for rgb notation
 	 * @param (regex) rhex: Checks for hex code
 	 * @param (regex) rfullhex: Checks for full 6 character hex code
+	 * @static (array) color2hex: Long color name to hex code conversions
 	 * @static (array) hex2short: Hex code to short color name conversions
-	 * @static (array) long2hex: Long color name to hex code conversions
+	 * @static (array) hex2short_safe: CSS Level 1 safe color names that are shorter than hex codes
 	 */
 	private $Control;
 	private $options = array();

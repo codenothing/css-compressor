@@ -130,6 +130,7 @@ Class CSSCompression
 	 * defines which options are to be false
 	 *
 	 * @mode safe: Keeps selector and detail order, and prevents hex to shortname conversion
+	 * @mode sane: Does most combinations while keeping selector order.
 	 * @mode medium: Prevents hex to shortname conversion
 	 * @mode small: Full compression
 	 */
@@ -230,7 +231,7 @@ Class CSSCompression
 	 * access to setting values in the options array
 	 *
 	 * @param (string) name: Key name of the option you want to set
-	 * @param (any) value: Value of the option you want to set
+	 * @param (mixed) value: Value of the option you want to set
 	 */ 
 	public function __set( $name, $value ) {
 		return $this->Control->set( $name, $value );
@@ -275,7 +276,7 @@ Class CSSCompression
 	 * 	- Passing both a name and value, sets the value to the name key, and returns the value
 	 *
 	 * @param (mixed) name: The key name of the option
-	 * @param (any) value: Value to set the option
+	 * @param (mixed) value: Value to set the option
 	 */
 	public function option( $name = NULL, $value = NULL ) {
 		return $this->Control->Option->option( $name, $value );
