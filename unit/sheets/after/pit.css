@@ -36,7 +36,7 @@ pre, code, div.code {
 }
 
 div.same {
-	color: blue;
+	color: red!important;
 	font-size: 15.2%;
 	margin: 20px;
 	background: red;

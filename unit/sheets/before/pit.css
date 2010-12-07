@@ -62,7 +62,7 @@ div.code {
 }
 
 div.same {
-	color: blue;
+	color: #FF0000 !important;
 	font-size: 15.2%;
 }
 
