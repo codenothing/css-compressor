@@ -1,4 +1,9 @@
 <?php
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ */ 
 
 Class Color
 {
