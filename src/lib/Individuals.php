@@ -82,17 +82,13 @@ Class CSSCompression_Individuals
 		}
 		$val = trim( implode( ' ', $parts ) );
 
+		// Special border radius handling
+		if ( preg_match( $this->rborderradius, $prop ) ) {
+			$val = $this->borderRadius( $val );
+		}
 		// Remove uneeded side definitions if possible
-		if ( $this->options['directional-compress'] && count( $parts ) > 1 && preg_match( $this->rdirectional, $prop, $match ) ) {
-			if ( preg_match( $this->rborderradius, $prop ) && preg_match( $this->rslash, $val ) ) {
-				$parts = preg_split( $this->rslash, $val, 2 );
-				$parts[ 0 ] = $this->directionals( strtolower( $parts[ 0 ] ) );
-				$parts[ 1 ] = $this->directionals( strtolower( $parts[ 1 ] ) );
-				$val = implode( '/', $parts );
-			}
-			else {
-				$val = $this->directionals( strtolower( $val ) );
-			}
+		else if ( $this->options['directional-compress'] && count( $parts ) > 1 && preg_match( $this->rdirectional, $prop ) ) {
+			$val = $this->directionals( strtolower( $val ) );
 		}
 
 		// Font-weight converter
@@ -113,6 +109,41 @@ Class CSSCompression_Individuals
 
 		// Return for list retrival
 		return array( $prop, $val );
+	}
+
+	/**
+	 * Preps border radius for directional compression
+	 *
+	 * @param (string) val: Value of CSS Property
+	 */ 
+	private function borderRadius( $val ) {
+		if ( preg_match( $this->rslash, $val ) ) {
+			$parts = preg_split( $this->rslash, $val, 2 );
+			// We have to redo numeric compression because the slash may hav intruded
+			foreach ( $parts as &$row ) {
+				$p = preg_split( $this->rspace, $row );
+				foreach ( $p as &$v ) {
+					if ( ! $v || $v == '' ) {
+						continue;
+					}
+
+					// Remove uneeded decimals/units
+					if ( $this->options['format-units'] ) {
+						$v = $this->Numeric->numeric( $v );
+					}
+				}
+				$row = implode( ' ', $p );
+				if ( $this->options['directional-compress'] ) {
+					$row = $this->directionals( strtolower( $row ) );
+				}
+			}
+			$val = implode( '/', $parts );
+		}
+		else if ( $this->options['directional-compress'] ) {
+			$val = $this->directionals( strtolower( $val ) );
+		}
+
+		return $val;
 	}
 
 	/**

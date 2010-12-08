@@ -24,7 +24,8 @@ Class CSScompressionUnitTest
 	 * @param (array) sandbox: Array containing test suite
 	 * @param (array) instances: Array of default instance modes
 	 * @param (array) modes: Copy of default modes
-	 * @param (array) doubles: Array of known zengarden files that fail (unknown fix|too hacky|invalid css)
+	 * @param (array) block: Array of special markings on test files
+	 * @param (array) sheetspecials: Special configurations for marked test files
 	 */
 	private $compressor;
 	private $root = '';
@@ -34,13 +35,22 @@ Class CSScompressionUnitTest
 	private $sandbox = array();
 	private $instances = array();
 	private $modes = array();
-	private $doubles = array(
-		// Special case of doubling organization actually does make it smaller
-		// (multiple defines of the same selector)
-		'csszengarden.com.167.css',
+	private $block = array(
+		// Files are only temporarily blocked until a sane fix is found
+		'temp' => array(
+			// Special case of doubling organization actually does make it smaller
+			// (multiple defines of the same selector)
+			'csszengarden.com.167.css',
 
-		// Invalid css
-		'csszengarden.com.177.css',
+			// Invalid css
+			'csszengarden.com.177.css',
+
+			// Don't have checks in for this yet
+			'border-radius.css'
+		),
+		// For testing purposes, focus only on a single file
+		'only' => array(
+		),
 	);
 	private $sheetspecials = array(
 		'maxread' => array(
@@ -268,7 +278,11 @@ Class CSScompressionUnitTest
 	private function testSheets(){
 		$handle = opendir( BEFORE );
 		while ( ( $file = readdir( $handle ) ) !== false ) {
-			if ( preg_match( "/\.css$/", $file ) ) {
+			if ( ( count( $this->block['only'] ) > 0 && ! in_array( $file, $this->block['only'] ) ) ||
+				in_array( $file, $this->block['temp'] ) ) {
+					continue;
+			}
+			else if ( preg_match( "/\.css$/", $file ) ) {
 				$this->setOptions();
 				foreach ( $this->sheetspecials as $config ) {
 					if ( in_array( $file, $config['files'] ) ) {
@@ -319,7 +333,11 @@ Class CSScompressionUnitTest
 		// Read each file in the direcotry
 		$handle = opendir( BENCHMARK );
 		while ( ( $file = readdir( $handle ) ) !== false ) {
-			if ( preg_match( "/\.css$/", $file ) && ! in_array( $file, $this->doubles ) ) {
+			if ( ( count( $this->block['only'] ) > 0 && ! in_array( $file, $this->block['only'] ) ) ||
+				in_array( $file, $this->block['temp'] ) ) {
+					continue;
+			}
+			else if ( preg_match( "/\.css$/", $file ) ) {
 				$before = trim( file_get_contents( BENCHMARK . $file ) );
 				foreach ( $this->instances as $mode => $instance ) {
 					// Media elements should not be organized, so skip them if instance does that
@@ -401,6 +419,21 @@ Class CSScompressionUnitTest
 	 * @params none
 	 */ 
 	public function __destruct(){
+		// Add warnings to before the last report
+		if ( count( $this->block['only'] ) > 0 ) {
+			echo "\r\n\r\n";
+			foreach ( $this->block['only'] as $file ) {
+				echo Color::yellow( "Warning: $file is the only file being tested." ) . "\r\n";
+			}
+		}
+		else if ( count( $this->block['temp'] ) ) {
+			echo "\r\n\r\n";
+			foreach ( $this->block['temp'] as $file ) {
+				echo Color::yellow( "Warning: $file is NOT being tested." ) . "\r\n";
+			}
+		}
+
+		// Final count
 		if ( $this->errors > 0 ) {
 			$final = Color::boldred( "Test Failed: " . $this->errors . " total errors. -- " ) . "\r\n" . $this->errorstack;
 			$exit = 1;
