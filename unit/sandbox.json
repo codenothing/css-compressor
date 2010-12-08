@@ -335,6 +335,22 @@
 			}
 		},
 
+		// Special clip conversions
+		"clip": {
+			"commas": {
+				"params": [ "rect(10.0px,-0.9px,5px,-.9px)" ],
+				"expect": "rect(10px,-.9px,5px,-.9px)"
+			},
+			"space": {
+				"params": [ "rect( 10.0px -0.9px 5px -.9px )" ],
+				"expect": "rect(10px -.9px 5px -.9px)"
+			},
+			"donothing": {
+				"params": [ "nothing( 10.0px -0.9px 5px -.9px )" ],
+				"expect": "nothing( 10.0px -0.9px 5px -.9px )"
+			}
+		},
+
 		// Converting none values to 0
 		"none": {
 			"background": {

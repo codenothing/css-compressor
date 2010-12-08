@@ -18,6 +18,7 @@ Class CSSCompression_Individuals
 	 * @param (regex) rborderradius: Checks property for border-radius declaration
 	 * @param (regex) rnoneprop: Properties that can have none as their value(will be converted to 0)
 	 * @param (regex) rnone: Looks for a none value in shorthand notations
+	 * @param (regex) rclip: Looks for rect grouping in clip declaration
 	 * @param (regex) rsplitter: Checks font properties for font-size/line-height split
 	 * @param (regex) rfilter: Special alpha filter for msie
 	 * @param (regex) rspace: Checks for space without an escape '\' character before it
@@ -32,6 +33,7 @@ Class CSSCompression_Individuals
 	private $rborderradius = "/border[a-z-]*radius/";
 	private $rnoneprop = "/^(border|background)/";
 	private $rnone = "/\snone\s/";
+	private $rclip = "/^rect\(\s*(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)\s*\)$/";
 	private $rsplitter = "/(^|(?<!\\\)\s)([^\/ ]+)\/([^\/ ]+)((?<!\\\)\s|$)/";
 	private $rfilter = "/[\"']?PROGID\\\?:DXImageTransform.Microsoft.Alpha\(Opacity=(\d+)\)[\"']?/i";
 	private $rspace = "/(?<!\\\)\s/";
@@ -99,6 +101,10 @@ Class CSSCompression_Individuals
 		// Special font value conversions
 		if ( $prop == 'font' ) {
 			$val = $this->font( $val );
+		}
+		
+		if ( $prop == 'clip' ) {
+			$val = $this->clip( $val );
 		}
 
 		// None to 0 converter
@@ -228,6 +234,28 @@ Class CSSCompression_Individuals
 			$height = $this->Numeric->numeric( $match[ 3 ][ 0 ] );
 			$concat = $match[ 1 ][ 0 ] . $size . '/' . $height . $match[ 4 ][ 0 ];
 			$val = substr_replace( $val, $concat, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] )  );
+		}
+
+		return $val;
+	}
+
+	/**
+	 * Special clip conversions
+	 *
+	 * @param (string) val: property value
+	 */
+	private function clip( $val ) {
+		if ( preg_match( $this->rclip, $val, $match ) ) {
+			$positions = array( 1, 3, 5, 7 );
+			$clean = 'rect(';
+			foreach ( $positions as $pos ) {
+				if ( ! isset( $match[ $pos ] ) ) {
+					return $val;
+				}
+
+				$clean .= $this->Numeric->numeric( $match[ $pos ] ) . ( isset( $match[ $pos + 1 ] ) ? $match[ $pos + 1 ] : '' );
+			}
+			$val = $clean . ')';
 		}
 
 		return $val;
