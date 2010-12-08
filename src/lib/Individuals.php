@@ -28,7 +28,7 @@ Class CSSCompression_Individuals
 	private $Numeric;
 	private $Color;
 	private $options = array();
-	private $rdirectional = "/^(margin|padding|([a-z-]*)border[a-z-]*radius)$/";
+	private $rdirectional = "/^(margin|padding|border-spacing)$/";
 	private $rborderradius = "/border[a-z-]*radius/";
 	private $rnoneprop = "/^(border|background)/";
 	private $rnone = "/\snone\s/";

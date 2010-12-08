@@ -401,6 +401,12 @@
 				"join": ":",
 				"expect": "color:#7f9d0a"
 			},
+			// Border-spacing
+			"border-spacing": {
+				"params": [ "border-spacing", "10.0px 10px" ],
+				"join": ":",
+				"expect": "border-spacing:10px"
+			},
 			// Border-radius
 			"border-radius": {
 				"params": [ "border-radius", "10.0px -0.10px 10.0px -.10px/-0.9px 1px 2px 1.0px" ],
