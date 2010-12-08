@@ -39,10 +39,8 @@ Class CSSCompression_Individuals
 	private $rspace = "/(?<!\\\)\s/";
 	private $rslash = "/(?<!\\\)\//";
 	private $weights = array(
-		"lighter" => 100,
 		"normal" => 400,
 		"bold" => 700,
-		"bolder" => 900,
 	);
 
 	/**

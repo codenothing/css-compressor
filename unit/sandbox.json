@@ -287,10 +287,6 @@
 
 		// Font-Weight compressions
 		"fontweight": {
-			"lighter": {
-				"params": [ "lighter" ],
-				"expect": "100"
-			},
 			"normal": {
 				"params": [ "normal" ],
 				"expect": "400"
@@ -298,10 +294,6 @@
 			"bold": {
 				"params": [ "bold" ],
 				"expect": "700"
-			},
-			"bolder": {
-				"params": [ "bolder" ],
-				"expect": "900"
 			},
 			"heavy": {
 				"params": [ "heavy" ],
