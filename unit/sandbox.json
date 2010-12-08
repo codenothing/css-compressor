@@ -224,8 +224,12 @@
 				"expect": "10px"
 			},
 			"4 to 2": {
-				"params": [ "10px 15px 10px 15px" ],
-				"expect": "10px 15px"
+				"params": [ ".5px 15px .5px 15px" ],
+				"expect": ".5px 15px"
+			},
+			"4 to 3": {
+				"params": [ "10px -15px 9px -15px" ],
+				"expect": "10px -15px 9px"
 			},
 			"3 to 2": {
 				"params": [ "10px .15px 10px" ],
@@ -368,6 +372,22 @@
 				"params": [ "color", "#7F9D0A" ],
 				"join": ":",
 				"expect": "color:#7f9d0a"
+			},
+			// Border-radius
+			"border-radius": {
+				"params": [ "border-radius", "10.0px -0.10px 10.0px -.10px" ],
+				"join": ":",
+				"expect": "border-radius:10px -.1px"
+			},
+			"-moz-border-radius": {
+				"params": [ "-moz-border-radius", "5px 6px 7px 6px" ],
+				"join": ":",
+				"expect": "-moz-border-radius:5px 6px 7px"
+			},
+			"-webkit-border-radius": {
+				"params": [ "-webkit-border-radius", "10px 10.0px 10px 10.0px" ],
+				"join": ":",
+				"expect": "-webkit-border-radius:10px"
 			}
 		}
 	},

@@ -53,6 +53,15 @@ Class CSScompressionUnitTest
 				'readability' => CSSCompression::READ_MAX,
 			),
 		),
+		'maxsane' => array(
+			'files' => array(
+				'border-radius.css',
+			),
+			'mode' => 'sane',
+			'options' => array(
+				'readability' => CSSCompression::READ_MAX,
+			),
+		),
 		'safe' => array(
 			'files' => array(
 				'box-model.css',

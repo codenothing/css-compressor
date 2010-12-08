@@ -15,23 +15,27 @@ Class CSSCompression_Individuals
 	 * @class Color: Color Handler
 	 * @param (array) options: Reference to options
 	 * @param (regex) rdirectional: Properties that may have multiple directions
+	 * @param (regex) rborderradius: Checks property for border-radius declaration
 	 * @param (regex) rnoneprop: Properties that can have none as their value(will be converted to 0)
 	 * @param (regex) rnone: Looks for a none value in shorthand notations
 	 * @param (regex) rsplitter: Checks font properties for font-size/line-height split
 	 * @param (regex) rfilter: Special alpha filter for msie
 	 * @param (regex) rspace: Checks for space without an escape '\' character before it
+	 * @param (regex) rspace: Checks for slash without an escape '\' character before it
 	 * @param (array) weights: Array of font-weight name conversions to their numeric counterpart
 	 */
 	private $Control;
 	private $Numeric;
 	private $Color;
 	private $options = array();
-	private $rdirectional = "/^(margin|padding)$/";
+	private $rdirectional = "/^(margin|padding|([a-z-]*)border[a-z-]*radius)$/";
+	private $rborderradius = "/border[a-z-]*radius/";
 	private $rnoneprop = "/^(border|background)/";
 	private $rnone = "/\snone\s/";
 	private $rsplitter = "/(^|(?<!\\\)\s)([^\/ ]+)\/([^\/ ]+)((?<!\\\)\s|$)/";
 	private $rfilter = "/[\"']?PROGID\\\?:DXImageTransform.Microsoft.Alpha\(Opacity=(\d+)\)[\"']?/i";
 	private $rspace = "/(?<!\\\)\s/";
+	private $rslash = "/(?<!\\\)\//";
 	private $weights = array(
 		"lighter" => 100,
 		"normal" => 400,
@@ -79,8 +83,16 @@ Class CSSCompression_Individuals
 		$val = trim( implode( ' ', $parts ) );
 
 		// Remove uneeded side definitions if possible
-		if ( $this->options['directional-compress'] && count( $parts ) > 1 && preg_match( $this->rdirectional, $prop ) ) {
-			$val = $this->directionals( strtolower( $val ) );
+		if ( $this->options['directional-compress'] && count( $parts ) > 1 && preg_match( $this->rdirectional, $prop, $match ) ) {
+			if ( preg_match( $this->rborderradius, $prop ) && preg_match( $this->rslash, $val ) ) {
+				$parts = preg_split( $this->rslash, $val, 2 );
+				$parts[ 0 ] = $this->directionals( strtolower( $parts[ 0 ] ) );
+				$parts[ 1 ] = $this->directionals( strtolower( $parts[ 1 ] ) );
+				$val = implode( '/', $parts );
+			}
+			else {
+				$val = $this->directionals( strtolower( $val ) );
+			}
 		}
 
 		// Font-weight converter
@@ -116,28 +128,32 @@ Class CSSCompression_Individuals
 		$count = count( $direction );
 		if ( $count == 4 ) {
 			// All 4 sides are the same, combine into 1 definition
-			if ( $direction[0] == $direction[1] && $direction[2] == $direction[3] && $direction[0] == $direction[3] ) {
+			if ( $direction[ 0 ] == $direction[ 1 ] && $direction[ 2 ] == $direction[ 3 ] && $direction[ 0 ] == $direction[ 3 ] ) {
 				$direction = array( $direction[ 0 ] );
 			}
 			// top-bottom/left-right are the same, reduce definition
-			else if ( $direction[0] == $direction[2] && $direction[1] == $direction[3] ) {
+			else if ( $direction[ 0 ] == $direction[ 2 ] && $direction[ 1 ] == $direction[ 3 ] ) {
 				$direction = array( $direction[ 0 ], $direction[ 1 ] );
+			}
+			// Only left-right are the same
+			else if ( $direction[ 1 ] == $direction[ 3 ] ) {
+				$direction = array( $direction[ 0 ], $direction[ 1 ], $direction[ 2 ] );
 			}
 		}
 		// 3 Direction reduction
 		else if ( $count == 3 ) {
 			// All directions are the same
-			if ( $direction[0] == $direction[1] && $direction[1] == $direction[2] ) {
+			if ( $direction[ 0 ] == $direction[ 1 ] && $direction[ 1 ] == $direction[ 2 ] ) {
 				$direction = array( $direction[ 0 ] );
 			}
 			// Only top(first) and bottom(last) are the same
-			else if ( $direction[0] == $direction[2] ) {
+			else if ( $direction[ 0 ] == $direction[ 2 ] ) {
 				$direction = array( $direction[ 0 ], $direction[ 1 ] );
 			}
 		}
 		// 2 Direction reduction
 		// Both directions are the same, combine into single definition
-		else if ( $count == 2 && $direction[0] == $direction[1] ) {
+		else if ( $count == 2 && $direction[ 0 ] == $direction[ 1 ] ) {
 			$direction = array( $direction[ 0 ] );
 		}
 
