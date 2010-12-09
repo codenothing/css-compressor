@@ -600,6 +600,22 @@
 				"params": [ "outline-color:blue;outline-style:thin;outline-width:1px;" ],
 				"expect": "outline:1px thin blue;"
 			},
+			"border-bottom": {
+				"params": [ "border-bottom-color:red;border-bottom-style:solid;border-bottom-width:2px;" ],
+				"expect": "border-bottom:2px solid red;"
+			},
+			"border-top": {
+				"params": [ "border-top-color:red;border-top-style:solid;border-top-width:2px;" ],
+				"expect": "border-top:2px solid red;"
+			},
+			"border-left": {
+				"params": [ "border-left-color:red;border-left-style:solid;border-left-width:2px;" ],
+				"expect": "border-left:2px solid red;"
+			},
+			"border-right": {
+				"params": [ "border-right-color:red;border-right-style:solid;border-right-width:2px;" ],
+				"expect": "border-right:2px solid red;"
+			},
 			"inbetween": {
 				"params": [ "border-color:red;color:red;border-style:solid;color:white;border-width:2px;" ],
 				"expect": "border:2px solid red;color:red;color:white;"
