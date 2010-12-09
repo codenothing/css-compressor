@@ -44,9 +44,6 @@ Class CSScompressionUnitTest
 
 			// Invalid css
 			'csszengarden.com.177.css',
-
-			// Don't have checks in for this yet
-			'border-radius.css'
 		),
 		// For testing purposes, focus only on a single file
 		'only' => array(
