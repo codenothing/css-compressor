@@ -476,6 +476,38 @@
 			}
 		},
 
+		// The assumption being that id is unique, so no need to nest it
+		"strictid": {
+			"basic": {
+				"params": [ "body>div#elem p" ],
+				"expect": "#elem p"
+			},
+			"comma": {
+				"params": [ "span.class,div#elem p" ],
+				"expect": "span.class,#elem p"
+			},
+			"double": {
+				"params": [ "span.class #test,div#elem p" ],
+				"expect": "#test,#elem p"
+			},
+			"nested": {
+				"params": [ "span.class #test div#elem p" ],
+				"expect": "#elem p"
+			},
+			"start": {
+				"params": [ "#test div.elem p" ],
+				"expect": "#test div.elem p"
+			},
+			"url": {
+				"params": [ "#test a[url=http://www.example.com/\\#hashtag] div#elem p" ],
+				"expect": "#elem p"
+			},
+			"nothing": {
+				"params": [ "html body div.class, body > q, i ~ b + a" ],
+				"expect": "html body div.class, body > q, i ~ b + a"
+			}
+		},
+
 		// Remove repeated selectors
 		"repeats": {
 			"1": {
@@ -1075,7 +1107,7 @@
 			// Single property with URL
 			"single": {
 				"params": [ "#one{background:url(http://www.example1.com?a=semi;);}" ],
-				"expect": "#one{background:url(http\\:\\/\\/www.example1.com?a=semi\\;);}"
+				"expect": "#one{background:url(http\\:\\/\\/www\\.example1\\.com?a\\=semi\\;);}"
 			},
 
 			// Many properties with URL
@@ -1088,10 +1120,10 @@
 					"#four{background:url(http://www.example4.com?a=semi;);}"
 				],
 				"expect": [
-					"#one{background:url(http\\:\\/\\/www.example1.com?a=semi\\;);}",
-					"#two{background:url(http\\:\\/\\/www.example2.com?a=semi\\;);}",
-					"#three{background:url(http\\:\\/\\/www.example3.com?a=semi\\;);}",
-					"#four{background:url(http\\:\\/\\/www.example4.com?a=semi\\;);}"
+					"#one{background:url(http\\:\\/\\/www\\.example1\\.com?a\\=semi\\;);}",
+					"#two{background:url(http\\:\\/\\/www\\.example2\\.com?a\\=semi\\;);}",
+					"#three{background:url(http\\:\\/\\/www\\.example3\\.com?a\\=semi\\;);}",
+					"#four{background:url(http\\:\\/\\/www\\.example4\\.com?a\\=semi\\;);}"
 				]
 			}
 		},
@@ -1113,12 +1145,12 @@
 				],
 				"expect": [
 					"#red>div.today+b.old,body.broken,#wtf{",
-					"background: url(http\\:\\/\\/www.example1.com?a=semi\\;);",
+					"background: url(http\\:\\/\\/www\\.example1\\.com?a\\=semi\\;);",
 					"border: 1px solid red;",
 					"color: white!important;",
 					"}",
 					"#next{",
-					"background: url(http\\:\\/\\/www.example2.com?a=semi\\;);",
+					"background: url(http\\:\\/\\/www\\.example2\\.com?a\\=semi\\;);",
 					"}"
 				]
 			}
