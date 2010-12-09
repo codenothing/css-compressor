@@ -19,6 +19,10 @@
 				"params": [ "-1.0em" ],
 				"expect": "-1em"
 			},
+			"positive remove": {
+				"params": [ "+1.0em" ],
+				"expect": "1em"
+			},
 			"long decimal int": {
 				"params": [ "1.00000em" ],
 				"expect": "1em"
@@ -26,6 +30,10 @@
 			"negative long decimal int": {
 				"params": [ "-1.00000em" ],
 				"expect": "-1em"
+			},
+			"positive long decimal int": {
+				"params": [ "+1.00000em" ],
+				"expect": "1em"
 			},
 			"long decimal": {
 				"params": [ "1.10000em" ],
@@ -66,6 +74,10 @@
 			"-0.5px": {
 				"params": [ "-0.5px" ],
 				"expect": "-.5px"
+			},
+			"+0.5px": {
+				"params": [ "+0.5px" ],
+				"expect": ".5px"
 			},
 			"0.2983%": {
 				"params": [ "0.2983%" ],

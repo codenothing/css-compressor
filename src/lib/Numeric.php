@@ -18,9 +18,9 @@ Class CSSCompression_Numeric
 	 */
 	private $Control;
 	private $options = array();
-	private $rdecimal = "/^(\-?\d*\.[1-9]*0*)(\%|[a-z]{2})$/i";
+	private $rdecimal = "/^(\+|\-)?(\d*\.[1-9]*0*)(\%|[a-z]{2})$/i";
 	private $runit = "/^0(\%|[a-z]{2})$/i";
-	private $rzero = "/^(\-)?0(\.\d+)(\%|[a-z]{2})?$/i";
+	private $rzero = "/^(\+|\-)?0(\.\d+)(\%|[a-z]{2})?$/i";
 
 	/**
 	 * Stash a reference to the controller on each instantiation
@@ -51,7 +51,7 @@ Class CSSCompression_Numeric
 	 */ 
 	private function decimal( $str ) {
 		if ( preg_match( $this->rdecimal, $str, $match ) ) {
-			$str = floatval( $match[ 1 ] ) . $match[ 2 ];
+			$str = ( isset( $match[ 1 ] ) && $match[ 1 ] == '-' ? '-' : '' ) . floatval( $match[ 2 ] ) . $match[ 3 ];
 		}
 
 		return $str;
@@ -78,7 +78,7 @@ Class CSSCompression_Numeric
 	 */
 	private function zeroes( $str ) {
 		if ( preg_match( $this->rzero, $str, $match ) ) {
-			$str = $match[ 1 ] . $match[ 2 ] . ( isset( $match[ 3 ] ) ? $match[ 3 ] : '' );
+			$str = ( isset( $match[ 1 ] ) && $match[ 1 ] == '-' ? '-' : '' ) . $match[ 2 ] . ( isset( $match[ 3 ] ) ? $match[ 3 ] : '' );
 		}
 
 		return $str;
