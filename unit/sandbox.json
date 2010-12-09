@@ -476,6 +476,22 @@
 			}
 		},
 
+		// Remove repeated selectors
+		"repeats": {
+			"1": {
+				"params": [ "#one,#two,#three,#one,#five" ],
+				"expect": "#one,#two,#three,#five"
+			},
+			"2": {
+				"params": [ "div.class>p.other,span.something,div.class>p.other,q,b,i,div.class>p.other" ],
+				"expect": "div.class>p.other,span.something,q,b,i"
+			},
+			"do nothing": {
+				"params": [ "#one,#two,#three,#four,#five" ],
+				"expect": "#one,#two,#three,#four,#five"
+			}
+		},
+
 		// IE coughs up if there is no space after a pseudo selector
 		"pseudoSpace": {
 			"first-letter comma": {

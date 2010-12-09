@@ -16,6 +16,7 @@ Class CSSCompression_Selectors
 	 * @param (regex) rmark: Stop points during selector parsing
 	 * @param (regex) ridclassend: End of a id/class string
 	 * @param (regex) rquote: Checks for the next quote character
+	 * @param (regex) rcomme: looks for an unescaped comma character
 	 * @param (array) pseudos: Contains pattterns and replacments to space out pseudo selectors
 	 */
 	private $Control;
@@ -24,6 +25,7 @@ Class CSSCompression_Selectors
 	private $rmark = "/(?<!\\\)(#|\.|=)/";
 	private $ridclassend = "/(?<!\\\)[:#>~\[\+\*\. ]/";
 	private $rquote = "/(?<!\\\)(\"|')?\]/";
+	private $rcomma = "/(?<!\\\),/";
 	private $pseudos = array(
 		'patterns' => array(
 			"/\:first-(letter|line)[,]/i",
@@ -62,6 +64,9 @@ Class CSSCompression_Selectors
 
 			// Smart casing and token injection
 			$selector = $this->parse( $selector );
+
+			// Get rid of possible repeated selectors
+			$selector = $this->repeats( $selector );
 
 			// Add space after pseudo selectors (so ie6 doesn't complain)
 			if ( $this->options['pseudo-space'] ) {
@@ -114,6 +119,18 @@ Class CSSCompression_Selectors
 		}
 
 		return $clean . ( $this->options['lowercase-selectors'] ? strtolower( substr( $selector, $pos ) ) : substr( $selector, $pos ) );
+	}
+
+	/**
+	 * Removes repeated selectors that have been comma separated (only god knows why)
+	 *
+	 * @param (string) selector: CSS Selector
+	 */
+	private function repeats( $selector ) {
+		$parts = preg_split( $this->rcomma, $selector );
+		$parts = array_flip( $parts );
+		$parts = array_flip( $parts );
+		return implode( ',', $parts );
 	}
 
 	/**
