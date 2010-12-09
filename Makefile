@@ -5,6 +5,8 @@
 #
 .PHONY: benchmark test
 
+all:
+	@echo "\n\x1B[1;31mPC_LOAD_LETTER\x1B[0m\n"
 test:
 	@php unit/start.php
 
