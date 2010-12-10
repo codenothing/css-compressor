@@ -16,6 +16,8 @@ Class CSSCompression_Selectors
 	 * @param (regex) rmark: Stop points during selector parsing
 	 * @param (regex) ridclassend: End of a id/class string
 	 * @param (regex) rquote: Checks for the next quote character
+	 * @param (regex) rcomma: looks for an unescaped comma character
+	 * @param (regex) rid: looks for an unescaped hash character
 	 * @param (array) pseudos: Contains pattterns and replacments to space out pseudo selectors
 	 */
 	private $Control;
@@ -24,6 +26,8 @@ Class CSSCompression_Selectors
 	private $rmark = "/(?<!\\\)(#|\.|=)/";
 	private $ridclassend = "/(?<!\\\)[:#>~\[\+\*\. ]/";
 	private $rquote = "/(?<!\\\)(\"|')?\]/";
+	private $rcomma = "/(?<!\\\),/";
+	private $rid = "/(?<!\\\)#/";
 	private $pseudos = array(
 		'patterns' => array(
 			"/\:first-(letter|line)[,]/i",
@@ -62,6 +66,14 @@ Class CSSCompression_Selectors
 
 			// Smart casing and token injection
 			$selector = $this->parse( $selector );
+
+			// Remove everything before final id in a selector
+			if ( $this->options['strict-id'] ) {
+				$selector = $this->strictid( $selector );
+			}
+
+			// Get rid of possible repeated selectors
+			$selector = $this->repeats( $selector );
 
 			// Add space after pseudo selectors (so ie6 doesn't complain)
 			if ( $this->options['pseudo-space'] ) {
@@ -114,6 +126,35 @@ Class CSSCompression_Selectors
 		}
 
 		return $clean . ( $this->options['lowercase-selectors'] ? strtolower( substr( $selector, $pos ) ) : substr( $selector, $pos ) );
+	}
+
+	/**
+	 * Promotes nested id's to the front of the selector
+	 *
+	 * @param (string) selector: CSS Selector
+	 */
+	private function strictid( $selector ) {
+		$parts = preg_split( $this->rcomma, $selector );
+		foreach ( $parts as &$s ) {
+			if ( preg_match( $this->rid, $s ) ) {
+				$p = preg_split( $this->rid, $s );
+				$s = '#' . array_pop( $p );
+			}
+		}
+
+		return implode( ',', $parts );
+	}
+
+	/**
+	 * Removes repeated selectors that have been comma separated
+	 *
+	 * @param (string) selector: CSS Selector
+	 */
+	private function repeats( $selector ) {
+		$parts = preg_split( $this->rcomma, $selector );
+		$parts = array_flip( $parts );
+		$parts = array_flip( $parts );
+		return implode( ',', $parts );
 	}
 
 	/**

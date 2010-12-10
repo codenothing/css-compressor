@@ -97,6 +97,14 @@ Add space after :first-letter and :first-line pseudo selectors, for ie6
  - *a:first-line{ -> a:first-line {*
 
 
+strict-id
+---------
+
+Promotes nested id's to the front of the selector
+
+ - *body > div#elem p -> #elem p*
+
+
 directional-compress
 --------------------
 

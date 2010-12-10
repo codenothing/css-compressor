@@ -19,6 +19,10 @@
 				"params": [ "-1.0em" ],
 				"expect": "-1em"
 			},
+			"positive remove": {
+				"params": [ "+1.0em" ],
+				"expect": "1em"
+			},
 			"long decimal int": {
 				"params": [ "1.00000em" ],
 				"expect": "1em"
@@ -26,6 +30,10 @@
 			"negative long decimal int": {
 				"params": [ "-1.00000em" ],
 				"expect": "-1em"
+			},
+			"positive long decimal int": {
+				"params": [ "+1.00000em" ],
+				"expect": "1em"
 			},
 			"long decimal": {
 				"params": [ "1.10000em" ],
@@ -66,6 +74,10 @@
 			"-0.5px": {
 				"params": [ "-0.5px" ],
 				"expect": "-.5px"
+			},
+			"+0.5px": {
+				"params": [ "+0.5px" ],
+				"expect": ".5px"
 			},
 			"0.2983%": {
 				"params": [ "0.2983%" ],
@@ -464,6 +476,54 @@
 			}
 		},
 
+		// The assumption being that id is unique, so no need to nest it
+		"strictid": {
+			"basic": {
+				"params": [ "body>div#elem p" ],
+				"expect": "#elem p"
+			},
+			"comma": {
+				"params": [ "span.class,div#elem p" ],
+				"expect": "span.class,#elem p"
+			},
+			"double": {
+				"params": [ "span.class #test,div#elem p" ],
+				"expect": "#test,#elem p"
+			},
+			"nested": {
+				"params": [ "span.class #test div#elem p" ],
+				"expect": "#elem p"
+			},
+			"start": {
+				"params": [ "#test div.elem p" ],
+				"expect": "#test div.elem p"
+			},
+			"url": {
+				"params": [ "#test a[url=http://www.example.com/\\#hashtag] div#elem p" ],
+				"expect": "#elem p"
+			},
+			"nothing": {
+				"params": [ "html body div.class, body > q, i ~ b + a" ],
+				"expect": "html body div.class, body > q, i ~ b + a"
+			}
+		},
+
+		// Remove repeated selectors
+		"repeats": {
+			"1": {
+				"params": [ "#one,#two,#three,#one,#five" ],
+				"expect": "#one,#two,#three,#five"
+			},
+			"2": {
+				"params": [ "div.class>p.other,span.something,div.class>p.other,q,b,i,div.class>p.other" ],
+				"expect": "div.class>p.other,span.something,q,b,i"
+			},
+			"do nothing": {
+				"params": [ "#one,#two,#three,#four,#five" ],
+				"expect": "#one,#two,#three,#four,#five"
+			}
+		},
+
 		// IE coughs up if there is no space after a pseudo selector
 		"pseudoSpace": {
 			"first-letter comma": {
@@ -571,6 +631,22 @@
 			"outline": {
 				"params": [ "outline-color:blue;outline-style:thin;outline-width:1px;" ],
 				"expect": "outline:1px thin blue;"
+			},
+			"border-bottom": {
+				"params": [ "border-bottom-color:red;border-bottom-style:solid;border-bottom-width:2px;" ],
+				"expect": "border-bottom:2px solid red;"
+			},
+			"border-top": {
+				"params": [ "border-top-color:red;border-top-style:solid;border-top-width:2px;" ],
+				"expect": "border-top:2px solid red;"
+			},
+			"border-left": {
+				"params": [ "border-left-color:red;border-left-style:solid;border-left-width:2px;" ],
+				"expect": "border-left:2px solid red;"
+			},
+			"border-right": {
+				"params": [ "border-right-color:red;border-right-style:solid;border-right-width:2px;" ],
+				"expect": "border-right:2px solid red;"
 			},
 			"inbetween": {
 				"params": [ "border-color:red;color:red;border-style:solid;color:white;border-width:2px;" ],
@@ -1031,7 +1107,7 @@
 			// Single property with URL
 			"single": {
 				"params": [ "#one{background:url(http://www.example1.com?a=semi;);}" ],
-				"expect": "#one{background:url(http\\:\\/\\/www.example1.com?a=semi\\;);}"
+				"expect": "#one{background:url(http\\:\\/\\/www\\.example1\\.com?a\\=semi\\;);}"
 			},
 
 			// Many properties with URL
@@ -1044,10 +1120,10 @@
 					"#four{background:url(http://www.example4.com?a=semi;);}"
 				],
 				"expect": [
-					"#one{background:url(http\\:\\/\\/www.example1.com?a=semi\\;);}",
-					"#two{background:url(http\\:\\/\\/www.example2.com?a=semi\\;);}",
-					"#three{background:url(http\\:\\/\\/www.example3.com?a=semi\\;);}",
-					"#four{background:url(http\\:\\/\\/www.example4.com?a=semi\\;);}"
+					"#one{background:url(http\\:\\/\\/www\\.example1\\.com?a\\=semi\\;);}",
+					"#two{background:url(http\\:\\/\\/www\\.example2\\.com?a\\=semi\\;);}",
+					"#three{background:url(http\\:\\/\\/www\\.example3\\.com?a\\=semi\\;);}",
+					"#four{background:url(http\\:\\/\\/www\\.example4\\.com?a\\=semi\\;);}"
 				]
 			}
 		},
@@ -1069,12 +1145,12 @@
 				],
 				"expect": [
 					"#red>div.today+b.old,body.broken,#wtf{",
-					"background: url(http\\:\\/\\/www.example1.com?a=semi\\;);",
+					"background: url(http\\:\\/\\/www\\.example1\\.com?a\\=semi\\;);",
 					"border: 1px solid red;",
 					"color: white!important;",
 					"}",
 					"#next{",
-					"background: url(http\\:\\/\\/www.example2.com?a=semi\\;);",
+					"background: url(http\\:\\/\\/www\\.example2\\.com?a\\=semi\\;);",
 					"}"
 				]
 			}

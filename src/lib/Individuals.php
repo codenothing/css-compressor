@@ -35,7 +35,7 @@ Class CSSCompression_Individuals
 	private $rnone = "/\snone\s/";
 	private $rclip = "/^rect\(\s*(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)\s*\)$/";
 	private $rsplitter = "/(^|(?<!\\\)\s)([^\/ ]+)\/([^\/ ]+)((?<!\\\)\s|$)/";
-	private $rfilter = "/[\"']?PROGID\\\?:DXImageTransform.Microsoft.Alpha\(Opacity=(\d+)\)[\"']?/i";
+	private $rfilter = "/[\"']?PROGID\\\?:DXImageTransform\\\?.Microsoft\\\?.Alpha\(Opacity\\\?=(\d+\\\?\.?\d*)\)[\"']?/i";
 	private $rspace = "/(?<!\\\)\s/";
 	private $rslash = "/(?<!\\\)\//";
 	private $weights = array(

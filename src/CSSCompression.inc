@@ -59,6 +59,10 @@ Class CSSCompression
 		// (a:first-child{ -> a:first-child {)
 		'pseudo-space' => false,
 
+		// Promotes nested id's to the front of the selector
+		// (body>div#elem p -> $elem p)
+		'strict-id' => false,
+
 		// Compresses single defined multi-directional properties
 		// (margin: 15px 25px 15px 25px -> margin:15px 25px)
 		'directional-compress' => true,
@@ -137,6 +141,7 @@ Class CSSCompression
 	private static $modes = array(
 		'safe' => array(
 			'color-hex2shortcolor' => false,
+			'strict-id' => false,
 			'organize' => false,
 			'csw-combine' => false,
 			'auralcp-combine' => false,
@@ -149,11 +154,13 @@ Class CSSCompression
 		),
 		'sane' => array(
 			'color-hex2shortcolor' => false,
+			'strict-id' => false,
 			'organize' => false,
 			'rm-multi-define' => false,
 		),
 		'small' => array(
 			'color-hex2shortcolor' => false,
+			'strict-id' => false,
 			'pseudo-space' => false,
 		),
 		'full' => array(

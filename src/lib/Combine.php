@@ -29,7 +29,7 @@ Class CSSCompression_Combine
 	private $token = '';
 	private $options = array();
 	private $rspace = "/(?<!\\\)\s/";
-	private $rcsw = "/(^|(?<!\\\);)(border|outline)-(color|style|width):(.*?)(?<!\\\);/";
+	private $rcsw = "/(^|(?<!\\\);)(border|border-top|border-bottom|border-left|border-right|outline)-(color|style|width):(.*?)(?<!\\\);/";
 	private $raural = "/(^|(?<!\\\);)(cue|pause)-(before|after):(.*?)(?<!\\\);/";
 	private $rmpbase = "/(margin|padding):(.*?)(?<!\\\);/";
 	private $rmp = "/(^|(?<!\\\);)(margin|padding)-(top|right|bottom|left):(.*?)(?<!\\\);/";
