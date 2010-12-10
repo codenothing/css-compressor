@@ -38,17 +38,8 @@ Class CSScompressionUnitTest
 	private $block = array(
 		// Files are only temporarily blocked until a sane fix is found
 		'temp' => array(
-<<<<<<< HEAD
-			// Special case of doubling organization actually does make it smaller
-			// (multiple defines of the same selector)
-			'csszengarden.com.167.css',
-
-			// Invalid css
-			'csszengarden.com.177.css',
-=======
 			// Don't have checks in for this yet
 			'border-radius.css'
->>>>>>> master
 		),
 		// For testing purposes, focus only on a single file
 		'only' => array(
