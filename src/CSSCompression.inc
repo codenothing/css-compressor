@@ -160,6 +160,7 @@ Class CSSCompression
 			'font-combine' => false,
 			'background-combine' => false,
 			'list-combine' => false,
+			'border-radius-combine' => false,
 			'rm-multi-define' => false,
 		),
 		'sane' => array(
