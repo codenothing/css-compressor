@@ -113,7 +113,7 @@ Class CompressionBenchmark
 	 */
 	private function compress( $file = '', $css = '', $instance ) {
 		file_put_contents( $this->root . 'dist/' . $file . '.' . $instance->mode, $instance->compress( $css ) );
-		$gzip = gzencode( $instance->css );
+		$gzip = gzencode( $instance->css, 1 );
 
 		// References
 		$before = $instance->stats['before'];
