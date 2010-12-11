@@ -143,6 +143,19 @@ $select .= "<option value='custom'>Custom</option>";
 				<span class='example'>list-style-type: round; list-style-position: outside -&gt; list-style:round outside</span>
 			</label>
 			<label>
+				<input type='checkbox' name='border-radius-combine' checked='checked' />
+				Combine border-radius properties
+				<span class='example'>
+					{
+					 border-top-left-radius: 10px;
+					 border-top-right-radius: 10px;
+					 border-bottom-right-radius: 10px;
+					 border-bottom-left-radius: 10px;
+					}
+					-&gt; { border-radius: 10px; }
+				</span>
+			</label>
+			<label>
 				<input type='checkbox' name='unnecessary-semicolons' checked='checked' />
 				Removes the last semicolon of a property set
 				<span class='example'>margin: 2px; color: blue; -&gt; margin: 2px; color: blue</span>
