@@ -627,7 +627,7 @@ Class CSSCompression_Combine
 						. ';';
 				}
 				else {
-					$replace .= $regex['mod'] . "border-radius-$p:"
+					$replace .= $regex['mod'] . "border-$p-radius:"
 						. $base['horizontal']['pos'][ $p ]
 						. ( $base['vertical']['parts'] === '' ? '' : ' ' . $base['vertical']['pos'][ $p ] )
 						. ';';
@@ -645,9 +645,75 @@ Class CSSCompression_Combine
 	 *
 	 * @param (string) val: Rule Set
 	 */
-	private function borderRadiusFix( $val, $mod, $regex ) {
+	private function borderRadiusFix( $val, $regex ) {
 		$val = $this->borderRadiusBase( $val, $regex );
+		$replace = $regex['mod'];
+		$storage = array(
+			'horizontal' => array( 'replace' => '' ),
+			'vertical' => array( 'replace' => '', 'keep' => false ),
+		);
 
+		// Find all possible occurences of this border-radius type and mark their directional value
+		$pos = 0;
+		while ( preg_match( $regex['full'], $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
+			$parts = preg_split( $this->rspace, $match[ 4 ][ 0 ], 2 );
+			$storage['horizontal'][ $match[ 2 ][ 0 ] . '-' . $match[ 3 ][ 0 ] ] = trim( $parts[ 0 ] );
+			if ( isset( $parts[ 1 ] ) ) {
+				$storage['vertical'][ $match[ 2 ][ 0 ] . '-' . $match[ 3 ][ 0 ] ] = trim( $parts[ 1 ] );
+				$storage['vertical']['keep'] = true;
+				$storage['vertical']['replace'] = '/';
+			}
+			else {
+				$storage['vertical'][ $match[ 2 ][ 0 ] . '-' . $match[ 3 ][ 0 ] ] = '0';
+			}
+		}
+
+		// Only combine if all 4 definitions are found (5 including replace)
+		if ( count( $storage['horizontal'] ) != 5 || 
+			$this->checkUncombinables( $storage['horizontal'] ) || 
+			$this->checkUncombinables( $storage['vertical'] ) ) {
+				return $val;
+		}
+
+		// Setup horizontal/vertical radii
+		foreach ( $storage as $dir => &$config ) {
+			// Verticals are optional
+			if ( $dir == 'vertical' && ! $config['keep'] ) {
+				break;
+			}
+			// All 4 are the same
+			else if ( $config['top-left'] == $config['top-right'] && 
+				$config['top-right'] == $config['bottom-right'] && 
+				$config['bottom-right'] == $config['bottom-left'] ) {
+					$config['replace'] .= $config['top-left'];
+			}
+			// Opposites are the same
+			else if ( $config['top-left'] == $config['bottom-right'] && $config['top-right'] == $config['bottom-left'] ) {
+				$config['replace'] .= $config['top-left'] . ' ' . $config['top-right'];
+			}
+			// 3-point directional
+			else if ( $config['top-right'] == $config['bottom-left'] ) {
+				$config['replace'] .= $config['top-left'] . ' ' . $config['top-right'] . ' ' . $config['bottom-right'];
+			}
+			// none are the same, but can still use shorthand notation
+			else {
+				$config['replace'] .= $config['top-left'] . ' ' . $config['top-right'] . ' ' 
+					. $config['bottom-right'] . ' ' . $config['bottom-left'];
+			}
+		}
+
+		// Now rebuild the string replacing all instances of margin/padding if shorthand exists
+		$pos = 0;
+		$replace = $regex['mod'] . "border-radius:" . $storage['horizontal']['replace'] . $storage['vertical']['replace'] . ';';
+		while ( preg_match( $regex['full'], $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$colon = strlen( $match[ 1 ][ 0 ] );
+			$val = substr_replace( $val, $replace, $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
+			$pos = $match[ 0 ][ 1 ] + strlen( $replace ) - $colon - 1;
+			$replace = '';
+		}
+
+		// Return converted val
 		return $val;
 	}
 
@@ -657,8 +723,8 @@ Class CSSCompression_Combine
 	 * @param (string) val: Rule Set
 	 */
 	private function combineBorderRadius( $val ) {
-		foreach ( $this->borderRadius as $mod => $regex ) {
-			$val = $this->borderRadiusFix( $val, $mod, $regex );
+		foreach ( $this->borderRadius as $regex ) {
+			$val = $this->borderRadiusFix( $val, $regex );
 		}
 
 		return $val;

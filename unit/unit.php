@@ -38,8 +38,6 @@ Class CSScompressionUnitTest
 	private $block = array(
 		// Files are only temporarily blocked until a sane fix is found
 		'temp' => array(
-			// Don't have checks in for this yet
-			'border-radius.css'
 		),
 		// For testing purposes, focus only on a single file
 		'only' => array(

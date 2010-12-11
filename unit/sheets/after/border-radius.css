@@ -23,7 +23,7 @@
 }
 
 #b2 {
-	-webkit-border-radius: 5px 10px 8px/5px 8px
+	-webkit-border-radius: 5px 10px 8px/6px 8px
 }
 
 #b4 {
@@ -31,8 +31,5 @@
 }
 
 #b5 {
-	border-top-left-radius: 5px;
-	border-top-right-radius: 6px;
-	border-bottom-right-radius: 7px;
-	border-bottom-left-radius: 8px
+	border-radius: 5px 6px 7px 8px
 }

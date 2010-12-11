@@ -12,7 +12,7 @@ $config = array(
 	'class' => 'Combine',
 	'method' => 'combineBorderRadius',
 	'params' => array(
-		"-webkit-border-radius:10px 9px 8px 7px/5px 4px 3px 2px;",
+		"border-radius:10px 9px 8px 9px / 5px 5px 5px 5px;",
 	),
 	'expect' => "blah",
 );
