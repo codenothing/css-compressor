@@ -14,6 +14,7 @@ Class CSSCompression_Combine
 	 * @param (string) token: Copy of the injection token
 	 * @param (array) options: Reference to options
 	 * @param (regex) rspace: Checks for space without an escape '\' character before it
+	 * @param (regex) rslash: Checks for unescaped slash character
 	 * @param (regex) rcsw: Border/Outline matching
 	 * @param (regex) raural: Aurual matching
 	 * @param (regex) rmpbase: Margin/Padding base match
@@ -23,12 +24,14 @@ Class CSSCompression_Combine
 	 * @param (regex) rbackground: Background matching
 	 * @param (regex) rlist: List style matching
 	 * @param (regex) rimportant: Checking props for uncombinables
+	 * @param (array) borderRadius: Various border radii components
 	 * @param (array) methods: List of options with their corresponding handler
 	 */
 	private $Control;
 	private $token = '';
 	private $options = array();
 	private $rspace = "/(?<!\\\)\s/";
+	private $rslash = "/(?<!\\\)\//";
 	private $rcsw = "/(^|(?<!\\\);)(border|border-top|border-bottom|border-left|border-right|outline)-(color|style|width):(.*?)(?<!\\\);/";
 	private $raural = "/(^|(?<!\\\);)(cue|pause)-(before|after):(.*?)(?<!\\\);/";
 	private $rmpbase = "/(margin|padding):(.*?)(?<!\\\);/";
@@ -38,6 +41,23 @@ Class CSSCompression_Combine
 	private $rbackground = "/(^|(?<!\\\);)background-(color|image|repeat|attachment|position):(.*?)(?<!\\\);/";
 	private $rlist = "/(^|(?<!\\\);)list-style-(type|position|image):(.*?)(?<!\\\);/";
 	private $rimportant = "/inherit|\!important|!ie|\s/i";
+	private $borderRadius = array(
+		'css3' => array(
+			'mod' => '',
+			'base' => "/(^|(?<!\\\);)border-radius:(.*?)(?<!\\\);/",
+			'full' => "/(^|(?<!\\\);)border-(top|bottom)-(left|right)-radius:(.*?)(?<!\\\);/",
+		),
+		'moz' => array(
+			'mod' => '-moz-',
+			'base' => "/(^|(?<!\\\);)-moz-border-radius:(.*?)(?<!\\\);/",
+			'full' => "/(^|(?<!\\\);)-moz-border-radius-(top|bottom)(left|right):(.*?)(?<!\\\);/"
+		),
+		'webkit' => array(
+			'mod' => '-webkit-',
+			'base' => "/(^|(?<!\\\);)-webkit-border-radius:(.*?)(?<!\\\);/",
+			'full' => "/(^|(?<!\\\);)-webkit-border-(top|bottom)-(left|right)-radius:(.*?)(?<!\\\);/"
+		),
+	);
 	private $methods = array(
 		'csw-combine' => 'combineCSWproperties',
 		'auralcp-combine' => 'combineAuralCuePause',
@@ -46,6 +66,7 @@ Class CSSCompression_Combine
 		'font-combine' => 'combineFontDefinitions',
 		'background-combine' => 'combineBackgroundDefinitions',
 		'list-combine' => 'combineListProperties',
+		'border-radius-combine' => 'combineBorderRadius',
 	);
 
 	/**
@@ -529,6 +550,117 @@ Class CSSCompression_Combine
 		}
 
 		// Return converted val
+		return $val;
+	}
+
+	/**
+	 * Expands short handed border radius props for combination
+	 *
+	 * @param (string) val: Rule Set
+	 */
+	private function borderRadiusBase( $val, $regex ) {
+		$pos = 0;
+		while ( preg_match( $regex['base'], $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$replace = '';
+			$parts = preg_split( $this->rslash, trim( $match[ 2 ][ 0 ] ), 2 );
+			$positions = array(
+				'top-left' => 0,
+				'top-right' => 0,
+				'bottom-right' => 0,
+				'bottom-left' => 0,
+			);
+			$base = array(
+				'horizontal' => array(
+					'parts' => preg_split( $this->rspace, trim( $parts[ 0 ] ) ),
+					'pos' => $positions,
+				),
+				'vertical' => array(
+					'parts' => isset( $parts[ 1 ] ) ? preg_split( $this->rspace, trim( $parts[ 1 ] ) ) : '',
+					'pos' => $positions,
+				),
+			);
+
+			foreach ( $base as &$config ) {
+				// Skip uncombinables
+				if ( $this->checkUncombinables( $config['parts'] ) ) {
+					$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
+					continue 2;
+				}
+				// Might not have verticals
+				else if ( $config['parts'] === '' ) {
+					continue;
+				}
+
+				// Each position needs a value
+				switch ( count( $config['parts'] ) ) {
+					case 1:
+						$config['pos']['top-left'] = $config['pos']['top-right'] = $config['parts'][ 0 ];
+						$config['pos']['bottom-left'] = $config['pos']['bottom-right'] = $config['parts'][ 0 ];
+						break;
+					case 2:
+						$config['pos']['top-left'] = $config['pos']['bottom-right'] = $config['parts'][ 0 ];
+						$config['pos']['bottom-left'] = $config['pos']['top-right'] = $config['parts'][ 1 ];
+						break;
+					case 3:
+						$config['pos']['top-left'] = $config['parts'][ 0 ];
+						$config['pos']['bottom-left'] = $config['pos']['top-right'] = $config['parts'][ 1 ];
+						$config['pos']['bottom-right'] = $config['parts'][ 2 ];
+						break;
+					case 4:
+						$config['pos']['top-left'] = $config['parts'][ 0 ];
+						$config['pos']['top-right'] = $config['parts'][ 1 ];
+						$config['pos']['bottom-right'] = $config['parts'][ 2 ];
+						$config['pos']['bottom-left'] = $config['parts'][ 3 ];
+						break;
+					default:
+						continue;
+				}
+
+			}
+
+			// Build the replacement
+			foreach ( $positions as $p => $v ) {
+				if ( $regex['mod'] == '-moz-' ) {
+					$replace .= "-moz-border-radius-" . preg_replace( "/-/", '', $p ) . ":"
+						. $base['horizontal']['pos'][ $p ]
+						. ( $base['vertical']['parts'] === '' ? '' : ' ' . $base['vertical']['pos'][ $p ] )
+						. ';';
+				}
+				else {
+					$replace .= $regex['mod'] . "border-radius-$p:"
+						. $base['horizontal']['pos'][ $p ]
+						. ( $base['vertical']['parts'] === '' ? '' : ' ' . $base['vertical']['pos'][ $p ] )
+						. ';';
+				}
+			}
+			$pos += strlen( $replace );
+			$val = substr_replace( $val, $replace, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+		}
+
+		return $val;
+	}
+
+	/**
+	 * Does the actual combining
+	 *
+	 * @param (string) val: Rule Set
+	 */
+	private function borderRadiusFix( $val, $mod, $regex ) {
+		$val = $this->borderRadiusBase( $val, $regex );
+
+		return $val;
+	}
+
+	/**
+	 * Main handler to combine border-radii into a single rule
+	 *
+	 * @param (string) val: Rule Set
+	 */
+	private function combineBorderRadius( $val ) {
+		foreach ( $this->borderRadius as $mod => $regex ) {
+			$val = $this->borderRadiusFix( $val, $mod, $regex );
+		}
+
 		return $val;
 	}
 

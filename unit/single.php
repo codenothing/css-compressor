@@ -10,11 +10,11 @@ error_reporting( E_ALL );
 $config = array(
 	'options' => 'small',
 	'class' => 'Combine',
-	'method' => 'combineFontDefinitions',
+	'method' => 'combineBorderRadius',
 	'params' => array(
-		"font-size:12pt;line-height:20px;font-family:arial;",
+		"-webkit-border-radius:10px 9px 8px 7px/5px 4px 3px 2px;",
 	),
-	'expect' => "font:12pt/20px arial;",
+	'expect' => "blah",
 );
 
 

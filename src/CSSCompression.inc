@@ -100,6 +100,16 @@ Class CSSCompression
 		// (list-style-type: round; list-style-position: outside -> list-style:round outside)
 		'list-combine' => true,
 
+		// Combines border-radius properties
+		// {
+		//  border-top-left-radius: 10px;
+		//  border-top-right-radius: 10px;
+		//  border-bottom-right-radius: 10px;
+		//  border-bottom-left-radius: 10px;
+		// }
+		// -> { border-radius: 10px; }
+		'border-radius-combine' => true,
+
 		// Removes the last semicolon of a property set
 		// ({margin: 2px; color: blue;} -> {margin: 2px; color: blue})
 		'unnecessary-semicolons' => true,
