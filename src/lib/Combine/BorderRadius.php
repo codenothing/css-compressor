@@ -57,7 +57,7 @@ Class CSSCompression_Combine_BorderRadius
 	 */
 	public function combine( $val ) {
 		foreach ( $this->borderRadius as $regex ) {
-			$val = $this->borderRadiusFix( $val, $regex );
+			$val = $this->fix( $val, $regex );
 		}
 
 		return $val;
@@ -68,8 +68,8 @@ Class CSSCompression_Combine_BorderRadius
 	 *
 	 * @param (string) val: Rule Set
 	 */
-	private function borderRadiusFix( $val, $regex ) {
-		$val = $this->borderRadiusBase( $val, $regex );
+	private function fix( $val, $regex ) {
+		$val = $this->base( $val, $regex );
 		$replace = $regex['mod'];
 		$storage = array(
 			'horizontal' => array( 'replace' => '' ),
@@ -145,7 +145,7 @@ Class CSSCompression_Combine_BorderRadius
 	 *
 	 * @param (string) val: Rule Set
 	 */
-	private function borderRadiusBase( $val, $regex ) {
+	private function base( $val, $regex ) {
 		$pos = 0;
 		while ( preg_match( $regex['base'], $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
 			$replace = '';

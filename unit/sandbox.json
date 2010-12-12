@@ -875,6 +875,51 @@
 
 	// Font combinations
 	"Combine.Font": {
+		"storage": {
+			"_special": "storage",
+			"1": {
+				"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"expect": {
+					"font-style": "italic",
+					"font-variant": "normal",
+					"font-weight": "bold",
+					"font-family": "arial",
+					"size/height": "12pt/20px"
+				}
+			},
+			"2": {
+				"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;font-family:arial;" ],
+				"expect": {
+					"font-style": "italic",
+					"font-variant": "normal",
+					"font-weight": "bold",
+					"font-size": "12pt",
+					"font-family": "arial"
+				}
+			},
+			"3": {
+				"params": [ "font-style:italic;font-variant:normal;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"expect": {
+					"font-style":"italic",
+					"font-variant": "normal",
+					"font-family": "arial",
+					"size/height": "12pt/20px"
+				}
+			},
+			"injection": {
+				"params": [ "font-variant:normal;font-size:12pt;font-family:arial;color:red;" ],
+				"expect": {
+					"font-variant":"normal",
+					"font-size": "12pt",
+					"font-family": "arial"
+				}
+			},
+			"nothing": {
+				"params": [ "color:red;background:blue;" ],
+				"expect": {}
+			}
+		},
+
 		"combine": {
 			"1": {
 				"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
