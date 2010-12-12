@@ -396,6 +396,10 @@
 			"Nothing": {
 				"params": [ "background", "white url(someimage.png)" ],
 				"expect": "white url(someimage.png)"
+			},
+			"border nothing": {
+				"params": [ "border-style", "none" ],
+				"expect": "none"
 			}
 		},
 

@@ -32,7 +32,7 @@ Class CSSCompression_Individuals
 	private $rdirectional = "/^(margin|padding|border-spacing)$/";
 	private $rborderradius = "/border[a-z-]*radius/";
 	private $rradiusfull = "/^(-moz-|-webkit-)?border-radius$/";
-	private $rnoneprop = "/^(border|background)/";
+	private $rnoneprop = "/^(border|background|border-(top|right|bottom|left))$/";
 	private $rnone = "/\snone\s/";
 	private $rclip = "/^rect\(\s*(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)\s*\)$/";
 	private $rsplitter = "/(^|(?<!\\\)\s)([^\/ ]+)\/([^\/ ]+)((?<!\\\)\s|$)/";
