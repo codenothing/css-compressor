@@ -17,7 +17,7 @@ Class CSSCompression_Combine_List
 	 */
 	private $Control;
 	private $Combine;
-	private $rlist = "/(^|(?<!\\\);)list-style-(type|position|image):(.*?)(?<!\\\);/";
+	private $rlist = "/(^|(?<!\\\);)list-style-(type|position|image):(.*?)((?<!\\\);|$)/";
 	private $groupings = array(
 		array( 'type', 'position', 'image' ),
 		array( 'type', 'position' ),

@@ -17,7 +17,7 @@ Class CSSCompression_Combine_Background
 	 */
 	private $Control;
 	private $Combine;
-	private $rbackground = "/(^|(?<!\\\);)background-(color|image|repeat|attachment|position):(.*?)(?<!\\\);/";
+	private $rbackground = "/(^|(?<!\\\);)background-(color|image|repeat|attachment|position):(.*?)((?<!\\\);|$)/";
 	private $backgrounds = array(
 		// With color
 		array( 'color', 'image', 'repeat', 'attachment', 'position' ),

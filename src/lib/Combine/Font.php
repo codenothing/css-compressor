@@ -17,7 +17,7 @@ Class CSSCompression_Combine_Font
 	 */
 	private $Control;
 	private $Combine;
-	private $rfont = "/(^|(?<!\\\);)(font|line)-(style|variant|weight|size|height|family):(.*?)(?<!\\\);/";
+	private $rfont = "/(^|(?<!\\\);)(font|line)-(style|variant|weight|size|height|family):(.*?)((?<!\\\);|$)/";
 	private $groupings = array(
 		array( 'font-style', 'font-variant', 'font-weight', 'size/height', 'font-family' ),
 		array( 'font-style', 'font-variant', 'font-weight', 'font-size', 'font-family' ),

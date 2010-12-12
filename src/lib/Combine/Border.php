@@ -16,7 +16,7 @@ Class CSSCompression_Combine_Border
 	 */
 	private $Control;
 	private $Combine;
-	private $rborder = "/(^|(?<!\\\);)border-(top|right|bottom|left):(.*?)(?<!\\\);/";
+	private $rborder = "/(^|(?<!\\\);)border-(top|right|bottom|left):(.*?)((?<!\\\);|$)/";
 
 	/**
 	 * Stash a reference to the controller & combiner

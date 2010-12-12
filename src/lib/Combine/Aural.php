@@ -16,7 +16,7 @@ Class CSSCompression_Combine_Aural
 	 */
 	private $Control;
 	private $Combine;
-	private $raural = "/(^|(?<!\\\);)(cue|pause)-(before|after):(.*?)(?<!\\\);/";
+	private $raural = "/(^|(?<!\\\);)(cue|pause)-(before|after):(.*?)((?<!\\\);|$)/";
 
 	/**
 	 * Stash a reference to the controller & combiner

@@ -16,7 +16,7 @@ Class CSSCompression_Combine_BorderOutline
 	 */
 	private $Control;
 	private $Combine;
-	private $rcsw = "/(^|(?<!\\\);)(border|border-top|border-bottom|border-left|border-right|outline)-(color|style|width):(.*?)(?<!\\\);/";
+	private $rcsw = "/(^|(?<!\\\);)(border|border-top|border-bottom|border-left|border-right|outline)-(color|style|width):(.*?)((?<!\\\);|$)/";
 
 	/**
 	 * Stash a reference to the controller & combiner

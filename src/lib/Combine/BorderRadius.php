@@ -23,18 +23,18 @@ Class CSSCompression_Combine_BorderRadius
 	private $borderRadius = array(
 		'css3' => array(
 			'mod' => '',
-			'base' => "/(^|(?<!\\\);)border-radius:(.*?)(?<!\\\);/",
-			'full' => "/(^|(?<!\\\);)border-(top|bottom)-(left|right)-radius:(.*?)(?<!\\\);/",
+			'base' => "/(^|(?<!\\\);)border-radius:(.*?)((?<!\\\);|$)/",
+			'full' => "/(^|(?<!\\\);)border-(top|bottom)-(left|right)-radius:(.*?)((?<!\\\);|$)/",
 		),
 		'moz' => array(
 			'mod' => '-moz-',
-			'base' => "/(^|(?<!\\\);)-moz-border-radius:(.*?)(?<!\\\);/",
-			'full' => "/(^|(?<!\\\);)-moz-border-radius-(top|bottom)(left|right):(.*?)(?<!\\\);/"
+			'base' => "/(^|(?<!\\\);)-moz-border-radius:(.*?)((?<!\\\);|$)/",
+			'full' => "/(^|(?<!\\\);)-moz-border-radius-(top|bottom)(left|right):(.*?)((?<!\\\);|$)/"
 		),
 		'webkit' => array(
 			'mod' => '-webkit-',
-			'base' => "/(^|(?<!\\\);)-webkit-border-radius:(.*?)(?<!\\\);/",
-			'full' => "/(^|(?<!\\\);)-webkit-border-(top|bottom)-(left|right)-radius:(.*?)(?<!\\\);/"
+			'base' => "/(^|(?<!\\\);)-webkit-border-radius:(.*?)((?<!\\\);|$)/",
+			'full' => "/(^|(?<!\\\);)-webkit-border-(top|bottom)-(left|right)-radius:(.*?)((?<!\\\);|$)/"
 		),
 	);
 

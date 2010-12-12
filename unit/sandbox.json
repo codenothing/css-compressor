@@ -629,7 +629,7 @@
 		"storage": {
 			"_special": "storage",
 			"border": {
-				"params": [ "border-color:red;border-style:solid;border-width:2px;" ],
+				"params": [ "border-color:red;border-style:solid;border-width:2px" ],
 				"expect": {
 					"border": "border:2px solid red;"
 				}
@@ -647,7 +647,7 @@
 				}
 			},
 			"border-top": {
-				"params": [ "border-top-color:red;border-top-style:solid;border-top-width:2px;" ],
+				"params": [ "border-top-color:red;border-top-style:solid;border-top-width:2px" ],
 				"expect": {
 					"border-top": "border-top:2px solid red;"
 				}
@@ -671,7 +671,7 @@
 					"border-bottom-color:red;border-bottom-style:solid;border-bottom-width:2px;",
 					"border-top-color:red;border-top-style:solid;border-top-width:2px;",
 					"border-left-color:red;border-left-style:solid;border-left-width:2px;",
-					"border-right-color:red;border-right-style:solid;border-right-width:2px;"
+					"border-right-color:red;border-right-style:solid;border-right-width:2px"
 				],
 				"expect": {
 					"outline": "outline:1px thin blue;",
@@ -682,7 +682,7 @@
 				}
 			},
 			"nothing": {
-				"params": [ "border-color:red;color:red;border-style:solid;color:white;" ],
+				"params": [ "border-color:red;color:red;border-style:solid;color:white" ],
 				"expect": {}
 			}
 		},
@@ -701,11 +701,11 @@
 				"expect": "border-bottom:2px solid red;"
 			},
 			"border-top": {
-				"params": [ "border-top-color:red;border-top-style:solid;border-top-width:2px;font-size:12px;" ],
-				"expect": "border-top:2px solid red;font-size:12px;"
+				"params": [ "border-top-color:red;border-top-style:solid;border-top-width:2px;font-size:12px" ],
+				"expect": "border-top:2px solid red;font-size:12px"
 			},
 			"border-left": {
-				"params": [ "color:white;border-left-color:red;border-left-style:solid;border-left-width:2px;" ],
+				"params": [ "color:white;border-left-color:red;border-left-style:solid;border-left-width:2px" ],
 				"expect": "color:white;border-left:2px solid red;"
 			},
 			"border-right": {
@@ -731,7 +731,7 @@
 				"expect": "cue:url(sound.wav) url(after.wav);color:red;"
 			},
 			"pause": {
-				"params": [ "color:white;pause-before:2s;pause-after:3s;" ],
+				"params": [ "color:white;pause-before:2s;pause-after:3s" ],
 				"expect": "color:white;pause:2s 3s;"
 			},
 			"do nothing": {
@@ -874,7 +874,7 @@
 					"color:blue;",
 					"border-left:1px solid red;",
 					"border-right:1px solid red;",
-					"border-bottom:1px solid red;"
+					"border-bottom:1px solid red"
 				],
 				"expect": "border:1px solid red;"
 			},
@@ -898,7 +898,7 @@
 					"color:blue;",
 					"border-left:1px solid red;",
 					"border-right:1px solid red;",
-					"border-bottom:1px solid red;"
+					"border-bottom:1px solid red"
 				],
 				"expect": "border:1px solid red;color:blue;"
 			},
@@ -927,7 +927,7 @@
 		"storage": {
 			"_special": "storage",
 			"1": {
-				"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial" ],
 				"expect": {
 					"font-style": "italic",
 					"font-variant": "normal",
@@ -947,7 +947,7 @@
 				}
 			},
 			"3": {
-				"params": [ "font-style:italic;font-variant:normal;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"params": [ "font-style:italic;font-variant:normal;font-size:12pt;line-height:20px;font-family:arial" ],
 				"expect": {
 					"font-style":"italic",
 					"font-variant": "normal",
@@ -979,7 +979,7 @@
 				"expect": "font:italic normal bold 12pt arial;"
 			},
 			"3": {
-				"params": [ "font-style:italic;font-variant:normal;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"params": [ "font-style:italic;font-variant:normal;font-size:12pt;line-height:20px;font-family:arial" ],
 				"expect": "font:italic normal 12pt/20px arial;"
 			},
 			"4": {
@@ -1011,7 +1011,7 @@
 				"expect": "font:bold 12pt arial;"
 			},
 			"11": {
-				"params": [ "font-variant:normal;font-size:12pt;line-height:20px;font-family:arial;" ],
+				"params": [ "font-variant:normal;font-size:12pt;line-height:20px;font-family:arial" ],
 				"expect": "font:normal 12pt/20px arial;"
 			},
 			"12": {
@@ -1027,7 +1027,7 @@
 				"expect": "font:italic 12pt arial;"
 			},
 			"15": {
-				"params": [ "font-size:12pt;color:black;line-height:20px;font-family:arial;" ],
+				"params": [ "font-size:12pt;color:black;line-height:20px;font-family:arial" ],
 				"expect": "font:12pt/20px arial;color:black;"
 			},
 			"16": {
@@ -1051,7 +1051,7 @@
 					"background-image:url(images/img.gif);",
 					"background-repeat:no-repeat;",
 					"background-attachment:scroll;",
-					"background-position:center;"
+					"background-position:center"
 				],
 				"expect": "background:green url(images/img.gif) no-repeat scroll center;"
 			},
@@ -1086,7 +1086,7 @@
 				"expect": "background:green url(images/img.gif) no-repeat scroll;"
 			},
 			"5": {
-				"params": [ "background-color:green;background-image:url(images/img.gif);background-repeat:no-repeat;" ],
+				"params": [ "background-color:green;background-image:url(images/img.gif);background-repeat:no-repeat" ],
 				"expect": "background:green url(images/img.gif) no-repeat;"
 			},
 			"6": {
@@ -1098,7 +1098,7 @@
 				"expect": "background:green url(images/img.gif) center;"
 			},
 			"8": {
-				"params": [ "color:red;background-color:green;background-image:url(images/img.gif);" ],
+				"params": [ "color:red;background-color:green;background-image:url(images/img.gif)" ],
 				"expect": "color:red;background:green url(images/img.gif);"
 			},
 			"9": {
@@ -1140,7 +1140,7 @@
 	"Combine.List": {
 		"replace": {
 			"1": {
-				"params": [ "list-style-type:none;list-style-position:inline;list-style-image:url(images/img.gif);" ],
+				"params": [ "list-style-type:none;list-style-position:inline;list-style-image:url(images/img.gif)" ],
 				"expect": "list-style:none inline url(images/img.gif);"
 			},
 			"2": {
@@ -1152,7 +1152,7 @@
 				"expect": "list-style:none url(images/img.gif);"
 			},
 			"4": {
-				"params": [ "list-style-position:inline;list-style-image:url(images/img.gif);" ],
+				"params": [ "list-style-position:inline;list-style-image:url(images/img.gif)" ],
 				"expect": "list-style:inline url(images/img.gif);"
 			},
 			"5": {
@@ -1205,15 +1205,15 @@
 	"Combine.BorderRadius": {
 		"combine": {
 			"shorthand regular": {
-				"params": [ "border-radius:10px 10px 10px 10px;" ],
+				"params": [ "border-radius:10px 10px 10px 10px" ],
 				"expect": "border-radius:10px;"
 			},
 			"shorthand moz": {
-				"params": [ "-moz-border-radius:10px 9px 10px 9px;" ],
+				"params": [ "-moz-border-radius:10px 9px 10px 9px" ],
 				"expect": "-moz-border-radius:10px 9px;"
 			},
 			"shorthand webkit": {
-				"params": [ "-webkit-border-radius:10px 9px 8px 9px;" ],
+				"params": [ "-webkit-border-radius:10px 9px 8px 9px" ],
 				"expect": "-webkit-border-radius:10px 9px 8px;"
 			},
 			"shorthand regular": {
@@ -1241,7 +1241,7 @@
 					"border-top-left-radius:10px;",
 					"border-top-right-radius:10px;",
 					"border-bottom-right-radius:10px;",
-					"border-bottom-left-radius:10px;"
+					"border-bottom-left-radius:10px"
 				],
 				"paramjoin": "",
 				"expect": "border-radius:10px;"
@@ -1251,7 +1251,7 @@
 					"-moz-border-radius-topleft:10px 5px;",
 					"-moz-border-radius-topright:9px 4px;",
 					"-moz-border-radius-bottomright:10px 3px;",
-					"-moz-border-radius-bottomleft:9px 4px;"
+					"-moz-border-radius-bottomleft:9px 4px"
 				],
 				"paramjoin": "",
 				"expect": "-moz-border-radius:10px 9px/5px 4px 3px;"
@@ -1261,7 +1261,7 @@
 					"-webkit-border-top-left-radius:10px 5px;",
 					"-webkit-border-top-right-radius:9px 5px;",
 					"-webkit-border-bottom-right-radius:8px 5px;",
-					"-webkit-border-bottom-left-radius:7px 5px;"
+					"-webkit-border-bottom-left-radius:7px 5px"
 				],
 				"paramjoin": "",
 				"expect": "-webkit-border-radius:10px 9px 8px 7px/5px;"
