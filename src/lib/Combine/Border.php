@@ -16,7 +16,7 @@ Class CSSCompression_Combine_Border
 	 */
 	private $Control;
 	private $Combine;
-	private $rborder = "/(^|(?<!\\\);)(border)-(top|right|bottom|left):(.*?)(?<!\\\);/";
+	private $rborder = "/(^|(?<!\\\);)border-(top|right|bottom|left):(.*?)(?<!\\\);/";
 
 	/**
 	 * Stash a reference to the controller & combiner
@@ -35,48 +35,48 @@ Class CSSCompression_Combine_Border
 	 * @param (string) val: Rule Set
 	 */
 	public function combine( $val ) {
+		if ( ( $replace = $this->replace( $val ) ) === false ) {
+			return $val;
+		}
+
+		// Rebuild the rule set with the combinations found
+		$pos = 0;
+		while ( preg_match( $this->rborder, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$colon = strlen( $match[ 1 ][ 0 ] );
+			$val = substr_replace( $val, $replace, $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
+			$pos = $match[ 0 ][ 1 ] + strlen( $replace ) - $colon - 1;
+			$replace = '';
+		}
+
+		// Return converted val
+		return $val;
+	}
+
+	/**
+	 * Builds a replacement string
+	 *
+	 * @param (string) val: Rule Set
+	 */
+	private function replace( $val ) {
 		$storage = array();
 
 		// Find all possible occurences and build the replacement
 		$pos = 0;
 		while ( preg_match( $this->rborder, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
-			if ( ! isset( $storage[ $match[ 2 ][ 0 ] ] ) ) {
-				$storage[ $match[ 2 ][ 0 ] ] = array( $match[ 3 ][ 0 ] => $match[ 4 ][ 0 ] );
-			}
-
 			// Override double written properties
-			$storage[ $match[ 2 ][ 0 ] ][ $match[ 3 ][ 0 ] ] = $match[ 4 ][ 0 ];
+			$storage[ $match[ 2 ][ 0 ] ] = $match[ 3 ][ 0 ];
 			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
 		}
 
-		// Go through each tag for possible combination
-		foreach ( $storage as $tag => $arr ) {
-			// All 4 have to be defined
-			if ( count( $arr ) == 4 && $arr['top'] == $arr['bottom'] && $arr['left'] == $arr['right'] && $arr['top'] == $arr['right'] ) {
-				$storage[ $tag ] = "$tag:" . $arr['top'] . ';';
-			}
-			else {
-				unset( $storage[ $tag ] );
-			}
+		// All 4 have to be defined
+		if ( count( $storage ) == 4 &&
+			$storage['top'] == $storage['bottom'] &&
+			$storage['left'] == $storage['right'] &&
+			$storage['top'] == $storage['right'] ) {
+				return "border:" . $storage['top'] . ';';
 		}
 
-		// Now rebuild the string replacing all instances
-		$pos = 0;
-		while ( preg_match( $this->rborder, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
-			$prop = $match[ 2 ][ 0 ];
-			if ( isset( $storage[ $prop ] ) ) {
-				$colon = strlen( $match[ 1 ][ 0 ] );
-				$val = substr_replace( $val, $storage[ $prop ], $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
-				$pos = $match[ 0 ][ 1 ] + strlen( $storage[ $prop ] ) - $colon - 1;
-				$storage[ $prop ] = '';
-			}
-			else {
-				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
-			}
-		}
-
-		// Return converted val
-		return $val;
+		return false;
 	}
 
 	/**

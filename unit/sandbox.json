@@ -756,6 +756,30 @@
 
 	// Border combinations
 	"Combine.Border": {
+		"replace": {
+			"border": {
+				"paramjoin": "",
+				"params": [ 
+					"border-top:1px solid red;",
+					"color:blue;",
+					"border-left:1px solid red;",
+					"border-right:1px solid red;",
+					"border-bottom:1px solid red;"
+				],
+				"expect": "border:1px solid red;"
+			},
+			"nothing": {
+				"paramjoin": "",
+				"params": [ 
+					"border-top:1px solid red;",
+					"color:blue;",
+					"border-right:1px solid red;",
+					"border-bottom:1px solid red;"
+				],
+				"expect": false
+			}
+		},
+
 		"combine": {
 			"border": {
 				"paramjoin": "",

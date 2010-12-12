@@ -9,12 +9,12 @@ error_reporting( E_ALL );
 // Access Setup
 $config = array(
 	'options' => 'small',
-	'class' => 'Combine.BorderOutline',
-	'method' => 'combine',
+	'class' => 'Combine.Border',
+	'method' => 'replace',
 	'params' => array(
-		"border-color:red;border-style:solid;border-width:2px;",
+		"border-top:1px solid red;color:blue;border-left:1px solid red;border-right:1px solid red;border-bottom:1px solid red;",
 	),
-	'expect' => "border:2px solid red;",
+	'expect' => "border:1px solid red;",
 );
 
 

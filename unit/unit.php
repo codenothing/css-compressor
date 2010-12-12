@@ -152,7 +152,7 @@ Class CSScompressionUnitTest
 				foreach ( $tests as $name => $row ) {
 					// Readability help
 					if ( isset( $row['paramjoin'] ) ) {
-						$row['params'] = array( implode( $row['params'] ) );
+						$row['params'] = array( implode( $row['paramjoin'], $row['params'] ) );
 					}
 
 					// Get the result from that single function
@@ -272,6 +272,11 @@ Class CSScompressionUnitTest
 		foreach ( $tests as $name => $row ) {
 			if ( $name == '_special' ) {
 				continue;
+			}
+
+			// Readability help
+			if ( isset( $row['paramjoin'] ) ) {
+				$row['params'] = array( implode( $row['paramjoin'], $row['params'] ) );
 			}
 
 			// Get the result from that single function
