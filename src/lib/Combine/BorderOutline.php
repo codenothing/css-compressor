@@ -35,10 +35,37 @@ Class CSSCompression_Combine_BorderOutline
 	 * @param (string) val: Rule Set
 	 */ 
 	public function combine( $val ) {
+		$storage = $this->storage( $val );
+		$pos = 0;
+
+		// Now rebuild the string replacing all instances
+		while ( preg_match( $this->rcsw, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$prop = $match[ 2 ][ 0 ];
+			if ( isset( $storage[ $prop ] ) ) {
+				$colon = strlen( $match[ 1 ][ 0 ] );
+				$val = substr_replace( $val, $storage[ $prop ], $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
+				$pos = $match[ 0 ][ 1 ] + strlen( $storage[ $prop ] ) - $colon - 1;
+				$storage[ $prop ] = '';
+			}
+			else {
+				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
+			}
+		}
+
+		// Return converted val
+		return $val;
+	}
+
+	/**
+	 * Builds a storage object for iteration
+	 *
+	 * @param (string) val: Rule Set
+	 */
+	private function storage( $val ) {
 		$storage = array();
+		$pos = 0;
 
 		// Find all possible occurences and build the replacement
-		$pos = 0;
 		while ( preg_match( $this->rcsw, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
 			if ( ! isset( $storage[ $match[ 2 ][ 0 ] ] ) ) {
 				$storage[ $match[ 2 ][ 0 ] ] = array( $match[ 3 ][ 0 ] => $match[ 4 ][ 0 ] );
@@ -60,23 +87,7 @@ Class CSSCompression_Combine_BorderOutline
 			}
 		}
 
-		// Now rebuild the string replacing all instances
-		$pos = 0;
-		while ( preg_match( $this->rcsw, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
-			$prop = $match[ 2 ][ 0 ];
-			if ( isset( $storage[ $prop ] ) ) {
-				$colon = strlen( $match[ 1 ][ 0 ] );
-				$val = substr_replace( $val, $storage[ $prop ], $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
-				$pos = $match[ 0 ][ 1 ] + strlen( $storage[ $prop ] ) - $colon - 1;
-				$storage[ $prop ] = '';
-			}
-			else {
-				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
-			}
-		}
-
-		// Return converted val
-		return $val;
+		return $storage;
 	}
 	
 	/**

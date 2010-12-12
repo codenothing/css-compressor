@@ -626,6 +626,67 @@
 
 	// Color/Style/Width properties
 	"Combine.BorderOutline": {
+		"storage": {
+			"_special": "storage",
+			"border": {
+				"params": [ "border-color:red;border-style:solid;border-width:2px;" ],
+				"expect": {
+					"border": "border:2px solid red;"
+				}
+			},
+			"outline": {
+				"params": [ "outline-color:blue;outline-style:thin;outline-width:1px;" ],
+				"expect": {
+					"outline": "outline:1px thin blue;"
+				}
+			},
+			"border-bottom": {
+				"params": [ "border-bottom-color:red;border-bottom-style:solid;border-bottom-width:2px;" ],
+				"expect": {
+					"border-bottom": "border-bottom:2px solid red;"
+				}
+			},
+			"border-top": {
+				"params": [ "border-top-color:red;border-top-style:solid;border-top-width:2px;" ],
+				"expect": {
+					"border-top": "border-top:2px solid red;"
+				}
+			},
+			"border-left": {
+				"params": [ "border-left-color:red;border-left-style:solid;border-left-width:2px;" ],
+				"expect": {
+					"border-left": "border-left:2px solid red;"
+				}
+			},
+			"border-right": {
+				"params": [ "border-right-color:red;border-right-style:solid;border-right-width:2px;" ],
+				"expect": {
+					"border-right": "border-right:2px solid red;"
+				}
+			},
+			"many": {
+				"paramjoin": "",
+				"params": [
+					"outline-color:blue;outline-style:thin;outline-width:1px;",
+					"border-bottom-color:red;border-bottom-style:solid;border-bottom-width:2px;",
+					"border-top-color:red;border-top-style:solid;border-top-width:2px;",
+					"border-left-color:red;border-left-style:solid;border-left-width:2px;",
+					"border-right-color:red;border-right-style:solid;border-right-width:2px;"
+				],
+				"expect": {
+					"outline": "outline:1px thin blue;",
+					"border-bottom": "border-bottom:2px solid red;",
+					"border-top": "border-top:2px solid red;",
+					"border-left": "border-left:2px solid red;",
+					"border-right": "border-right:2px solid red;"
+				}
+			},
+			"nothing": {
+				"params": [ "border-color:red;color:red;border-style:solid;color:white;" ],
+				"expect": {}
+			}
+		},
+
 		"combine": {
 			"border": {
 				"params": [ "border-color:red;border-style:solid;border-width:2px;" ],
@@ -640,12 +701,12 @@
 				"expect": "border-bottom:2px solid red;"
 			},
 			"border-top": {
-				"params": [ "border-top-color:red;border-top-style:solid;border-top-width:2px;" ],
-				"expect": "border-top:2px solid red;"
+				"params": [ "border-top-color:red;border-top-style:solid;border-top-width:2px;font-size:12px;" ],
+				"expect": "border-top:2px solid red;font-size:12px;"
 			},
 			"border-left": {
-				"params": [ "border-left-color:red;border-left-style:solid;border-left-width:2px;" ],
-				"expect": "border-left:2px solid red;"
+				"params": [ "color:white;border-left-color:red;border-left-style:solid;border-left-width:2px;" ],
+				"expect": "color:white;border-left:2px solid red;"
 			},
 			"border-right": {
 				"params": [ "border-right-color:red;border-right-style:solid;border-right-width:2px;" ],
