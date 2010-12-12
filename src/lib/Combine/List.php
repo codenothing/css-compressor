@@ -13,10 +13,20 @@ Class CSSCompression_Combine_List
 	 * @class Control: Compression Controller
 	 * @class Combine: Combine Controller
 	 * @param (regex) rlist: List style matching
+	 * @param (array) groupings: Group of list combinationals
 	 */
 	private $Control;
 	private $Combine;
 	private $rlist = "/(^|(?<!\\\);)list-style-(type|position|image):(.*?)(?<!\\\);/";
+	private $groupings = array(
+		array( 'type', 'position', 'image' ),
+		array( 'type', 'position' ),
+		array( 'type', 'image' ),
+		array( 'position', 'image' ),
+		array( 'type' ),
+		array( 'position' ),
+		array( 'image' ),
+	);
 
 	/**
 	 * Stash a reference to the controller & combiner
@@ -35,35 +45,8 @@ Class CSSCompression_Combine_List
 	 * @param (string) val: Rule Set
 	 */ 
 	public function combine( $val ) {
-		$storage = array();
-
-		// Find all possible occurences and build the replacement
-		$pos = 0;
-		while ( preg_match( $this->rlist, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
-			$storage[ $match[ 2 ][ 0 ] ] = $match[ 3 ][ 0 ];
-			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
-		}
-
-		// List os list-style props to check against
-		$lists = array(
-			array( 'type', 'position', 'image' ),
-			array( 'type', 'position' ),
-			array( 'type', 'image' ),
-			array( 'position', 'image' ),
-			array( 'type' ),
-			array( 'position' ),
-			array( 'image' ),
-		);
-
-		// Run background checks and get replacement str
-		foreach ( $lists as $props ) {
-			if ( $replace = $this->Combine->searchDefinitions( 'list-style', $storage, $props ) ) {
-				break;
-			}
-		}
-
 		// If replacement string found, run it on all declarations
-		if ( $replace ) {
+		if ( ( $replace = $this->replace( $val ) ) !== false ) {
 			$pos = 0;
 			while ( preg_match( $this->rlist, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
 				$colon = strlen( $match[ 1 ][ 0 ] );
@@ -75,6 +58,31 @@ Class CSSCompression_Combine_List
 
 		// Return converted val
 		return $val;
+	}
+
+	/**
+	 * Build the replacement string for list props
+	 *
+	 * @param (string) val: Rule Set
+	 */
+	private function replace( $val ) {
+		$storage = array();
+		$pos = 0;
+
+		// Find all possible occurences and build the replacement
+		while ( preg_match( $this->rlist, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$storage[ $match[ 2 ][ 0 ] ] = $match[ 3 ][ 0 ];
+			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
+		}
+
+		// Run background checks and get replacement str
+		foreach ( $this->groupings as $props ) {
+			if ( $replace = $this->Combine->searchDefinitions( 'list-style', $storage, $props ) ) {
+				return $replace;
+			}
+		}
+
+		return false;
 	}
 
 	/**
