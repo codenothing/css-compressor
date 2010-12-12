@@ -814,11 +814,11 @@
 
 		"expand": {
 			"expand 1": {
-				"params": [ "margin:10px;" ],
+				"params": [ "margin:10px" ],
 				"expect": "margin-top:10px;margin-right:10px;margin-bottom:10px;margin-left:10px;"
 			},
 			"expand 2": {
-				"params": [ "color:red;padding:0 10px;" ],
+				"params": [ "color:red;padding:0 10px" ],
 				"expect": "color:red;padding-top:0;padding-right:10px;padding-bottom:0;padding-left:10px;"
 			},
 			"expand 3": {

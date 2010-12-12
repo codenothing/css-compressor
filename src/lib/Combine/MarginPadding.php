@@ -20,7 +20,7 @@ Class CSSCompression_Combine_MarginPadding
 	private $Combine;
 	private $rspace = "/(?<!\\\)\s/";
 	private $rmp = "/(^|(?<!\\\);)(margin|padding)-(top|right|bottom|left):(.*?)((?<!\\\);|$)/";
-	private $rmpbase = "/(margin|padding):(.*?)(?<!\\\);/";
+	private $rmpbase = "/(margin|padding):(.*?)((?<!\\\);|$)/";
 
 	/**
 	 * Stash a reference to the controller & combiner
