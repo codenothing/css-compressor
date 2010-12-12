@@ -5,7 +5,7 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 
-Class CSSCompression_Combine_Border
+Class CSSCompression_Combine_BorderRadius
 {
 	/**
 	 * Combine Patterns
@@ -55,7 +55,7 @@ Class CSSCompression_Combine_Border
 	 *
 	 * @param (string) val: Rule Set
 	 */
-	private function combine( $val ) {
+	public function combine( $val ) {
 		foreach ( $this->borderRadius as $regex ) {
 			$val = $this->borderRadiusFix( $val, $regex );
 		}
@@ -169,7 +169,7 @@ Class CSSCompression_Combine_Border
 
 			foreach ( $base as &$config ) {
 				// Skip uncombinables
-				if ( $this->checkUncombinables( $config['parts'] ) ) {
+				if ( $this->Combine->checkUncombinables( $config['parts'] ) ) {
 					$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
 					continue 2;
 				}

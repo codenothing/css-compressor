@@ -198,6 +198,12 @@ Class CSSCompression_Control
 		if ( $class == 'Control' ) {
 			return call_user_func_array( array( $class, $method ), $args );
 		}
+		else if ( strpos( $class, '.' ) !== false ) {
+			$parts = explode( '.', $class );
+			$class = $parts[ 0 ];
+			$subclass = $parts[ 1 ];
+			return $this->$class->access( $subclass, $method, $args );
+		}
 		else if ( in_array( $class, $this->subclasses ) ) {
 			return $this->$class->access( $method, $args );
 		}

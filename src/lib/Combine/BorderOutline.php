@@ -87,12 +87,7 @@ Class CSSCompression_Combine_BorderOutline
 	 */
 	public function access( $method, $args ) {
 		if ( method_exists( $this, $method ) ) {
-			if ( $method == 'combine' ) {
-				return $this->combine( $args[ 0 ], $args[ 1 ] );
-			}
-			else {
-				return call_user_func_array( array( $this, $method ), $args );
-			}
+			return call_user_func_array( array( $this, $method ), $args );
 		}
 		else {
 			throw new CSSCompression_Exception( "Unknown method in Color Class - " . $method );

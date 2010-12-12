@@ -5,7 +5,7 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 
-Class CSSCompression_Combine_Border
+Class CSSCompression_Combine_Font
 {
 	/**
 	 * Combine Patterns
@@ -34,7 +34,7 @@ Class CSSCompression_Combine_Border
 	 *
 	 * @param (string) val: Rule Set
 	 */ 
-	public function combine(){
+	public function combine( $val ) {
 		$storage = array();
 
 		// Find all possible occurences and build the replacement
@@ -72,7 +72,7 @@ Class CSSCompression_Combine_Border
 
 		// Loop through each property check and see if they can be replaced
 		foreach ( $fonts as $props ) {
-			if ( $replace = $this->searchDefinitions( 'font', $storage, $props ) ) {
+			if ( $replace = $this->Combine->searchDefinitions( 'font', $storage, $props ) ) {
 				break;
 			}
 		}

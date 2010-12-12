@@ -5,7 +5,7 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 
-Class CSSCompression_Combine_Border
+Class CSSCompression_Combine_MarginPadding
 {
 	/**
 	 * Combine Patterns
@@ -39,7 +39,7 @@ Class CSSCompression_Combine_Border
 	 *
 	 * @param (string) val: Rule Set
 	 */ 
-	public function combine(){
+	public function combine( $val ) {
 		$storage = array();
 		$val = $this->expand( $val );
 
@@ -119,7 +119,7 @@ Class CSSCompression_Combine_Border
 			);
 
 			// Skip uncombinables
-			if ( $this->checkUncombinables( $value ) ) {
+			if ( $this->Combine->checkUncombinables( $value ) ) {
 				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] );
 				continue;
 			}

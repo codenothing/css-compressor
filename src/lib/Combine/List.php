@@ -5,7 +5,7 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 
-Class CSSCompression_Combine_Border
+Class CSSCompression_Combine_List
 {
 	/**
 	 * Combine Patterns
@@ -57,7 +57,7 @@ Class CSSCompression_Combine_Border
 
 		// Run background checks and get replacement str
 		foreach ( $lists as $props ) {
-			if ( $replace = $this->searchDefinitions( 'list-style', $storage, $props ) ) {
+			if ( $replace = $this->Combine->searchDefinitions( 'list-style', $storage, $props ) ) {
 				break;
 			}
 		}

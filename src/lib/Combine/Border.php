@@ -34,7 +34,7 @@ Class CSSCompression_Combine_Border
 	 *
 	 * @param (string) val: Rule Set
 	 */
-	public function combine(){
+	public function combine( $val ) {
 		$storage = array();
 
 		// Find all possible occurences and build the replacement

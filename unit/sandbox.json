@@ -620,10 +620,9 @@
 		}
 	},
 
-	// Combine handler
-	"Combine": {
-		// Color/Style/Width properties
-		"combineCSWproperties": {
+	// Color/Style/Width properties
+	"Combine.BorderOutline": {
+		"combine": {
 			"border": {
 				"params": [ "border-color:red;border-style:solid;border-width:2px;" ],
 				"expect": "border:2px solid red;"
@@ -656,10 +655,12 @@
 				"params": [ "border-color:red;color:red;border-style:solid;color:white;" ],
 				"expect": "border-color:red;color:red;border-style:solid;color:white;"
 			}
-		},
+		}
+	},
 
-		// Sound props
-		"combineAuralCuePause": {
+	// Sound props
+	"Combine.Aural": {
+		"combine": {
 			"cue": {
 				"params": [ "cue-before:url(sound.wav);color:red;cue-after:url(after.wav);" ],
 				"expect": "cue:url(sound.wav) url(after.wav);color:red;"
@@ -672,10 +673,12 @@
 				"params": [ "pause-before:2s;color:red;" ],
 				"expect": "pause-before:2s;color:red;"
 			}
-		},
+		}
+	},
 
-		// Expanding margin/padding beforce combinations
-		"mpbuild": {
+	// Expanding margin/padding beforce combinations
+	"Combine.MarginPadding": {
+		"expand": {
 			"expand 1": {
 				"params": [ "margin:10px;" ],
 				"expect": "margin-top:10px;margin-right:10px;margin-bottom:10px;margin-left:10px;"
@@ -699,7 +702,7 @@
 		},
 
 		// Margin/Padding combinations
-		"combineMPproperties": {
+		"combine": {
 			"top-left": {
 				"params": [ "margin-top:10px;margin-left:10px;" ],
 				"expect": "margin-top:10px;margin-left:10px;"
@@ -724,10 +727,12 @@
 				"params": [ "margin:0;color:blue;" ],
 				"expect": "margin:0;color:blue;"
 			}
-		},
+		}
+	},
 
-		// Border combinations
-		"combineBorderDefinitions": {
+	// Border combinations
+	"Combine.Border": {
+		"combine": {
 			"border": {
 				"paramjoin": "",
 				"params": [ 
@@ -756,10 +761,12 @@
 					"border-bottom:1px solid red;"
 				]
 			}
-		},
+		}
+	},
 
-		// Font combinations
-		"combineFontDefinitions": {
+	// Font combinations
+	"Combine.Font": {
+		"combine": {
 			"1": {
 				"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
 				"expect": "font:italic normal bold 12pt/20px arial;"
@@ -828,10 +835,12 @@
 				"params": [ "font-style:italic;font-size:12pt;" ],
 				"expect": "font-style:italic;font-size:12pt;"
 			}
-		},
+		}
+	},
 
-		// Background combinations
-		"combineBackgroundDefinitions": {
+	// Background combinations
+	"Combine.Background": {
+		"combine": {
 			"1": {
 				"paramjoin": "",
 				"params": [
@@ -921,10 +930,12 @@
 				"params": [ "background-color:green;background-position:center;" ],
 				"expect": "background-color:green;background-position:center;"
 			}
-		},
+		}
+	},
 
-		// List combinations
-		"combineListProperties": {
+	// List combinations
+	"Combine.List": {
+		"combine": {
 			"1": {
 				"params": [ "list-style-type:none;list-style-position:inline;list-style-image:url(images/img.gif);" ],
 				"expect": "list-style:none inline url(images/img.gif);"
@@ -953,10 +964,12 @@
 				"params": [ "list-style-image:url(images/img.gif);" ],
 				"expect": "list-style:url(images/img.gif);"
 			}
-		},
+		}
+	},
 
-		// Border radii
-		"combineBorderRadius": {
+	// Border radii
+	"Combine.BorderRadius": {
+		"combine": {
 			"shorthand regular": {
 				"params": [ "border-radius:10px 10px 10px 10px;" ],
 				"expect": "border-radius:10px;"
@@ -1031,9 +1044,11 @@
 				"params": [ "-webkit-border-radius:10px;-webkit-border-top-left-radius:11px;" ],
 				"expect": "-webkit-border-radius:11px 10px 10px;"
 			}
-		},
+		}
+	},
 
-		// Central handler for all details
+	// Central handler for all combinations
+	"Combine.Combine":{
 		"combine": {
 			"_special": "details",
 			"params": [
