@@ -87,7 +87,7 @@ Class CSSCompression_Compress
 		// Format css to users preference
 		$css = $this->Format->readability( $this->options['readability'], $setup['selectors'], $setup['details'] );
 
-		// Check readability before adding intros
+		// Intros
 		foreach ( $setup as $value ) {
 			if ( $value && is_string( $value ) ) {
 				$css = $value . $css;

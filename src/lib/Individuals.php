@@ -31,6 +31,7 @@ Class CSSCompression_Individuals
 	private $options = array();
 	private $rdirectional = "/^(margin|padding|border-spacing)$/";
 	private $rborderradius = "/border[a-z-]*radius/";
+	private $rradiusfull = "/^(-moz-|-webkit-)?border-radius$/";
 	private $rnoneprop = "/^(border|background)/";
 	private $rnone = "/\snone\s/";
 	private $rclip = "/^rect\(\s*(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)\s*\)$/";
@@ -84,7 +85,7 @@ Class CSSCompression_Individuals
 
 		// Special border radius handling
 		if ( preg_match( $this->rborderradius, $prop ) ) {
-			$val = $this->borderRadius( $val );
+			$val = $this->borderRadius( $prop, $val );
 		}
 		// Remove uneeded side definitions if possible
 		else if ( $this->options['directional-compress'] && count( $parts ) > 1 && preg_match( $this->rdirectional, $prop ) ) {
@@ -118,9 +119,10 @@ Class CSSCompression_Individuals
 	/**
 	 * Preps border radius for directional compression
 	 *
-	 * @param (string) val: Value of CSS Property
+	 * @param (string) prop: Property Declaration
+	 * @param (string) val: Declaration Value
 	 */ 
-	private function borderRadius( $val ) {
+	private function borderRadius( $prop, $val ) {
 		if ( preg_match( $this->rslash, $val ) ) {
 			$parts = preg_split( $this->rslash, $val, 2 );
 			// We have to redo numeric compression because the slash may hav intruded
@@ -143,7 +145,7 @@ Class CSSCompression_Individuals
 			}
 			$val = implode( '/', $parts );
 		}
-		else if ( $this->options['directional-compress'] ) {
+		else if ( $this->options['directional-compress'] && preg_match( $this->rradiusfull, $prop ) ) {
 			$val = $this->directionals( strtolower( $val ) );
 		}
 
