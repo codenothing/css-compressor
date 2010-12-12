@@ -268,14 +268,8 @@ Class CSSCompression_Individuals
 	 * @param (string) val: property value
 	 */ 
 	private function none( $prop, $val ) {
-		if ( preg_match( $this->rnoneprop, $prop ) ) {
-			if ( $val == 'none' ) {
-				$val = '0';
-			}
-			// Wrap spaces in case none is the last value
-			else if ( preg_match( $this->rnone, " " . $val . " " ) ) {
-				$val = trim( preg_replace( $this->rnone, ' 0 ', " " . $val . " " ) );
-			}
+		if ( preg_match( $this->rnoneprop, $prop ) && $val == 'none' ) {
+			$val = '0';
 		}
 
 		return $val;

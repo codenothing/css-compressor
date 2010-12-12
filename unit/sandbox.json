@@ -387,11 +387,11 @@
 			},
 			"Shorthand": {
 				"params": [ "background", "white none no-repeat" ],
-				"expect": "white 0 no-repeat"
+				"expect": "white none no-repeat"
 			},
 			"Last Value": {
 				"params": [ "background", "white none" ],
-				"expect": "white 0"
+				"expect": "white none"
 			},
 			"Nothing": {
 				"params": [ "background", "white url(someimage.png)" ],
@@ -719,6 +719,10 @@
 			"inbetween": {
 				"params": [ "border-color:red;color:red;border-style:solid;color:white;border-width:2px;" ],
 				"expect": "border:2px solid red;color:red;color:white;"
+			},
+			"border style directional": {
+				"params": [ "border-color:black;border-style:none none solid;border-width:0 0 1;" ],
+				"expect": "border-color:black;border-style:none none solid;border-width:0 0 1;"
 			},
 			"do nothing": {
 				"params": [ "border-color:red;color:red;border-style:solid;color:white;" ],
