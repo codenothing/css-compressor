@@ -13,10 +13,32 @@ Class CSSCompression_Combine_Background
 	 * @class Control: Compression Controller
 	 * @class Combine: Combine Controller
 	 * @param (regex) rbackground: Background matching
+	 * @param (array) backgrounds: List of background combinations
 	 */
 	private $Control;
 	private $Combine;
 	private $rbackground = "/(^|(?<!\\\);)background-(color|image|repeat|attachment|position):(.*?)(?<!\\\);/";
+	private $backgrounds = array(
+		// With color
+		array( 'color', 'image', 'repeat', 'attachment', 'position' ),
+		array( 'color', 'image', 'attachment', 'position' ),
+		array( 'color', 'image', 'repeat', 'position' ),
+		array( 'color', 'image', 'repeat', 'attachment' ),
+		array( 'color', 'image', 'repeat' ),
+		array( 'color', 'image', 'attachment' ),
+		array( 'color', 'image', 'position' ),
+		array( 'color', 'image' ),
+		// Without Color
+		array( 'image', 'attachment', 'position' ),
+		array( 'image', 'repeat', 'position' ),
+		array( 'image', 'repeat', 'attachment' ),
+		array( 'image', 'repeat' ),
+		array( 'image', 'attachment' ),
+		array( 'image', 'position' ),
+		array( 'image' ),
+		// Just Color
+		array( 'color' ),
+	);
 
 	/**
 	 * Stash a reference to the controller & combiner
@@ -44,31 +66,8 @@ Class CSSCompression_Combine_Background
 			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] ) - 1;
 		}
 
-		// List of background props to check
-		$backgrounds = array(
-			// With color
-			array( 'color', 'image', 'repeat', 'attachment', 'position' ),
-			array( 'color', 'image', 'attachment', 'position' ),
-			array( 'color', 'image', 'repeat', 'position' ),
-			array( 'color', 'image', 'repeat', 'attachment' ),
-			array( 'color', 'image', 'repeat' ),
-			array( 'color', 'image', 'attachment' ),
-			array( 'color', 'image', 'position' ),
-			array( 'color', 'image' ),
-			// Without Color
-			array( 'image', 'attachment', 'position' ),
-			array( 'image', 'repeat', 'position' ),
-			array( 'image', 'repeat', 'attachment' ),
-			array( 'image', 'repeat' ),
-			array( 'image', 'attachment' ),
-			array( 'image', 'position' ),
-			array( 'image' ),
-			// Just Color
-			array( 'color' ),
-		);
-
 		// Run background checks and get replacement str
-		foreach ( $backgrounds as $props ) {
+		foreach ( $this->backgrounds as $props ) {
 			if ( $replace = $this->Combine->searchDefinitions( 'background', $storage, $props ) ) {
 				break;
 			}
