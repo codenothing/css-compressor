@@ -677,6 +677,26 @@
 				"params": [ "pause-before:2s;color:red;" ],
 				"expect": "pause-before:2s;color:red;"
 			}
+		},
+
+		"storage": {
+			"_special": "storage",
+			"cue": {
+				"params": [ "cue-before:url(sound.wav);color:red;cue-after:url(after.wav);" ],
+				"expect": {
+					"cue": "cue:url(sound.wav) url(after.wav);"
+				}
+			},
+			"pause": {
+				"params": [ "color:white;pause-before:2s;pause-after:3s;" ],
+				"expect": {
+					"pause": "pause:2s 3s;"
+				}
+			},
+			"nothing": {
+				"params": [ "pause-before:2s;color:red;" ],
+				"expect": {}
+			}
 		}
 	},
 

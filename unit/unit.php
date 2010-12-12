@@ -262,6 +262,34 @@ Class CSScompressionUnitTest
 	}
 
 	/**
+	 * Storage Array Comparison
+	 *
+	 * @param (string) class: Class to be called
+	 * @param (string) method: Class method to be called
+	 * @param (array) tests: Test layout
+	 */
+	private function storage( $class, $method, $tests ) {
+		foreach ( $tests as $name => $row ) {
+			if ( $name == '_special' ) {
+				continue;
+			}
+
+			// Get the result from that single function
+			$result = $this->compressor->access( $class, $method, $row['params'] );
+
+			// Mark the result
+			$this->mark( "${class}.${method}", $name, $result === $row['expect'] );
+
+			// Output failures
+			if ( $result !== $row['expect'] ) {
+				$this->errorstack .= "Sent:\n" . print_r( $row['params'], true ) 
+					. "\n======\nExpecting:\n" . print_r( $row['expect'], true )
+					. "\n======\nResult:\n" . print_r( $result, true ) . "\n";
+			}
+		}
+	}
+
+	/**
 	 * Run all test sheets through full compressor to see outcome
 	 *
 	 * @params none
