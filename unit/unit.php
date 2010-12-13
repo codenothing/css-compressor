@@ -69,6 +69,7 @@ Class CSScompressionUnitTest
 				'preserve-strings.css',
 				'preserve-newline.css',
 				'font-face.css',
+				'id.css',
 			),
 			'mode' => 'safe',
 			'options' => array(),
@@ -107,12 +108,12 @@ Class CSScompressionUnitTest
 		$this->setOptions();
 		$this->focus();
 
+		// Test express compression
+		$this->express();
+
 		// Full sheet tests (security checks)
 		$this->setOptions();
 		$this->testSheets();
-
-		// Test express compression
-		$this->express();
 
 		// Multi compression checks
 		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'all' ) {
@@ -155,6 +156,15 @@ Class CSScompressionUnitTest
 						$row['params'] = array( implode( $row['paramjoin'], $row['params'] ) );
 					}
 
+					// Token interchange
+					if ( isset( $row['token'] ) ) {
+						foreach ( $row['params'] as &$item ) {
+							if ( is_string( $item ) ) {
+								$item = preg_replace( "/(?<!\\\)#\{token\}/", $this->compressor->token, $item );
+							}
+						}
+					}
+
 					// Get the result from that single function
 					$result = $this->compressor->access( $class, $method, $row['params'] );
 
@@ -166,6 +176,11 @@ Class CSScompressionUnitTest
 					// For readability, allow for arrays of expectations
 					if ( is_array( $row['expect'] ) ) {
 						$row['expect'] = implode( $row['expect'] );
+					}
+
+					// Token interchange
+					if ( isset( $row['token'] ) && is_string( $row['expect'] ) ) {
+						$row['expect'] = preg_replace( "/(?<!\\\)#\{token\}/", $this->compressor->token, $row['expect'] );
 					}
 
 					// Mark the result
@@ -327,7 +342,7 @@ Class CSScompressionUnitTest
 				// Mark the result
 				$before = trim( file_get_contents( BEFORE . $file ) );
 				$expected = trim( file_get_contents( AFTER . $file ) );
-				$result = trim( $this->compressor->compress( $before, NULL,  $file === 'color.css'  ) );
+				$result = trim( $this->compressor->compress( $before, NULL ) );
 				$this->mark( $file, "full", $result === $expected );
 
 				// Stash errors for diff tooling

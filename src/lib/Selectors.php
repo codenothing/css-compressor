@@ -12,6 +12,7 @@ Class CSSCompression_Selectors
 	 *
 	 * @class Control: Compression Controller
 	 * @param (string) token: Copy of the injection token
+	 * @param (regex) ridattr: ID Attribute matcher (combined with token)
 	 * @param (array) options: Reference to options
 	 * @param (regex) rmark: Stop points during selector parsing
 	 * @param (regex) ridclassend: End of a id/class string
@@ -22,6 +23,7 @@ Class CSSCompression_Selectors
 	 */
 	private $Control;
 	private $token = '';
+	private $ridattr = "";
 	private $options = array();
 	private $rmark = "/(?<!\\\)(#|\.|=)/";
 	private $ridclassend = "/(?<!\\\)[:#>~\[\+\*\. ]/";
@@ -49,6 +51,7 @@ Class CSSCompression_Selectors
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
 		$this->token = $control->token;
+		$this->ridattr = "/\[id=$this->token(.*?)$this->token\]/";
 		$this->options = &$control->Option->options;
 	}
 
@@ -66,6 +69,9 @@ Class CSSCompression_Selectors
 
 			// Smart casing and token injection
 			$selector = $this->parse( $selector );
+
+			// Use id hash instead of id attr
+			$selector = $this->idAttribute( $selector );
 
 			// Remove everything before final id in a selector
 			if ( $this->options['strict-id'] ) {
@@ -126,6 +132,26 @@ Class CSSCompression_Selectors
 		}
 
 		return $clean . ( $this->options['lowercase-selectors'] ? strtolower( substr( $selector, $pos ) ) : substr( $selector, $pos ) );
+	}
+
+	/**
+	 * Convert [id=blah] attribute selectors into #blah has selector
+	 *
+	 * @param (string) selector: CSS Selector
+	 */
+	private function idAttribute( $selector ) {
+		$pos = 0;
+		while ( preg_match( $this->ridattr, $selector, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			if ( strpos( $match[ 1 ][ 0 ], ' ' ) !== false ) {
+				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] );
+				continue;
+			}
+
+			$selector = substr_replace( $selector, '#' . $match[ 1 ][ 0 ], $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 1 ][ 0 ] ) + 1;
+		}
+
+		return $selector;
 	}
 
 	/**

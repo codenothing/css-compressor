@@ -484,6 +484,25 @@
 			}
 		},
 
+		// Converting selector id attributes to hash 
+		"idAttribute": {
+			"simple": {
+				"token": true,
+				"params": [ "div[id=#{token}testing#{token}] p" ],
+				"expect": "div#testing p"
+			},
+			"multiple": {
+				"token": true,
+				"params": [ "div[id=#{token}one#{token}] p[id=#{token}two#{token}] a b pre[id=#{token}three#{token}]" ],
+				"expect": "div#one p#two a b pre#three"
+			},
+			"nothing": {
+				"token": true,
+				"params": [ "div[name=#{token}one#{token}] p" ],
+				"expect": "div[name=#{token}one#{token}] p"
+			}
+		},
+
 		// The assumption being that id is unique, so no need to nest it
 		"strictid": {
 			"basic": {
