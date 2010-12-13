@@ -17,7 +17,8 @@ Class Color
 		'red' => 31,
 		'green' => 32,
 		'yellow' => 33,
-		'blue' => 34
+		'blue' => 34,
+		'gray' => 37,
 	);
 
 	// Main wrapping function
@@ -25,7 +26,7 @@ Class Color
 		return "\x1B[" . ( $bold ? '1' : '0' ) . ";" . self::$colors[ $color ] . "m" . $msg . "\x1B[0m";
 	}
 
-	// Main utility functions ( red, gree, yellow, blue )
+	// Main utility functions ( red, gree, yellow, blue, gray )
 	public static function red( $msg ) {
 		return self::wrap( 'red', false, $msg );
 	}
@@ -42,8 +43,12 @@ Class Color
 		return self::wrap( 'blue', false, $msg );
 	}
 
+	public static function gray( $msg ) {
+		return self::wrap( 'gray', false, $msg );
+	}
 
-	// Bold versions of utitlity functions
+
+	// Bold versions of utitlity functions minus gray
 	public static function boldred( $msg ) {
 		return self::wrap( 'red', true, $msg );
 	}

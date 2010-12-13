@@ -13,8 +13,8 @@ test:
 test-all:
 	@php unit/start.php all
 
-single:
-	@php unit/single.php
+test-focus:
+	@php unit/focus.php
 
 benchmark:
 	@php unit/benchmark/benchmark.php
