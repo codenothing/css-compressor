@@ -4,37 +4,42 @@
  * [DATE]
  * Corey Hart @ http://www.codenothing.com
  */
-
-// Before/After directories
-$root = dirname(__FILE__) . '/';
-define('BEFORE', $root . '/sheets/before/');
-define('AFTER', $root . '/sheets/after/');
-define('BENCHMARK', $root . '/benchmark/src/');
+error_reporting( E_ALL );
+require( dirname( __FILE__ ) . '/Color.php' );
+require( dirname( __FILE__ ) . '/../src/CSSCompression.inc' );
 
 
-Class CSScompressionUnitTest
+Class CSScompression_Test
 {
 	/**
 	 * Class Variables
 	 *
 	 * @class compressor: CSSCompression Instance
-	 * @param (string) root: Root path to this file
+	 * @param (string) root: Root path to unit dir
+	 * @param (string) original: Path to original test sheets
+	 * @param (string) expected: Path to expected test sheets
+	 * @param (string) benchmark: Path to benchmark test sheets
 	 * @param (int) errors: Number of errors found
 	 * @param (int) passes: Number of tests passed
 	 * @param (array) sandbox: Array containing test suite
 	 * @param (array) instances: Array of default instance modes
 	 * @param (array) modes: Copy of default modes
+	 * @param (regex) rtoken: Token match for replacement
 	 * @param (array) block: Array of special markings on test files
 	 * @param (array) sheetspecials: Special configurations for marked test files
 	 */
 	private $compressor;
 	private $root = '';
+	private $original = '';
+	private $expected = '';
+	private $benchmark = '';
 	private $errors = 0;
 	private $passes = 0;
 	private $errorstack = '';
 	private $sandbox = array();
 	private $instances = array();
 	private $modes = array();
+	private $rtoken = "/(?<!\\\)#\{token\}/";
 	private $block = array(
 		// Files are only temporarily blocked until a sane fix is found
 		'temp' => array(
@@ -89,8 +94,36 @@ Class CSScompressionUnitTest
 	 * @params none
 	 */ 
 	public function __construct(){
+		$this->setup();
+
+		// Run through sandbox tests
+		$this->reset();
+		$this->focus();
+
+		// Test express compression
+		$this->express();
+
+		// Full sheet tests (security checks)
+		$this->reset();
+		$this->testSheets();
+
+		// Multi compression checks (just added sugar)
+		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'all' ) {
+			$this->testDoubles();
+		}
+	}
+
+	/**
+	 * Setup test suite
+	 *
+	 * @params none
+	 */
+	private function setup(){
 		// Rootpath
-		$this->root = dirname(__FILE__) . '/';
+		$this->root = dirname(__FILE__) . '/' ;
+		$this->original = $this->root . 'sheets/original/';
+		$this->expected = $this->root . 'sheets/expected/';
+		$this->benchmark = $this->root . 'benchmark/src/';
 
 		// Clean out the errors directory
 		$this->clean( $this->root . 'errors/' );
@@ -98,7 +131,7 @@ Class CSScompressionUnitTest
 		// Reset the local class vars
 		$this->compressor = new CSSCompression();
 		$this->modes = CSSCompression::modes();
-		$this->sandbox = CSSCompression::getJSON( $this->root . 'sandbox.json' );
+		$this->sandbox = CSSCompression::getJSON( $this->root . '/sandbox.json' );
 		$this->errors = 0;
 
 		// CSS Compressor doesn't currently throw exceptions, so we have to
@@ -110,30 +143,14 @@ Class CSScompressionUnitTest
 		foreach ( $this->modes as $mode => $options ) {
 			$this->instances[ $mode ] = new CSSCompression( $mode );
 		}
-
-		// Run through sandbox tests
-		$this->setOptions();
-		$this->focus();
-
-		// Test express compression
-		$this->express();
-
-		// Full sheet tests (security checks)
-		$this->setOptions();
-		$this->testSheets();
-
-		// Multi compression checks
-		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'all' ) {
-			$this->testDoubles();
-		}
 	}
 
 	/**
-	 * Turn all options to true to test every possible function
+	 * Turns all options to true
 	 *
 	 * @params none
 	 */ 
-	private function setOptions(){
+	private function reset(){
 		$options = $this->compressor->option();
 		foreach ( $options as $key => $value ) {
 			$this->compressor->option( $key, true );
@@ -167,7 +184,7 @@ Class CSScompressionUnitTest
 					if ( isset( $row['token'] ) ) {
 						foreach ( $row['params'] as &$item ) {
 							if ( is_string( $item ) ) {
-								$item = preg_replace( "/(?<!\\\)#\{token\}/", $this->compressor->token, $item );
+								$item = preg_replace( $this->rtoken, $this->compressor->token, $item );
 							}
 						}
 					}
@@ -187,7 +204,7 @@ Class CSScompressionUnitTest
 
 					// Token interchange
 					if ( isset( $row['token'] ) && is_string( $row['expect'] ) ) {
-						$row['expect'] = preg_replace( "/(?<!\\\)#\{token\}/", $this->compressor->token, $row['expect'] );
+						$row['expect'] = preg_replace( $this->rtoken, $this->compressor->token, $row['expect'] );
 					}
 
 					// Mark the result
@@ -322,14 +339,14 @@ Class CSScompressionUnitTest
 	 * @params none
 	 */
 	private function testSheets(){
-		$handle = opendir( BEFORE );
+		$handle = opendir( $this->original );
 		while ( ( $file = readdir( $handle ) ) !== false ) {
 			if ( ( count( $this->block['only'] ) > 0 && ! in_array( $file, $this->block['only'] ) ) ||
 				in_array( $file, $this->block['temp'] ) ) {
 					continue;
 			}
 			else if ( preg_match( "/\.css$/", $file ) ) {
-				$this->setOptions();
+				$this->reset();
 				foreach ( $this->sheetspecials as $config ) {
 					if ( in_array( $file, $config['files'] ) ) {
 						// Use default mode if wanted
@@ -347,18 +364,15 @@ Class CSScompressionUnitTest
 				}
 
 				// Mark the result
-				$before = trim( file_get_contents( BEFORE . $file ) );
-				$expected = trim( file_get_contents( AFTER . $file ) );
-				$result = trim( $this->compressor->compress( $before, NULL ) );
+				$original = trim( file_get_contents( $this->original . $file ) );
+				$expected = trim( file_get_contents( $this->expected . $file ) );
+				$result = trim( $this->compressor->compress( $original, NULL ) );
 				$this->mark( $file, "full", $result === $expected );
 
 				// Stash errors for diff tooling
 				if ( $result !== $expected ) {
-					file_put_contents( $this->root . "errors/$file-before.css", $before );
-					file_put_contents( $this->root . "errors/$file-expected.css", $expected );
 					file_put_contents( $this->root . "errors/$file-result.css", $result );
-					$this->errorstack .= "diff " . $this->root . "errors/$file-expected.css "
-						. $this->root . "errors/$file-result.css\n";
+					$this->errorstack .= "diff " . $this->expected . $file . $this->root . "errors/$file-result.css\n";
 				}
 			}
 		}
@@ -377,14 +391,14 @@ Class CSScompressionUnitTest
 		}
 
 		// Read each file in the direcotry
-		$handle = opendir( BENCHMARK );
+		$handle = opendir( $this->benchmark );
 		while ( ( $file = readdir( $handle ) ) !== false ) {
 			if ( ( count( $this->block['only'] ) > 0 && ! in_array( $file, $this->block['only'] ) ) ||
 				in_array( $file, $this->block['temp'] ) ) {
 					continue;
 			}
 			else if ( preg_match( "/\.css$/", $file ) ) {
-				$before = trim( file_get_contents( BENCHMARK . $file ) );
+				$original = trim( file_get_contents( $this->benchmark . $file ) );
 				foreach ( $this->instances as $mode => $instance ) {
 					// Small and full mode have to be run multiple times
 					// to get finished output
@@ -393,12 +407,12 @@ Class CSScompressionUnitTest
 						continue;
 					}
 					// Media elements should not be organized, so skip them if instance does that
-					else if ( strpos( $before, '@media' ) !== false && $instance->option('organize') ) {
+					else if ( strpos( $original, '@media' ) !== false && $instance->option('organize') ) {
 						continue;
 					}
 
 					// Double compression
-					$first = $instance->compress( $before );
+					$first = $instance->compress( $original );
 					$size = $instance->stats['after']['size'];
 					$second = $instance->compress( $first );
 					$this->mark( 'Double CSS ' . $file, $mode, $first === $second );
@@ -422,7 +436,7 @@ Class CSScompressionUnitTest
 	 * @params none
 	 */
 	private function express(){
-		$content = file_get_contents( BEFORE . 'pit.css' );
+		$content = file_get_contents( $this->original . 'pit.css' );
 		foreach ( $this->instances as $mode => $instance ) {
 			$this->mark( "CSSCompression.express", $mode, CSSCompression::express( $content, $mode ) === $instance->compress( $content ) );
 		}
@@ -498,5 +512,8 @@ Class CSScompressionUnitTest
 		exit( $exit );
 	}
 };
+
+// Unit Testing is on autorun
+new CSScompression_Test();
 
 ?>
