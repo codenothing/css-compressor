@@ -89,6 +89,14 @@ Lowercases html tags from list
  - *BODY -> body*
 
 
+attr2selector
+-------------
+
+Converts class and id attributes to their shorthand counterparts
+
+ - *div[id=blah][class=blah] -> div#blah.blah*
+
+
 pseudo-space
 ------------
 
