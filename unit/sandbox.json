@@ -512,12 +512,12 @@
 			},
 			"multiple inner": {
 				"token": true,
-				"params": [ "div[class=#{token}testing multiple classes#{token}] p" ],
+				"params": [ "div[class=#{token}testing\\ multiple\\ classes#{token}] p" ],
 				"expect": "div.testing.multiple.classes p"
 			},
 			"multiple": {
 				"token": true,
-				"params": [ "div[class=#{token}testing multiple classes#{token}] p[class=#{token}one two three#{token}] a b" ],
+				"params": [ "div[class=#{token}testing\\ multiple\\ classes#{token}] p[class=#{token}one\\ two\\ three#{token}] a b" ],
 				"expect": "div.testing.multiple.classes p.one.two.three a b"
 			},
 			"nothing": {

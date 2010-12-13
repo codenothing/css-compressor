@@ -1,0 +1,7 @@
+div[class="testing classnames"] p {
+	color: red;
+}
+
+div[class="dont.change"] p[class='one two three'] a {
+	color: red;
+}

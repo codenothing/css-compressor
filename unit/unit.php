@@ -63,13 +63,20 @@ Class CSScompressionUnitTest
 				'readability' => CSSCompression::READ_MAX,
 			),
 		),
+		'sane' => array(
+			'files' => array(
+				'id.css',
+				'class.css',
+			),
+			'mode' => 'sane',
+			'options' => array(),
+		),
 		'safe' => array(
 			'files' => array(
 				'box-model.css',
 				'preserve-strings.css',
 				'preserve-newline.css',
 				'font-face.css',
-				'id.css',
 			),
 			'mode' => 'safe',
 			'options' => array(),

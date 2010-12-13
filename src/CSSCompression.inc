@@ -55,13 +55,17 @@ Class CSSCompression
 		// (BODY -> body)
 		'lowercase-selectors' => true,
 
-		// Add space after pseudo selectors, for ie6
-		// (a:first-child{ -> a:first-child {)
-		'pseudo-space' => false,
+		// Converts id and class attribute selectors, to their short selector counterpart
+		// (div[id=blah][class=moreblah] -> div#blah.moreblah)
+		'attr2selector' => true,
 
 		// Promotes nested id's to the front of the selector
 		// (body>div#elem p -> $elem p)
 		'strict-id' => false,
+
+		// Add space after pseudo selectors, for ie6
+		// (a:first-child{ -> a:first-child {)
+		'pseudo-space' => false,
 
 		// Compresses single defined multi-directional properties
 		// (margin: 15px 25px 15px 25px -> margin:15px 25px)
@@ -151,6 +155,7 @@ Class CSSCompression
 	private static $modes = array(
 		'safe' => array(
 			'color-hex2shortcolor' => false,
+			'attr2selector' => false,
 			'strict-id' => false,
 			'organize' => false,
 			'csw-combine' => false,

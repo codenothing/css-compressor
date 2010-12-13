@@ -32,7 +32,7 @@ Class CSSCompression_Selectors
 	private $rmark = "/(?<!\\\)(#|\.|=)/";
 	private $ridclassend = "/(?<!\\\)[:#>~\[\+\*\. ]/";
 	private $rquote = "/(?<!\\\)(\"|')?\]/";
-	private $rescapedspace = "/\\ /";
+	private $rescapedspace = "/\\\ /";
 	private $rcomma = "/(?<!\\\),/";
 	private $rspace = "/(?<!\\\)\s/";
 	private $rid = "/(?<!\\\)#/";
@@ -77,11 +77,14 @@ Class CSSCompression_Selectors
 			// Smart casing and token injection
 			$selector = $this->parse( $selector );
 
-			// Use id hash instead of id attr
-			$selector = $this->idAttribute( $selector );
+			// Converting attr to shorthanded selectors
+			if ( $this->options['attr2selector'] ) {
+				// Use id hash instead of id attr
+				$selector = $this->idAttribute( $selector );
 
-			// Use class notation instead of class attr
-			$selector = $this->classAttribute( $selector );
+				// Use class notation instead of class attr
+				$selector = $this->classAttribute( $selector );
+			}
 
 			// Remove everything before final id in a selector
 			if ( $this->options['strict-id'] ) {
