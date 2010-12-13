@@ -498,8 +498,32 @@
 			},
 			"nothing": {
 				"token": true,
-				"params": [ "div[name=#{token}one#{token}] p" ],
-				"expect": "div[name=#{token}one#{token}] p"
+				"params": [ "div[id=#{token}test spacing#{token}] p" ],
+				"expect": "div[id=#{token}test spacing#{token}] p"
+			}
+		},
+
+		// Converting class attributes to selector form
+		"classAttribute": {
+			"simple": {
+				"token": true,
+				"params": [ "div[class=#{token}testing#{token}] p" ],
+				"expect": "div.testing p"
+			},
+			"multiple inner": {
+				"token": true,
+				"params": [ "div[class=#{token}testing multiple classes#{token}] p" ],
+				"expect": "div.testing.multiple.classes p"
+			},
+			"multiple": {
+				"token": true,
+				"params": [ "div[class=#{token}testing multiple classes#{token}] p[class=#{token}one two three#{token}] a b" ],
+				"expect": "div.testing.multiple.classes p.one.two.three a b"
+			},
+			"nothing": {
+				"token": true,
+				"params": [ "div[class=#{token}dont.change#{token}] p" ],
+				"expect": "div[class=#{token}dont.change#{token}] p"
 			}
 		},
 

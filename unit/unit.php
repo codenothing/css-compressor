@@ -189,8 +189,8 @@ Class CSScompressionUnitTest
 					// Output failures
 					if ( $result != $row['expect'] ) {
 						$this->errorstack .= "Sent:\n" . print_r( $row['params'], true ) 
-							. "\n======\nExpecting:\n" . $row['expect']
-							. "\n======\nResult:\n$result\n";
+							. "\n======\nExpecting:\n'" . $row['expect'] . "'"
+							. "\n======\nResult:\n'$result'\n";
 					}
 				}
 			}

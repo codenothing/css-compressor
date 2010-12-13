@@ -13,22 +13,28 @@ Class CSSCompression_Selectors
 	 * @class Control: Compression Controller
 	 * @param (string) token: Copy of the injection token
 	 * @param (regex) ridattr: ID Attribute matcher (combined with token)
+	 * @param (regex) rclassattr: class Attribute matcher (combined with token)
 	 * @param (array) options: Reference to options
 	 * @param (regex) rmark: Stop points during selector parsing
 	 * @param (regex) ridclassend: End of a id/class string
+	 * @param (regex) rescapedspace: for replacement in class attributes
 	 * @param (regex) rquote: Checks for the next quote character
 	 * @param (regex) rcomma: looks for an unescaped comma character
+	 * @param (regex) rspace: looks for an unescaped space character
 	 * @param (regex) rid: looks for an unescaped hash character
 	 * @param (array) pseudos: Contains pattterns and replacments to space out pseudo selectors
 	 */
 	private $Control;
 	private $token = '';
 	private $ridattr = "";
+	private $rclassattr = "";
 	private $options = array();
 	private $rmark = "/(?<!\\\)(#|\.|=)/";
 	private $ridclassend = "/(?<!\\\)[:#>~\[\+\*\. ]/";
 	private $rquote = "/(?<!\\\)(\"|')?\]/";
+	private $rescapedspace = "/\\ /";
 	private $rcomma = "/(?<!\\\),/";
+	private $rspace = "/(?<!\\\)\s/";
 	private $rid = "/(?<!\\\)#/";
 	private $pseudos = array(
 		'patterns' => array(
@@ -52,6 +58,7 @@ Class CSSCompression_Selectors
 		$this->Control = $control;
 		$this->token = $control->token;
 		$this->ridattr = "/\[id=$this->token(.*?)$this->token\]/";
+		$this->rclassattr = "/\[class=$this->token(.*?)$this->token\]/";
 		$this->options = &$control->Option->options;
 	}
 
@@ -72,6 +79,9 @@ Class CSSCompression_Selectors
 
 			// Use id hash instead of id attr
 			$selector = $this->idAttribute( $selector );
+
+			// Use class notation instead of class attr
+			$selector = $this->classAttribute( $selector );
 
 			// Remove everything before final id in a selector
 			if ( $this->options['strict-id'] ) {
@@ -135,19 +145,42 @@ Class CSSCompression_Selectors
 	}
 
 	/**
-	 * Convert [id=blah] attribute selectors into #blah has selector
+	 * Convert [id=blah] attribute selectors into id form selector (#blah)
 	 *
 	 * @param (string) selector: CSS Selector
 	 */
 	private function idAttribute( $selector ) {
 		$pos = 0;
 		while ( preg_match( $this->ridattr, $selector, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			// Don't convert if space found (not valid hash selector)
 			if ( strpos( $match[ 1 ][ 0 ], ' ' ) !== false ) {
 				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] );
 				continue;
 			}
 
 			$selector = substr_replace( $selector, '#' . $match[ 1 ][ 0 ], $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 1 ][ 0 ] ) + 1;
+		}
+
+		return $selector;
+	}
+
+	/**
+	 * Convert [class=blah] attribute selectors into class form selector (.blah)
+	 *
+	 * @param (string) selector: CSS Selector
+	 */
+	private function classAttribute( $selector ) {
+		$pos = 0;
+		while ( preg_match( $this->rclassattr, $selector, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			// Don't convert if prescense of dot separator found
+			if ( strpos( $match[ 1 ][ 0 ], '.' ) !== false ) {
+				$pos = $match[ 0 ][ 1 ] + strlen( $match[ 0 ][ 0 ] );
+				continue;
+			}
+
+			$replace = '.' . preg_replace( $this->rescapedspace, ".", $match[ 1 ][ 0 ] );
+			$selector = substr_replace( $selector, $replace, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
 			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 1 ][ 0 ] ) + 1;
 		}
 
