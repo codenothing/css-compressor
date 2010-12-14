@@ -5,7 +5,7 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 require( dirname(__FILE__) . '/../../src/CSSCompression.inc');
-require( dirname(__FILE__) . '/../color.php');
+require( dirname(__FILE__) . '/../src/Color.php');
 
 
 Class CompressionBenchmark

@@ -4,9 +4,8 @@
  * [DATE]
  * Corey Hart @ http://www.codenothing.com
  */
-error_reporting( E_ALL );
+require( dirname( __FILE__ ) . '/../../src/CSSCompression.inc' );
 require( dirname( __FILE__ ) . '/Color.php' );
-require( dirname( __FILE__ ) . '/../src/CSSCompression.inc' );
 
 
 Class CSScompression_Test
@@ -24,8 +23,8 @@ Class CSScompression_Test
 	 * @param (array) sandbox: Array containing test suite
 	 * @param (array) instances: Array of default instance modes
 	 * @param (array) modes: Copy of default modes
-	 * @param (regex) rtoken: Token match for replacement
 	 * @param (array) block: Array of special markings on test files
+	 * @param (regex) rtoken: Token match for replacement
 	 * @param (array) sheetspecials: Special configurations for marked test files
 	 */
 	private $compressor;
@@ -39,15 +38,8 @@ Class CSScompression_Test
 	private $sandbox = array();
 	private $instances = array();
 	private $modes = array();
+	private $block = array();
 	private $rtoken = "/(?<!\\\)#\{token\}/";
-	private $block = array(
-		// Files are only temporarily blocked until a sane fix is found
-		'temp' => array(
-		),
-		// For testing purposes, focus only on a single file
-		'only' => array(
-		),
-	);
 	private $sheetspecials = array(
 		'maxread' => array(
 			'files' => array(
@@ -91,9 +83,10 @@ Class CSScompression_Test
 	/**
 	 * Constructor - runs the test suite
 	 *
-	 * @params none
+	 * @param (array) block: Array of files to temporarily focus on/ignore
 	 */ 
-	public function __construct(){
+	public function __construct( $block = array() ) {
+		$this->block = $block;
 		$this->setup();
 
 		// Run through sandbox tests
@@ -120,7 +113,7 @@ Class CSScompression_Test
 	 */
 	private function setup(){
 		// Rootpath
-		$this->root = dirname(__FILE__) . '/' ;
+		$this->root = realpath( dirname( __FILE__ ) . '/../' ) . '/' ;
 		$this->original = $this->root . 'sheets/original/';
 		$this->expected = $this->root . 'sheets/expected/';
 		$this->benchmark = $this->root . 'benchmark/src/';
@@ -131,7 +124,7 @@ Class CSScompression_Test
 		// Reset the local class vars
 		$this->compressor = new CSSCompression();
 		$this->modes = CSSCompression::modes();
-		$this->sandbox = CSSCompression::getJSON( $this->root . '/sandbox.json' );
+		$this->sandbox = CSSCompression::getJSON( dirname( __FILE__ ) . '/sandbox.json' );
 		$this->errors = 0;
 
 		// CSS Compressor doesn't currently throw exceptions, so we have to
@@ -512,8 +505,5 @@ Class CSScompression_Test
 		exit( $exit );
 	}
 };
-
-// Unit Testing is on autorun
-new CSScompression_Test();
 
 ?>
