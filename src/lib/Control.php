@@ -8,33 +8,52 @@
 Class CSSCompression_Control
 {
 	/**
-	 * Compression Variables
+	 * Control Patterns
 	 *
 	 * @param (string) css: Holds compressed css string
 	 * @param (string) mode: Current compression mode state
 	 * @param (array) stats: Holds compression stats
+	 * @param (array) getters: Array of accessible getters
 	 */ 
 	public $css = '';
 	public $mode = '__custom';
 	public $stats = array();
+	private $getters = array(
+		'css',
+		'mode',
+		'stats',
+	);
 
 	/**
 	 * Subclasses that do the ground work for this compressor
 	 *
+	 * @class CSSCompression: Public facing compression class
 	 * @class Option: Option handling
 	 * @class Trim: Does the initial trimming for the css
 	 * @class Format: Formats the output
-	 * @class Individuals: Runs compression algorithms on individual properties and values
 	 * @class Numeric: Handles numeric compression
 	 * @class Color: Handles color compression
+	 * @class Individuals: Runs compression algorithms on individual properties and values
 	 * @class Selectors: Runs selector specific compressions
 	 * @class Combine: Handles combining of various properties
 	 * @class Organize: Reorganizes the sheet for futher compression
 	 * @class Cleanup: Cleans out all injected characters during compression
 	 * @class Compress: Central compression unit.
-	 * @param subclasses: Array holding all the subclasses for inlusion
+	 * @param (array) subclasses: Array holding all the subclasses for inlusion
 	 */
 	public $CSSCompression;
+	public $Option;
+	public $Trim;
+	public $Format;
+	public $Numeric;
+	public $Color;
+	public $Individuals;
+	public $Selectors;
+	public $Combine;
+	public $Organize;
+	public $Cleanup;
+	public $Setup;
+	public $Compress;
 	private $subclasses = array(
 		'Option',
 		'Trim',
@@ -76,14 +95,14 @@ Class CSSCompression_Control
 	/**
 	 * Control access to properties
 	 *
-	 *	- Getting stats/_mode/css returns the current value of that property
+	 *	- Getting stats/mode/css returns the current value of that property
 	 *	- Getting options will return the current full options array
 	 *	- Getting anything else returns that current value in the options array or NULL
 	 *
 	 * @param (string) name: Name of property that you want to access
 	 */ 
 	public function get( $name ) {
-		if ( $name == 'css' || $name == 'mode' || $name == 'stats' ) {
+		if ( in_array( $name, $this->getters ) ) {
 			return $this->$name;
 		}
 		else if ( $name == 'options' ) {
@@ -104,8 +123,12 @@ Class CSSCompression_Control
 		// Allow for passing array of options to merge into current ones
 		if ( $name === 'options' && is_array( $value ) ) {
 			return $this->Option->merge( $value );
-		} else {
+		}
+		else if ( isset( CSSCompression::$defaults[ $name ] ) ) {
 			return $this->Option->option( $name, $value );
+		}
+		else {
+			throw new CSSCompression_Exception( "Invalid Private Access to $name in CSSCompression." );
 		}
 	}
 
