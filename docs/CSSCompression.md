@@ -10,6 +10,12 @@ const bool DEV
 Signifies development mode. When true, back door access to all subclasses is enabled. Should always be false in production.
 
 
+const bool TOKEN
+----------------
+
+Special marker that gets injected and removed into the stylesheet during compression. Change this if it exists in your sheet.
+
+
 public static array defaults
 ----------------------------
 
@@ -122,7 +128,7 @@ Here's a few demo examples
 **NOTE:** When an instance congures itself to a mode, it sets every option to true, and expects the mode configuration to tell it what is false.
 
 
-public function option( [ mixed $name = NULL, mixed $value = NULL )
+public function option( [ mixed $name = NULL, mixed $value = NULL ] )
 -------------------------------------------------------------------
 
 Custom option handling, any one of the following may happen

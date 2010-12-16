@@ -97,20 +97,20 @@ Converts class and id attributes to their shorthand counterparts
  - *div[id=blah][class=blah] -> div#blah.blah*
 
 
-pseudo-space
-------------
-
-Add space after :first-letter and :first-line pseudo selectors, for ie6
-
- - *a:first-line{ -> a:first-line {*
-
-
 strict-id
 ---------
 
 Promotes nested id's to the front of the selector
 
  - *body > div#elem p -> #elem p*
+
+
+pseudo-space
+------------
+
+Add space after :first-letter and :first-line pseudo selectors, for ie6
+
+ - *a:first-line{ -> a:first-line {*
 
 
 directional-compress
@@ -202,8 +202,7 @@ Combines border-radius properties
 
 
 unnecessary-semicolons
-----------------------
-
+---------------------- 
 Removes the last semicolon of a property set
 
  - *{margin: 2px; color: blue;} -> {margin: 2px; color: blue}*
@@ -226,7 +225,7 @@ Adds unknown artifacts to a comment block at the top of output.
 readability
 -----------
 
-Readibility of Compressed Output.
+Readability of Compressed Output.
 
 	CSSCompression::READ_MAX; // Maximum readability
 	CSSCompression::READ_MED; // Medium readability
