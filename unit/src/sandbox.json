@@ -127,6 +127,10 @@
 				"params": [ "rgb(145,123,16)" ],
 				"expect": "#917b10"
 			},
+			"single percentage": {
+				"params": [ "rgb(50%)" ],
+				"expect": "#7f7f7f"
+			},
 			"percentage": {
 				"params": [ "rgb(50%,50%,50%)" ],
 				"expect": "#7f7f7f"
@@ -179,7 +183,7 @@
 				"params": [ "#808000" ],
 				"expect": "olive"
 			},
-			"peru": {
+			"peru (not safe)": {
 				"params": [ "#cd853f" ],
 				"expect": "#cd853f"
 			},
@@ -219,6 +223,10 @@
 			"red": {
 				"params": [ "#FF0000" ],
 				"expect": "red"
+			},
+			"Lowercase Hex Codes short": {
+				"params": [ "#ABC" ],
+				"expect": "#abc"
 			},
 			"Lowercase Hex Codes": {
 				"params": [ "#ABCABC" ],

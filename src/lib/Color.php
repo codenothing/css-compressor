@@ -18,6 +18,7 @@ Class CSSCompression_Color
 	 * @static (array) color2hex: Long color name to hex code conversions
 	 * @static (array) hex2short: Hex code to short color name conversions
 	 * @static (array) hex2short_safe: CSS Level 1 safe color names that are shorter than hex codes
+	 * @static (array) files: List of static helpers with their class vars
 	 */
 	private $Control;
 	private $options = array();
@@ -27,6 +28,11 @@ Class CSSCompression_Color
 	private static $color2hex = array();
 	private static $hex2short = array();
 	private static $hex2short_safe = array();
+	private static $files = array(
+		'color2hex' => 'long2hex-colors.json',
+		'hex2short' => 'hex2short-colors.json',
+		'hex2short_safe' => 'hex2short-safe.json',
+	);
 
 	/**
 	 * Stash a reference to the controller on each instantiation
@@ -39,16 +45,10 @@ Class CSSCompression_Color
 		$this->options = &$control->Option->options;
 
 		if ( ! self::$color2hex ) {
-			if ( ( self::$color2hex = CSSCompression::getJSON( 'long2hex-colors.json' ) ) instanceof CSSCompression_Exception ) {
-				throw self::$color2hex;
-			}
-
-			if ( ( self::$hex2short = CSSCompression::getJSON( 'hex2short-colors.json' ) ) instanceof CSSCompression_Exception ) {
-				throw self::$hex2short;
-			}
-
-			if ( ( self::$hex2short_safe = CSSCompression::getJSON( 'hex2short-safe.json' ) ) instanceof CSSCompression_Exception ) {
-				throw self::$hex2short_safe;
+			foreach ( self::$files as $v => $file ) {
+				if ( ( self::$$v = CSSCompression::getJSON( $file ) ) instanceof CSSCompression_Exception ) {
+					throw self::$$v;
+				}
 			}
 		}
 	}
@@ -148,24 +148,6 @@ Class CSSCompression_Color
 	/**
 	 * Convert large hex codes to small codes
 	 *
-	 * @param (string) val: Color to be converted
-	 */
-	private function hex2color( $val ) {
-		return isset( self::$hex2short[ $val ] ) ? self::$hex2short[ $val ] : $val;
-	}
-
-	/**
-	 * Convert large hex codes to small codes
-	 *
-	 * @param (string) val: Color to be converted
-	 */
-	private function hex2safe( $val ) {
-		return isset( self::$hex2short_safe[ $val ] ) ? self::$hex2short_safe[ $val ] : $val;
-	}
-
-	/**
-	 * Convert large hex codes to small codes
-	 *
 	 * @param (string) val: Hex to be shortened
 	 */
 	private function hex2short( $val ) {
@@ -180,6 +162,24 @@ Class CSSCompression_Color
 		}
 
 		return $val;
+	}
+
+	/**
+	 * Convert large hex codes to small codes
+	 *
+	 * @param (string) val: Color to be converted
+	 */
+	private function hex2color( $val ) {
+		return isset( self::$hex2short[ $val ] ) ? self::$hex2short[ $val ] : $val;
+	}
+
+	/**
+	 * Convert large hex codes to small codes
+	 *
+	 * @param (string) val: Color to be converted
+	 */
+	private function hex2safe( $val ) {
+		return isset( self::$hex2short_safe[ $val ] ) ? self::$hex2short_safe[ $val ] : $val;
 	}
 
 	/**
