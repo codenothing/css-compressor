@@ -1,11 +1,12 @@
 @charset "UTF-8";
 @import "stuff.css";
-@import url(stuff.css);
-@import url(stuff.css) print,handheld;
-@import url(stuff.css) screen and (color);
+@import 'crazyurl.css?semi=yes;&email=corey@codenothing.com';
+@import 'stuff.css';
+@import 'stuff.css' print,handheld;
+@import 'stuff.css' screen and (color);
 @import "stuff.css" screen and (color),projection and (min-color: 256);
 @namespace svg "http://www.w3.org/2000/svg";
-@namespace svg url(http://www.w3.org/2000/svg);
+@namespace svg 'http://www.w3.org/2000/svg';
 @namespace "http://example.org";
 @namespace empty "";
 @namespace "";

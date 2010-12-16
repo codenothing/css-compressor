@@ -21,6 +21,8 @@ Class CSSCompression_Setup
 	 * @param (regex) rspacebank: Checks for an unescaped space before a bang character
 	 * @param (regex) rliner: Matching known 1-line intros
 	 * @param (regex) rnested: Matching known subsection handlers
+	 * @param (regex) rurl: url wrapper matching
+	 * @param (regex) rsinglequote: Checks for unescaped escaped single quote (mouthfull)
 	 * @param (array) rsetup: Expanding stylesheet for semi-tokenizing
 	 */
 	private $Control;
@@ -34,12 +36,14 @@ Class CSSCompression_Setup
 	private $rspacebang = "/(?<!\\\)\s\!/";
 	private $rliner = "/^@(import|charset|namespace)/i";
 	private $rmedia = "/^@media/i";
+	private $rurl = "/url\((.*?)\)/";
+	private $rsinglequote = "/(?<!\\\)\\\'/";
 	private $rsetup = array(
 		'patterns' => array(
 			"/(?<!\\\){/",
 			"/(?<!\\\)}/",
 			"/(?<!\\\)@/",
-			"/(@(charset|import)[^;]*;)/",
+			"/(@(charset|import)[^;]*(?<!\\\);)/",
 		),
 		'replacements' => array(
 			"\n{\n",
@@ -100,7 +104,7 @@ Class CSSCompression_Setup
 			}
 			// Single line At-Rules (import/charset/namespace)
 			else if ( preg_match( $this->rliner, $row, $match ) ) {
-				$setup[ $match[ 1 ] ] .= $row . $newline;
+				$setup[ $match[ 1 ] ] .= $this->liner( $row ) . $newline;
 			}
 			// Nested At-Rule declaration blocks
 			else if ( $row[ 0 ] == '@' && $css[ 0 ] == '{' ) {
@@ -196,6 +200,23 @@ Class CSSCompression_Setup
 
 		// Stash the compressed nested script
 		return "$spacing{" . $content . "}$newline";
+	}
+
+	/**
+	 * Converts import/namespace urls into strings
+	 *
+	 * @param (string) row: At-rule
+	 */
+	private function liner( $row ) {
+		$pos = 0;
+		while ( preg_match( $this->rurl, $row, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+			$quote = preg_match( $this->rsinglequote, $match[ 1 ][ 0 ] ) ? '"' : "'";
+			$replace = $quote . $match[ 1 ][ 0 ] . $quote;
+			$row = substr_replace( $row, $replace, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+			$pos = $match[ 0 ][ 1 ] + strlen( $replace );
+		}
+
+		return $row;
 	}
 
 	/**

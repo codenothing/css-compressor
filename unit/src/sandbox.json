@@ -1561,12 +1561,14 @@
 					"\n\n\n\n\t\t\n",
 					"\n\t\t\t\t\t#red > div.today + b.old, body.broken, #wtf {\n\n",
 					"\t\n\tbackground: url(\"someimg.jpg\");;;;\n\n\n",
+					"\t\n\tbackground: url('someimg.jpg');;;;\n\n\n",
 					"\t\tborder: 1px solid red;;;;;\n\t\n\t",
 					"\tcolor: white !important;;;;;\n\t\n",
 					"}\n\n\n"
 				],
 				"expect": [
 					"#red>div.today+b.old,body.broken,#wtf{",
+					"background: url(someimg.jpg);",
 					"background: url(someimg.jpg);",
 					"border: 1px solid red;",
 					"color: white!important;",
@@ -1626,6 +1628,27 @@
 					"background: url(http\\:\\/\\/www\\.example2\\.com?a\\=semi\\;);",
 					"}"
 				]
+			}
+		}
+	},
+
+	"Setup": {
+		"liner": {
+			"simple": {
+				"params": [ "@import url(styles.css)" ],
+				"expect": "@import 'styles.css'"
+			},
+			"escaped quote": {
+				"params": [ "@import url(styles.css?quote=\\'yes\\')" ],
+				"expect": "@import \"styles.css?quote=\\'yes\\'\""
+			},
+			"full url": {
+				"params": [ "@import url(http://www.example.com/styles.css?semi=yes;&quote=\\'yes\\'&email=corey\\@codenothing.com)" ],
+				"expect": "@import \"http://www.example.com/styles.css?semi=yes;&quote=\\'yes\\'&email=corey\\@codenothing.com\""
+			},
+			"do nothing": {
+				"params": [ "@import 'donothing.css'" ],
+				"expect": "@import 'donothing.css'"
 			}
 		}
 	}

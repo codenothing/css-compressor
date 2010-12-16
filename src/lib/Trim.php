@@ -35,7 +35,7 @@ Class CSSCompression_Trim
 		'patterns' => array(
 			"/(?<!\\\)(\s+)?(?<!\\\)([!,{};>\~\+\/])(?<!\\\)(\s+)?/s", // Remove un-needed spaces around special characters
 			"/url\((?<!\\\)\"(.*?)(?<!\\\)\"\)/s", // Remove quotes from urls
-			"/url\((?<!\\\)'(.*?)(?<!\\\)'\)/s", // Remove quotes from urls
+			"/url\((?<!\\\)'(.*?)(?<!\\\)'\)/s", // Remove single quotes from urls
 			"/(?<!\\\);{2,}/", // Remove unecessary semi-colons
 			"/(?<!\\\)\s+/s", // Compress all spaces into single space
 		),

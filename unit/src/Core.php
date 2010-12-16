@@ -365,7 +365,7 @@ Class CSScompression_Test
 				// Stash errors for diff tooling
 				if ( $result !== $expected ) {
 					file_put_contents( $this->root . "errors/$file-result.css", $result );
-					$this->errorstack .= "diff " . $this->expected . $file . $this->root . "errors/$file-result.css\n";
+					$this->errorstack .= "diff " . $this->expected . $file . ' ' . $this->root . "errors/$file-result.css\n";
 				}
 			}
 		}
