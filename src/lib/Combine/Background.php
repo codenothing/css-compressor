@@ -13,12 +13,12 @@ Class CSSCompression_Combine_Background
 	 * @class Control: Compression Controller
 	 * @class Combine: Combine Controller
 	 * @param (regex) rbackground: Background matching
-	 * @param (array) backgrounds: List of background combinations
+	 * @param (array) groupings: List of background combinations
 	 */
 	private $Control;
 	private $Combine;
 	private $rbackground = "/(^|(?<!\\\);)background-(color|image|repeat|attachment|position):(.*?)((?<!\\\);|$)/";
-	private $backgrounds = array(
+	private $groupings = array(
 		// With color
 		array( 'color', 'image', 'repeat', 'attachment', 'position' ),
 		array( 'color', 'image', 'attachment', 'position' ),
@@ -35,8 +35,8 @@ Class CSSCompression_Combine_Background
 		array( 'image', 'repeat' ),
 		array( 'image', 'attachment' ),
 		array( 'image', 'position' ),
+		// Just Color/Image
 		array( 'image' ),
-		// Just Color
 		array( 'color' ),
 	);
 
@@ -67,7 +67,7 @@ Class CSSCompression_Combine_Background
 		}
 
 		// Run background checks and get replacement str
-		foreach ( $this->backgrounds as $props ) {
+		foreach ( $this->groupings as $props ) {
 			if ( $replace = $this->Combine->searchDefinitions( 'background', $storage, $props ) ) {
 				break;
 			}
