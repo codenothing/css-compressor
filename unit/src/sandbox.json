@@ -1342,6 +1342,81 @@
 
 	// Central handler for all combinations
 	"Combine.Combine":{
+		"checkUncombinables": {
+			"important alone": {
+				"params": [ "!important" ],
+				"expect": true
+			},
+			"ie alone": {
+				"params": [ "!ie" ],
+				"expect": true
+			},
+			"space alone": {
+				"params": [ " " ],
+				"expect": true
+			},
+			"inherit alone": {
+				"params": [ "inherit" ],
+				"expect": true
+			},
+			"important color": {
+				"params": [ "red!important;" ],
+				"expect": true
+			},
+			"important fail": {
+				"params": [ "important" ],
+				"expect": false
+			},
+			"ie fail": {
+				"params": [ "ie" ],
+				"expect": false
+			},
+			"clean alone": {
+				"params": [ "red" ],
+				"expect": false
+			},
+			"ie color": {
+				"params": [ "red!ie;" ],
+				"expect": true
+			},
+			"inherit color space": {
+				"params": [ "red inherit;" ],
+				"expect": true
+			},
+			"escaped space": {
+				"params": [ "red;\\ " ],
+				"expect": true
+			},
+			"array important": {
+				"params": [ [ "red", "!important" ] ],
+				"expect": true
+			},
+			"array ie": {
+				"params": [ [ "red", "!ie" ] ],
+				"expect": true
+			},
+			"array inherit": {
+				"params": [ [ "red", "inherit" ] ],
+				"expect": true
+			},
+			"array escaped space": {
+				"params": [ [ "red", "\\ " ] ],
+				"expect": true
+			},
+			"array important fail": {
+				"params": [ [ "red", "important" ] ],
+				"expect": false
+			},
+			"array ie fail": {
+				"params": [ [ "red", "ie" ] ],
+				"expect": false
+			},
+			"array clean": {
+				"params": [ [ "10px", "9px", "8px", "4px" ] ],
+				"expect": false
+			}
+		},
+
 		"combine": {
 			"_special": "details",
 			"params": [
