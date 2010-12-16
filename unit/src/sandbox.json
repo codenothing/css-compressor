@@ -949,6 +949,17 @@
 				],
 				"expect": "border:1px solid red;"
 			},
+			"border end with semi": {
+				"paramjoin": "",
+				"params": [ 
+					"border-top:1px solid red;",
+					"border-left:1px solid red;",
+					"border-right:1px solid red;",
+					"color:blue;",
+					"border-bottom:1px solid red;"
+				],
+				"expect": "border:1px solid red;"
+			},
 			"nothing": {
 				"paramjoin": "",
 				"params": [ 
