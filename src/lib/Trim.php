@@ -123,6 +123,7 @@ Class CSSCompression_Trim
 		$pos = 0;
 		while ( preg_match( $this->rcmark, $css, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
 			switch ( $match[ 1 ][ 0 ] ) {
+				// Start of comment block
 				case "/*":
 					if ( preg_match( $this->rendcomment, $css, $m, PREG_OFFSET_CAPTURE, $match[ 1 ][ 1 ] + 1 ) ) {
 						$end = $m[ 0 ][ 1 ] - $match[ 1 ][ 1 ] + strlen( $m[ 0 ][ 0 ] );
@@ -134,6 +135,7 @@ Class CSSCompression_Trim
 						break 2;
 					}
 					break;
+				// Start of string
 				case "\"":
 					if ( preg_match( $this->rendquote, $css, $m, PREG_OFFSET_CAPTURE, $match[ 1 ][ 1 ] + 1 ) ) {
 						$pos = $m[ 0 ][ 1 ] + strlen( $m[ 0 ][ 0 ] );
@@ -142,6 +144,7 @@ Class CSSCompression_Trim
 						break 2;
 					}
 					break;
+				// Start of string
 				case "'":
 					if ( preg_match( $this->rendsinglequote, $css, $m, PREG_OFFSET_CAPTURE, $match[ 1 ][ 1 ] + 1 ) ) {
 						$pos = $m[ 0 ][ 1 ] + strlen( $m[ 0 ][ 0 ] );
@@ -150,6 +153,7 @@ Class CSSCompression_Trim
 						break 2;
 					}
 					break;
+				// Should have never gotten here
 				default:
 					break 2;
 			}

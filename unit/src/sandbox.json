@@ -1546,6 +1546,10 @@
 					"t\"/*e\"/*ab\"c\\*/def*/st"
 				],
 				"expect": "t\"/*e\"st"
+			},
+			"ignore": {
+				"params": [ "#red { content: blue; }" ],
+				"expect": "#red { content: blue; }"
 			}
 		},
 
