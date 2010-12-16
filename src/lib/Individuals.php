@@ -17,12 +17,11 @@ Class CSSCompression_Individuals
 	 * @param (regex) rdirectional: Properties that may have multiple directions
 	 * @param (regex) rborderradius: Checks property for border-radius declaration
 	 * @param (regex) rnoneprop: Properties that can have none as their value(will be converted to 0)
-	 * @param (regex) rnone: Looks for a none value in shorthand notations
 	 * @param (regex) rclip: Looks for rect grouping in clip declaration
 	 * @param (regex) rsplitter: Checks font properties for font-size/line-height split
 	 * @param (regex) rfilter: Special alpha filter for msie
-	 * @param (regex) rspace: Checks for space without an escape '\' character before it
-	 * @param (regex) rspace: Checks for slash without an escape '\' character before it
+	 * @param (regex) rspace: Checks for unescaped space
+	 * @param (regex) rspace: Checks for unescaped slash
 	 * @param (array) weights: Array of font-weight name conversions to their numeric counterpart
 	 */
 	private $Control;
@@ -33,7 +32,6 @@ Class CSSCompression_Individuals
 	private $rborderradius = "/border[a-z-]*radius/";
 	private $rradiusfull = "/^(-moz-|-webkit-)?border-radius$/";
 	private $rnoneprop = "/^(border|background|border-(top|right|bottom|left))$/";
-	private $rnone = "/\snone\s/";
 	private $rclip = "/^rect\(\s*(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)(,|\s)(\-?\d*\.?\d*?\w*)\s*\)$/";
 	private $rsplitter = "/(^|(?<!\\\)\s)([^\/ ]+)\/([^\/ ]+)((?<!\\\)\s|$)/";
 	private $rfilter = "/[\"']?PROGID\\\?:DXImageTransform\\\?.Microsoft\\\?.Alpha\(Opacity\\\?=(\d+\\\?\.?\d*)\)[\"']?/i";
@@ -102,6 +100,7 @@ Class CSSCompression_Individuals
 			$val = $this->font( $val );
 		}
 		
+		// Special clip value compressions
 		if ( $prop == 'clip' ) {
 			$val = $this->clip( $val );
 		}
