@@ -172,6 +172,9 @@ Class CSSCompression
 			'color-hex2shortcolor' => false,
 			'strict-id' => false,
 			'organize' => false,
+			'font-combine' => false,
+			'background-combine' => false,
+			'list-combine' => false,
 			'rm-multi-define' => false,
 		),
 		'small' => array(

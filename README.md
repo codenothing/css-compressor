@@ -7,6 +7,7 @@ PHP Based CSS Compressor.
 Usage
 -----
 
+	require( 'src/CSSCompression.inc' );
 	$compressed = CSSCompression::express( $css, 'sane' );
 
 
