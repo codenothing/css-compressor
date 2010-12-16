@@ -157,6 +157,8 @@ Class CSScompression_Test
 	 * @params none
 	 */
 	private function focus(){
+		// Setup compression vars
+		$this->compressor->flush();
 		foreach ( $this->sandbox as $class => $obj ) {
 			foreach ( $obj as $method => $tests ) {
 				// Check for special test handler

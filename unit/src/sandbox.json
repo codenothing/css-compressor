@@ -1632,7 +1632,9 @@
 		}
 	},
 
+	// Compression setup
 	"Setup": {
+		// Convert urls into strings in single line at rules
 		"liner": {
 			"simple": {
 				"params": [ "@import url(styles.css)" ],
@@ -1649,6 +1651,22 @@
 			"do nothing": {
 				"params": [ "@import 'donothing.css'" ],
 				"expect": "@import 'donothing.css'"
+			}
+		},
+
+		// Run rule sets through individual compressions
+		"details": {
+			"simple": {
+				"params": [ "color:#FF0000;font-size:12.0px;" ],
+				"expect": "color:red;font-size:12px;"
+			},
+			"semicolon": {
+				"params": [ "color:#FF0000;background:url(myimage.png?semi=yes\\;);font-size:12.0px;" ],
+				"expect": "color:red;background:url(myimage.png?semi=yes\\;);font-size:12px;"
+			},
+			"empty": {
+				"params": [ "" ],
+				"expect": ""
 			}
 		}
 	}
