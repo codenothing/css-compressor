@@ -177,7 +177,7 @@ Class CSScompression_Test
 					if ( isset( $row['token'] ) ) {
 						foreach ( $row['params'] as &$item ) {
 							if ( is_string( $item ) ) {
-								$item = preg_replace( $this->rtoken, $this->compressor->token, $item );
+								$item = preg_replace( $this->rtoken, CSSCompression::TOKEN, $item );
 							}
 						}
 					}
@@ -197,7 +197,7 @@ Class CSScompression_Test
 
 					// Token interchange
 					if ( isset( $row['token'] ) && is_string( $row['expect'] ) ) {
-						$row['expect'] = preg_replace( $this->rtoken, $this->compressor->token, $row['expect'] );
+						$row['expect'] = preg_replace( $this->rtoken, CSSCompression::TOKEN, $row['expect'] );
 					}
 
 					// Mark the result

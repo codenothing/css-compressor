@@ -57,7 +57,7 @@ Class CSSCompression_Setup
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
 		$this->Individuals = $control->Individuals;
-		$this->token = $control->token;
+		$this->token = CSSCompression::TOKEN;
 		$this->options = &$control->Option->options;
 		$this->stats = &$control->stats;
 	}

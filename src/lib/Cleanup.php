@@ -83,13 +83,13 @@ Class CSSCompression_Cleanup
 	);
 
 	/**
-	 * Stash a reference to the controller on each instantiation
+	 * Build the token regex based on defined token
 	 *
 	 * @param (class) control: CSSCompression Controller
 	 */
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
-		$this->token = $control->token;
+		$this->token = CSSCompression::TOKEN;
 		$this->options = &$control->Option->options;
 
 		// Have to build the token regexs after initialization

@@ -36,7 +36,7 @@ Class CSSCompression_Format
 	 */
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
-		$this->token = $control->token;
+		$this->token = CSSCompression::TOKEN;
 		$this->options = &$control->Option->options;
 	}
 

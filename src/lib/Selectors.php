@@ -56,7 +56,7 @@ Class CSSCompression_Selectors
 	 */
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
-		$this->token = $control->token;
+		$this->token = CSSCompression::TOKEN;
 		$this->ridattr = "/\[id=$this->token(.*?)$this->token\]/";
 		$this->rclassattr = "/\[class=$this->token(.*?)$this->token\]/";
 		$this->options = &$control->Option->options;

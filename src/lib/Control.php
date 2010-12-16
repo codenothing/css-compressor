@@ -12,12 +12,10 @@ Class CSSCompression_Control
 	 *
 	 * @param (string) css: Holds compressed css string
 	 * @param (string) mode: Current compression mode state
-	 * @param (string) token: Special injection token
 	 * @param (array) stats: Holds compression stats
 	 */ 
 	public $css = '';
 	public $mode = '__custom';
-	public $token = '@___CSSCOMPRESSION_TOKEN___';
 	public $stats = array();
 
 	/**
@@ -78,14 +76,14 @@ Class CSSCompression_Control
 	/**
 	 * Control access to properties
 	 *
-	 *	- Getting stats/_mode/css/token returns the current value of that property
+	 *	- Getting stats/_mode/css returns the current value of that property
 	 *	- Getting options will return the current full options array
 	 *	- Getting anything else returns that current value in the options array or NULL
 	 *
 	 * @param (string) name: Name of property that you want to access
 	 */ 
 	public function get( $name ) {
-		if ( $name == 'css' || $name == 'mode' || $name == 'stats' || $name == 'token' ) {
+		if ( $name == 'css' || $name == 'mode' || $name == 'stats' ) {
 			return $this->$name;
 		}
 		else if ( $name == 'options' ) {

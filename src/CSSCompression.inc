@@ -20,6 +20,16 @@ Class CSSCompression
 	const DEV = true;
 
 	/**
+	 * TOKEN is a special string that gets used as a marker within
+	 * the compressor, and is removed before final output. Make sure
+	 * this token is unique to your stylsheets.
+	 *
+	 * NOTE: This string gets used in regular expressions, and escaping
+	 * won't help, so don't pick a complicated token.
+	 */
+	const TOKEN = "@____CSSCOMPRESSION_TOKEN____@";
+
+	/**
 	 * The default set of options for every instance.
 	 */
 	public static $defaults = array(
