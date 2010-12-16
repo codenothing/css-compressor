@@ -23,7 +23,7 @@ Class CSSCompression_Combine
 	private $options = array();
 	private $rspace = "/(?<!\\\)\s/";
 	private $rslash = "/(?<!\\\)\//";
-	private $rimportant = "/inherit|\!important|!ie|\s/i";
+	private $rimportant = "/inherit|\!important|\!ie|\s/i";
 	private $methods = array(
 		'csw-combine' => 'BorderOutline',
 		'border-radius-combine' => 'BorderRadius',
@@ -38,9 +38,9 @@ Class CSSCompression_Combine
 	/**
 	 * Sub Comination Classes
 	 *
-	 * @class Border: Handles normal border combinations
 	 * @class BorderOutline: Handles Color/Style/With combinations of border/outline properties
 	 * @class BorderRadius: Handles border-radius combinations
+	 * @class Border: Handles normal border combinations
 	 * @class MarginPadding: Handles margin/padding combinations
 	 * @class Background: Handles background combinations
 	 * @class Aural: Handles aural combinations
@@ -48,6 +48,14 @@ Class CSSCompression_Combine
 	 * @class List: Handles list combinations
 	 * @param (array) subcombines: Array holding all subcombination classes
 	 */
+	public $BorderOutline;
+	public $BorderRadius;
+	public $Border;
+	public $MarginPadding;
+	public $Background;
+	public $Aural;
+	public $Font;
+	public $List;
 	private $subcombines = array(
 		'BorderOutline',
 		'BorderRadius',
@@ -110,7 +118,7 @@ Class CSSCompression_Combine
 	 * Helper function to ensure flagged words don't get
 	 * overridden
 	 *
-	 * @param (array|string) obj: Array/String of definitions to be checked
+	 * @param (mixed) obj: Array/String of definitions to be checked
 	 */ 
 	public function checkUncombinables( $obj ) {
 		if ( is_array( $obj ) ) {
