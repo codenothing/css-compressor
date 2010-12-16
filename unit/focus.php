@@ -20,15 +20,15 @@ require( dirname( __FILE__ ) . '/src/Focus.php' );
  * @param (mixed) expect: Expected result
  */
 new FocusedTest(array(
-	'class' => 'Setup',
-	'method' => 'liner',
+	'class' => 'Combine.Border',
+	'method' => 'expand',
 	'mode' => 'small',
 	'options' => array(
 	),
 	'params' => array(
-		"@import url(styles.css)",
+		"color:red;border:1px solid red",
 	),
-	'expect' => "@import 'styles.css'",
+	'expect' => "color:red;border-top:1px solid red;border-right:1px solid red;border-bottom:1px solid red;border-left:1px solid red;",
 ));
 
 ?>
