@@ -13,14 +13,14 @@ Class CSSCompression_Numeric
 	 * @class Control: Compression Controller
 	 * @param (array) options: Reference to options
 	 * @param (regex) rdecimal: Checks for zero decimal
-	 * @param (regex) runit: Checks for suffix on 0 unit
 	 * @param (regex) rzero: Checks for preceding 0 to decimal unit
+	 * @param (regex) runit: Checks for suffix on 0 unit
 	 */
 	private $Control;
 	private $options = array();
 	private $rdecimal = "/^(\+|\-)?(\d*\.[1-9]*0*)(\%|[a-z]{2})$/i";
-	private $runit = "/^0(\%|[a-z]{2})$/i";
 	private $rzero = "/^(\+|\-)?0(\.\d+)(\%|[a-z]{2})?$/i";
+	private $runit = "/^0(\%|[a-z]{2})$/i";
 
 	/**
 	 * Stash a reference to the controller on each instantiation
@@ -51,7 +51,7 @@ Class CSSCompression_Numeric
 	 */ 
 	private function decimal( $str ) {
 		if ( preg_match( $this->rdecimal, $str, $match ) ) {
-			$str = ( isset( $match[ 1 ] ) && $match[ 1 ] == '-' ? '-' : '' ) . floatval( $match[ 2 ] ) . $match[ 3 ];
+			$str = ( $match[ 1 ] == '-' ? '-' : '' ) . floatval( $match[ 2 ] ) . $match[ 3 ];
 		}
 
 		return $str;

@@ -59,6 +59,10 @@
 				"params": [ "0px" ],
 				"expect": "0"
 			},
+			"percentage": {
+				"params": [ "0%" ],
+				"expect": "0"
+			},
 			"keep": {
 				"params": [ "1pt" ],
 				"expect": "1pt"
