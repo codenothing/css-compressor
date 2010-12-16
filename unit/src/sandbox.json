@@ -816,10 +816,14 @@
 				}
 			},
 			"pause": {
-				"params": [ "color:white;pause-before:2s;pause-after:3s;" ],
+				"params": [ "color:white;pause-before:2s;pause-after:3s" ],
 				"expect": {
 					"pause": "pause:2s 3s;"
 				}
+			},
+			"pause important": {
+				"params": [ "color:white;pause-before:2s!important;pause-after:3s;" ],
+				"expect": {}
 			},
 			"nothing": {
 				"params": [ "pause-before:2s;color:red;" ],
