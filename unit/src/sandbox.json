@@ -902,6 +902,10 @@
 				"params": [ "color:red;padding:0 5px 10px 2px;color:white;" ],
 				"expect": "color:red;padding-top:0;padding-right:5px;padding-bottom:10px;padding-left:2px;color:white;"
 			},
+			"future hack?": {
+				"params": [ "some-margin:10px;" ],
+				"expect": "some-margin:10px;"
+			},
 			"no expand": {
 				"params": [ "color:red;margin-top:20px;margin-left:10px;color:white;" ],
 				"expect": "color:red;margin-top:20px;margin-left:10px;color:white;"

@@ -20,7 +20,7 @@ Class CSSCompression_Combine_MarginPadding
 	private $Combine;
 	private $rspace = "/(?<!\\\)\s/";
 	private $rmp = "/(^|(?<!\\\);)(margin|padding)-(top|right|bottom|left):(.*?)((?<!\\\);|$)/";
-	private $rmpbase = "/(margin|padding):(.*?)((?<!\\\);|$)/";
+	private $rmpbase = "/(^|(?<!\\\);)(margin|padding):(.*?)((?<!\\\);|$)/";
 
 	/**
 	 * Stash a reference to the controller & combiner
@@ -120,8 +120,8 @@ Class CSSCompression_Combine_MarginPadding
 		$pos = 0;
 		while ( preg_match( $this->rmpbase, $val, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
 			$replace = '';
-			$prop = $match[ 1 ][ 0 ];
-			$value = preg_split( $this->rspace, trim( $match[ 2 ][ 0 ] ) );
+			$prop = $match[ 2 ][ 0 ];
+			$value = preg_split( $this->rspace, trim( $match[ 3 ][ 0 ] ) );
 			$positions = array(
 				'top' => 0,
 				'right' => 0,
@@ -163,8 +163,9 @@ Class CSSCompression_Combine_MarginPadding
 			foreach ( $positions as $p => $v ) {
 				$replace .= "$prop-$p:$v;";
 			}
-			$pos += strlen( $replace );
-			$val = substr_replace( $val, $replace, $match[ 0 ][ 1 ], strlen( $match[ 0 ][ 0 ] ) );
+			$colon = strlen( $match[ 1 ][ 0 ] );
+			$val = substr_replace( $val, $replace, $match[ 0 ][ 1 ] + $colon, strlen( $match[ 0 ][ 0 ] ) - $colon );
+			$pos = $match[ 0 ][ 1 ] + strlen( $replace ) - $colon - 1;
 		}
 
 		return $val;
