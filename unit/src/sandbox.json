@@ -565,6 +565,10 @@
 				"params": [ "#test a[url=http://www.example.com/\\#hashtag] div#elem p" ],
 				"expect": "#elem p"
 			},
+			"url nothing": {
+				"params": [ "body a[url=http://www.example.com/\\#hashtag] div.class p" ],
+				"expect": "body a[url=http://www.example.com/\\#hashtag] div.class p"
+			},
 			"nothing": {
 				"params": [ "html body div.class, body > q, i ~ b + a" ],
 				"expect": "html body div.class, body > q, i ~ b + a"

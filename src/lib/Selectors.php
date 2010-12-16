@@ -119,6 +119,7 @@ Class CSSCompression_Selectors
 			$clean .= $this->options['lowercase-selectors'] ? strtolower( $substr ) : $substr;
 			$pos = $match[ 0 ][ 1 ] + strlen( $match[ 1 ][ 0 ] );
 
+			// Class or id match
 			if ( $match[ 1 ][ 0 ] == '#' || $match[ 1 ][ 0 ] == '.' ) {
 				if ( preg_match( $this->ridclassend, $selector, $m, PREG_OFFSET_CAPTURE, $pos ) ) {
 					$clean .= substr( $selector, $pos, $m[ 0 ][ 1 ] - $pos );
@@ -130,6 +131,7 @@ Class CSSCompression_Selectors
 					break;
 				}
 			}
+			// Start of a string
 			else if ( preg_match( $this->rquote, $selector, $m, PREG_OFFSET_CAPTURE, $pos ) ) {
 				if ( $selector[ $pos ] == "\"" || $selector[ $pos ] == "'" ) {
 					$pos++;
@@ -137,6 +139,7 @@ Class CSSCompression_Selectors
 				$clean .= $this->token . substr( $selector, $pos, $m[ 0 ][ 1 ] - $pos ) . $this->token . ']';
 				$pos = $m[ 0 ][ 1 ] + strlen( $m[ 0 ][ 0 ] );
 			}
+			// No break points left
 			else {
 				$clean .= substr( $selector, $pos );
 				$pos = strlen( $selector );
