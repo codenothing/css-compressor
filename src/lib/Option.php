@@ -11,9 +11,11 @@ Class CSSCompression_Option
 	 * Option Patterns
 	 *
 	 * @class Control: Compression Controller
+	 * @param (string) custom: Name of the custom mode
 	 * @param (array) options: Instance settings
 	 */
 	private $Control;
+	private $custom = '__custom';
 	public $options = array();
 
 	/**
@@ -24,6 +26,7 @@ Class CSSCompression_Option
 	public function __construct( CSSCompression_Control $control ) {
 		$this->Control = $control;
 		$this->options = CSSCompression::$defaults;
+		$control->mode = $this->custom;
 	}
 
 	/**
@@ -48,7 +51,7 @@ Class CSSCompression_Option
 			return isset( $this->options[ $name ] ) ? $this->options[ $name ] : NULL;
 		}
 		else {
-			$this->mode = '__custom';
+			$this->Control->mode = $this->custom;
 			return ( $this->options[ $name ] = $value );
 		}
 	}
@@ -72,7 +75,7 @@ Class CSSCompression_Option
 	public function merge( $options = array() ) {
 		$modes = CSSCompression::modes();
 		if ( $options && is_array( $options ) && count( $options ) ) {
-			$this->Control->mode = '__custom';
+			$this->Control->mode = $this->custom;
 			foreach ( $this->options as $key => $value ) {
 				if ( ! isset( $options[ $key ] ) ) {
 					continue;

@@ -16,7 +16,7 @@ Class CSSCompression_Control
 	 * @param (array) getters: Array of accessible getters
 	 */ 
 	public $css = '';
-	public $mode = '__custom';
+	public $mode = '';
 	public $stats = array();
 	private $getters = array(
 		'css',
