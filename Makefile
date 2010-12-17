@@ -4,6 +4,7 @@
 # Corey Hart @ http://www.codenothing.com
 #
 .PHONY: benchmark test
+VERSION=temp
 
 all:
 	@echo "\n\x1B[1;31mPC_LOAD_LETTER\x1B[0m\n"
@@ -21,4 +22,7 @@ test-file:
 	@php unit/file.php
 
 benchmark:
-	@php unit/benchmark/benchmark.php
+	@php unit/benchmark/benchmark.php $(VERSION)
+
+clean:
+	@sh unit/clean.sh

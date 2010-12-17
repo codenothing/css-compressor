@@ -30,6 +30,15 @@ Class CSSCompression
 	const TOKEN = "@____CSSCOMPRESSION_TOKEN____@";
 
 	/**
+	 * CSSCompression Metadata
+	 *
+	 * @const (string) VERSION: Release version
+	 * @const (string) DATE: Release date
+	 */
+	const VERSION = "[VERSION]";
+	const DATE = "[DATE]";
+
+	/**
 	 * The default set of options for every instance.
 	 */
 	public static $defaults = array(

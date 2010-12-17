@@ -7,3 +7,4 @@ unit/errors/*.css
 # Benchmark generated files
 unit/benchmark/dist/
 unit/benchmark/src/csszengarden.com*
+unit/benchmark/results/temp-*
