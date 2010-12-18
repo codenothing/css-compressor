@@ -1,7 +1,8 @@
 [CSS Compressor](http://www.codenothing.com/css-compressor/)
 ========================
 
-PHP Based CSS Compressor.
+CSSCompression is a PHP based CSS minifier that analyzes stylesheets for various compressions.
+It finds possible CSS shorthand techniques for combination of properties.
 
 
 Usage
@@ -24,11 +25,11 @@ Modes are pre-defined sets of options that can be set by passing in the mode nam
 
  - **safe**: Safe mode does zero combinations or organizing. It's the best mode if you use a lot of hacks.
 
- - **sane**: Sane mode does all combinations(multiple long hand notations to single shorthand), but still keeps most declarations in their place.
+ - **sane**: Sane mode does most combinations(multiple long hand notations to single shorthand), but still keeps most declarations in their place.
 
  - **small**: Small mode reorganizes the whole sheet, combines as much as it can, and will break most comment hacks. 
 
- - **full**: Full does everything small does, but also converts hex codes to their short color name alternatives. This is only safe for latest browsers.
+ - **full**: Full mode does everything small does, but also uses strict-id compression, and converts hex codes to their short color name alternatives.
 
 
 Here's a few different ways to initiate a mode.
@@ -53,6 +54,10 @@ Singleton Instances
 Yes the compressor provides singleton access(separate from express), but use it wisely.
 
 	$CSSC = CSSCompression::getInstance();
+
+	// Or, if you want to keep named instances
+	$rose_instance = CSSCompression::getInstance('rose');
+	$blue_instance = CSSCompression::getInstance('blue');
 
 
 Option Handling

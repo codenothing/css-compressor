@@ -18,7 +18,7 @@ $select .= "<option value='custom'>Custom</option>";
 	<title>CSS Compressor [VERSION]</title>
 	<link rel='stylesheet' type='text/css' href='styles.css' />
 	<script type='text/javascript' src='jquery-1.4.2.js'></script>
-	<script type='text/javascript'>var CSSCompressionModes = <?php echo json_encode( $modes ); ?></script>
+	<script type='text/javascript'>var CSSCompressionModes = <?php echo json_encode( $modes ); ?>;</script>
 	<script type='text/javascript' src='js.js'></script>
 </head>
 <body>
@@ -36,7 +36,7 @@ $select .= "<option value='custom'>Custom</option>";
 	</td>
 	<td width='50%'>
 		<div class='control'>
-			<button class='compress'>Compress</button>
+			<button class='compress' type='submit'>Compress</button>
 			Mode:
 			<select name='mode'><?php echo $select; ?></select>
 			Readability:
