@@ -49,20 +49,20 @@ Converts long hex codes to short color names, Only works on latest browsers, car
  - *#f5f5dc -> beige*
 
 
-color-hex2safe
---------------------
-
-Converts long hex codes to safe CSS Level 1 color names.
-
- - *#f00 -> red*
-
-
 color-hex2shorthex
 ------------------
 
 Converts long hex codes to short hex codes
 
  - *#44ff11 -> #4f1*
+
+
+color-hex2safe
+--------------------
+
+Converts long hex codes to safe CSS Level 1 color names.
+
+ - *#f00 -> red*
 
 
 fontweight2num
