@@ -1,6 +1,6 @@
 /**
- * CSS Compressor [VERSION]
- * [DATE]
+ * CSS Compressor 3.0beta
+ * December 19, 2010
  * Corey Hart @ http://www.codenothing.com
  */ 
 jQuery(function(){

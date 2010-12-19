@@ -1,7 +1,7 @@
 <?php
 /**
- * CSS Compressor [VERSION]
- * [DATE]
+ * CSS Compressor 3.0beta
+ * December 19, 2010
  * Corey Hart @ http://www.codenothing.com
  */ 
 require( "../src/CSSCompression.inc" );
@@ -15,7 +15,7 @@ $select .= "<option value='custom'>Custom</option>";
 <!DOCTYPE html>
 <html>
 <head>
-	<title>CSS Compressor [VERSION]</title>
+	<title>CSS Compressor 3.0beta</title>
 	<link rel='stylesheet' type='text/css' href='styles.css' />
 	<script type='text/javascript' src='jquery-1.4.2.js'></script>
 	<script type='text/javascript'>var CSSCompressionModes = <?php echo json_encode( $modes ); ?>;</script>
@@ -24,7 +24,7 @@ $select .= "<option value='custom'>Custom</option>";
 <body>
 
 
-<h2 title='testingspaces'>CSS Compressor [VERSION]</h2>
+<h2 title='testingspaces'>CSS Compressor 3.0beta</h2>
 
 
 <iframe name='compression'></iframe>

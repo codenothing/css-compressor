@@ -1,7 +1,7 @@
 <?php
 /**
- * CSS Compressor [VERSION]
- * [DATE]
+ * CSS Compressor 3.0beta
+ * December 19, 2010
  * Corey Hart @ http://www.codenothing.com
  */ 
 require("../src/CSSCompression.inc");
@@ -49,7 +49,7 @@ $size = array(
 <!DOCTYPE html>
 <html>
 <head>
-	<title>CSS Compressor [VERSION]</title>
+	<title>CSS Compressor 3.0beta</title>
 	<link rel='stylesheet' type='text/css' href='result.css' />
 </head>
 <body>
