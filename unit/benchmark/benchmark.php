@@ -78,10 +78,10 @@ Class CompressionBenchmark
 	 */
 	private function build(){
 		$this->root = dirname(__FILE__) . '/';
-		$this->version = $_SERVER['argv'][ 1 ] == 'temp' ? CSSCompression::VERSION : $_SERVER['argv'][ 1 ];
+		$this->version = ! isset( $_SERVER['argv'][ 1 ] ) || $_SERVER['argv'][ 1 ] == 'temp' ? CSSCompression::VERSION : $_SERVER['argv'][ 1 ];
 
 		// Check for dev mode
-		if ( $this->version == '[VERSION]' ) {
+		if ( strpos( $this->version, 'VERSION') !== false ) {
 			$this->version = 'temp-' . time();
 		}
 
