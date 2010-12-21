@@ -63,6 +63,14 @@
 				"params": [ "0%" ],
 				"expect": "0"
 			},
+			"non-zero": {
+				"params": [ "50px" ],
+				"expect": "50px"
+			},
+			"non-zero decimal": {
+				"params": [ "50.0px" ],
+				"expect": "50.0px"
+			},
 			"keep": {
 				"params": [ "1pt" ],
 				"expect": "1pt"
