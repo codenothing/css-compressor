@@ -27,20 +27,22 @@ Class CSSCompression_Trim
 	private $rendquote = "/(?<!\\\)\"/";
 	private $rendsinglequote = "/(?<!\\\)'/";
 	private $rescape = array(
-		"/(url\()([^'\"].*?)(\))/s",
+		"/(url\()([^'\"].*?)(\))/is",
 		"/((?<!\\\)\")(.*?)((?<!\\\)\")/s",
 		"/((?<!\\\)')(.*?)((?<!\\\)')/s",
 	);
 	private $trimmings = array(
 		'patterns' => array(
 			"/(?<!\\\)(\s+)?(?<!\\\)([!,{};>\~\+\/])(?<!\\\)(\s+)?/s", // Remove un-needed spaces around special characters
-			"/url\((?<!\\\)\"(.*?)(?<!\\\)\"\)/s", // Remove quotes from urls
-			"/url\((?<!\\\)'(.*?)(?<!\\\)'\)/s", // Remove single quotes from urls
+			"/url\((?<!\\\)\"(.*?)(?<!\\\)\"\)/is", // Remove quotes from urls
+			"/url\((?<!\\\)'(.*?)(?<!\\\)'\)/is", // Remove single quotes from urls
+			"/url\((.*?)\)/is", // Lowercase url wrapper
 			"/(?<!\\\);{2,}/", // Remove unecessary semi-colons
 			"/(?<!\\\)\s+/s", // Compress all spaces into single space
 		),
 		'replacements' => array(
 			'$2',
+			'url($1)',
 			'url($1)',
 			'url($1)',
 			';',
