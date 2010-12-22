@@ -21,8 +21,11 @@ test-focus:
 test-file:
 	@php unit/file.php
 
-benchmark:
+test-regression:
 	@php unit/benchmark/benchmark.php $(VERSION)
+
+benchmark:
+	@php unit/benchmark/benchmark.php
 
 clean:
 	@sh unit/clean.sh

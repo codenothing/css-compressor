@@ -15,7 +15,9 @@ Class CompressionBenchmark
 	 *
 	 * @param (string) root: Path to this current directory
 	 * @param (string) dist: Path to dist directory
-	 * @param (string version: Current version storage
+	 * @param (string) compare: Path to regression comparison directory
+	 * @param (string) version: Current version storage
+	 * @param (bool) regressiontest: True if doing regression testing, false for just benchmarks
 	 * @param (array) files: List of files read
 	 * @param (array) averages: List of averages of compressions
 	 * @param (array) instances: List of each modes instance
@@ -26,7 +28,9 @@ Class CompressionBenchmark
 	 */
 	private $root = '';
 	private $dist = '';
+	private $compare = '';
 	private $version = '';
+	private $regressiontest = true;
 	private $files = array();
 	private $averages = array();
 	private $instances = array();
@@ -53,14 +57,23 @@ Class CompressionBenchmark
 				'size-gzip' => 0,
 				'time' => 0,
 			);
+
+			// Regression testing
+			if ( $this->regressiontest ) {
+				$this->instances[ $mode ]->option( 'readability', CSSCompression::READ_MAX );
+			}
 		}
 
 		// Run Benchmarks
 		$this->loadprev();
 		$this->render();
 
+		// If just doing benchmarks, clear out
+		if ( ! $this->regressiontest ) {
+			return;
+		}
 		// Only store results in non-comparrison mode
-		if ( $this->conflicts() === false ) {
+		else if ( $this->conflicts() === false ) {
 			echo "\n\n" . Color::boldred( "There are conflicts that need to be handled" ) . "\n\n";
 		}
 		else if ( $_SERVER['argv'][ 1 ] != 'temp' ) {
@@ -78,7 +91,8 @@ Class CompressionBenchmark
 	 */
 	private function build(){
 		$this->root = dirname(__FILE__) . '/';
-		$this->version = ! isset( $_SERVER['argv'][ 1 ] ) || $_SERVER['argv'][ 1 ] == 'temp' ? CSSCompression::VERSION : $_SERVER['argv'][ 1 ];
+		$this->regressiontest = isset( $_SERVER['argv'][ 1 ] );
+		$this->version = ! $this->regressiontest || $_SERVER['argv'][ 1 ] == 'temp' ? CSSCompression::VERSION : $_SERVER['argv'][ 1 ];
 
 		// Check for dev mode
 		if ( strpos( $this->version, 'VERSION') !== false ) {
@@ -103,19 +117,22 @@ Class CompressionBenchmark
 	 * @params none
 	 */
 	private function loadprev(){
-		if ( isset( $_SERVER['argv'][ 1 ] )  && $_SERVER['argv'][ 1 ] != 'temp' ) {
-			print_r( $_SERVER['argv'] );
+		if ( ! $this->regressiontest ) {
+			return;
+		}
+		else if ( $_SERVER['argv'][ 1 ] != 'temp' ) {
 			if ( file_exists( $this->root . 'results/' . $_SERVER['argv'][ 1 ] . '.json' ) ) {
+				$this->compare = $this->root . 'dist/' . $_SERVER['argv'][ 1 ] . '/';
 				$this->prev = json_decode( file_get_contents( $this->root . 'results/' . $_SERVER['argv'][ 1 ] . '.json' ), true );
 			}
 			else {
 				throw new CSSCompression_Exception( "Unknown Benchmark " . $_SERVER['argv'][ 1 ] );
 			}
-			return;
 		}
 		else if ( file_exists( $this->root . 'dist/lastrun.txt' ) ) {
 			$version = trim( file_get_contents( $this->root . 'dist/lastrun.txt' ) );
 			if ( is_file( $this->root . "results/$version.json" ) ) {
+				$this->compare = $this->root . 'dist/' . $version . '/';
 				$this->prev = json_decode( file_get_contents( $this->root . "results/$version.json" ), true );
 			}
 			else {
@@ -154,7 +171,7 @@ Class CompressionBenchmark
 			
 			// Do each instance
 			foreach( $this->instances as $mode => $instance ) {
-				list( $compression, $gzip, $info ) = $this->compress( $file, $css, $instance );
+				list( $compression, $gzip, $info ) = $this->compress( $file, $css, $mode, $instance );
 				$output .= "\t$mode:\t$info"
 					. "\t$compression"
 					. "\t$gzip\n";
@@ -183,10 +200,11 @@ Class CompressionBenchmark
 	 *
 	 * @param (string) file: filename
 	 * @param (string) css: File contents
-	 * @param (instance) instance: Compression instance
+	 * @param (string) mode: Instance mode
+	 * @param (CSSCompression instance) instance: Compression instance
 	 */
-	private function compress( $file = '', $css = '', $instance ) {
-		file_put_contents( $this->dist . $file . '.' . $instance->mode . '.css', $instance->compress( $css ) );
+	private function compress( $file = '', $css = '', $mode = '', CSSCompression $instance ) {
+		file_put_contents( $this->dist . $file . '.' . $mode . '.css', $instance->compress( $css ) );
 		$gzip = gzencode( $instance->css, 1 );
 
 		// References
@@ -199,14 +217,14 @@ Class CompressionBenchmark
 		}
 
 		// Store compression results
-		$this->files[ $file ][ $instance->mode ] = $instance->stats;
-		$this->files[ $file ][ $instance->mode ]['gzip'] = strlen( $gzip );
+		$this->files[ $file ][ $mode ] = $instance->stats;
+		$this->files[ $file ][ $mode ]['gzip'] = strlen( $gzip );
 
 		// Log basic result for averages
-		$this->averages[ $instance->mode ]['size-before'] += $before['size'];
-		$this->averages[ $instance->mode ]['size-after'] += $after['size'];
-		$this->averages[ $instance->mode ]['size-gzip'] += strlen( $gzip );
-		$this->averages[ $instance->mode ]['time'] += $after['time'] - $before['time'];
+		$this->averages[ $mode ]['size-before'] += $before['size'];
+		$this->averages[ $mode ]['size-after'] += $after['size'];
+		$this->averages[ $mode ]['size-gzip'] += strlen( $gzip );
+		$this->averages[ $mode ]['time'] += $after['time'] - $before['time'];
 
 		// Return formatted string result
 		return array(
@@ -222,7 +240,7 @@ Class CompressionBenchmark
 			. '[' . Color::blue( number_format( strlen( $gzip ) / $before['size'] * 100, 2 )  . '%' ) . '] ',
 
 			// Compare to last benchmark
-			$this->compare( $file, $instance->mode, $this->files[ $file ][ $instance->mode ] ),
+			$this->compare( $file, $mode, $this->files[ $file ][ $mode ] ),
 		);
 	}
 
@@ -276,6 +294,11 @@ Class CompressionBenchmark
 	 * @param (array) stats: COmpression results
 	 */
 	private function compare( $file, $mode, $stats ) {
+		// Ignore if in benchmark test
+		if ( ! $this->regressiontest ) {
+			return '';
+		}
+
 		// Get true dist filename
 		$filename = $file . ".$mode.css";
 
@@ -325,7 +348,7 @@ Class CompressionBenchmark
 			echo Color::gray( "\n-------------------------\n" );
 			echo Color::boldgreen( "There are " . count( $this->gains ) . " files with gains." ) . "\n";
 			foreach ( $this->gains as $file ) {
-				echo Color::green( $this->dist . $file ) . "\n";
+				echo Color::green( $file ) . "\n";
 			}
 		}
 
@@ -335,7 +358,7 @@ Class CompressionBenchmark
 			echo Color::gray( "\n-------------------------\n" );
 			echo Color::boldyellow( "There are " . count( $this->tainted ) . " tainted files." ) . "\n";
 			foreach ( $this->tainted as $file ) {
-				echo Color::yellow( $this->dist . $file ) . "\n";
+				echo Color::yellow( $file ) . "\n";
 			}
 		}
 
@@ -346,6 +369,7 @@ Class CompressionBenchmark
 			echo Color::boldred( "There are " . count( $this->regression ) . " files in regression." ) . "\n";
 			foreach ( $this->regression as $file ) {
 				echo Color::red( $this->dist . $file ) . "\n";
+				echo 'diff ' . $this->compare . $file . ' ' . $this->dist . $file . "\n\n";
 			}
 		}
 
