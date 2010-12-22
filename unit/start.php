@@ -4,7 +4,7 @@
  * [DATE]
  * Corey Hart @ http://www.codenothing.com
  */
-error_reporting( E_ALL );
+error_reporting( -1 );
 require( dirname( __FILE__ ) . '/src/Core.php' );
 
 

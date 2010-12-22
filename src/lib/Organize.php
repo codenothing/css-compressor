@@ -56,7 +56,7 @@ Class CSSCompression_Organize
 	 * @param (array) details: Array of rule sets broken down by setup
 	 */ 
 	private function reduceSelectors( $selectors, $details ) {
-	    $keys = array_keys( $selectors );
+		$keys = array_keys( $selectors );
 		$max = array_pop( $keys ) + 1;
 		
 		for ( $i = 0; $i < $max; $i++ ) {
@@ -103,7 +103,7 @@ Class CSSCompression_Organize
 	 * @param (array) details: Array of rule sets broken down by setup
 	 */ 
 	private function reduceDetails( $selectors, $details ) {
-	    $keys = array_keys( $selectors );
+		$keys = array_keys( $selectors );
 		$max = array_pop( $keys ) + 1;
 		for ( $i = 0; $i < $max; $i++ ) {
 			if ( ! isset( $selectors[ $i ] ) ) {
