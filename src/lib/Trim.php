@@ -23,7 +23,7 @@ Class CSSCompression_Trim
 	private $Control;
 	private $options = array();
 	private $rcmark = "/((?<!\\\)\/\*|(?<!\\\)\"|(?<!\\\)')/";
-	private $rendcomment = "/(?<!\\\)\*\//";
+	private $rendcomment = "/\*\//";
 	private $rendquote = "/(?<!\\\)\"/";
 	private $rendsinglequote = "/(?<!\\\)'/";
 	private $rescape = array(
