@@ -189,7 +189,6 @@ Class CSSCompression
 		),
 		'sane' => array(
 			'color-hex2shortcolor' => false,
-			'strict-id' => false,
 			'organize' => false,
 			'font-combine' => false,
 			'background-combine' => false,
@@ -198,7 +197,6 @@ Class CSSCompression
 		),
 		'small' => array(
 			'color-hex2shortcolor' => false,
-			'strict-id' => false,
 			'pseudo-space' => false,
 		),
 		'full' => array(
