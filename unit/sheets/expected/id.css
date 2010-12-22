@@ -1,1 +1,1 @@
-#testing p{color:red}div[id='no combine'] p{color:red}
+div#testing p{color:red}div[id='no combine'] p{color:red}
