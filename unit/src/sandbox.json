@@ -1566,13 +1566,13 @@
 			},
 			"escaped": {
 				"params": [
-					"te/*abc\\*/def*/st"
+					"te/*abc*\\/def*/st"
 				],
 				"expect": "test"
 			},
 			"in a string": {
 				"params": [
-					"t\"/*e\"/*ab\"c\\*/def*/st"
+					"t\"/*e\"/*ab\"c*\\/def*/st"
 				],
 				"expect": "t\"/*e\"st"
 			},

@@ -1,0 +1,5 @@
+body {
+	font-size: 12pt;
+	/* ie5 mac comment hack \*/
+	font-size: 5pt;
+}
