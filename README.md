@@ -23,13 +23,13 @@ Modes
 
 Modes are pre-defined sets of options that can be set by passing in the mode name.
 
- - **safe**: Safe mode does zero combinations or organizing. It's the best mode if you use a lot of hacks.
+ - **safe**: (99% safe) Safe mode does zero combinations or organizing. It's the best mode if you use a lot of hacks.
 
- - **sane**: Sane mode does most combinations(multiple long hand notations to single shorthand), but still keeps most declarations in their place.
+ - **sane**: (90% safe) Sane mode does most combinations(multiple long hand notations to single shorthand), but still keeps most declarations in their place.
 
- - **small**: Small mode reorganizes the whole sheet, combines as much as it can, and will break most comment hacks. 
+ - **small**: (65% safe) Small mode reorganizes the whole sheet, combines as much as it can, and will break most comment hacks. 
 
- - **full**: Full mode does everything small does, but also uses strict-id compression, and converts hex codes to their short color name alternatives.
+ - **full**: (50% safe) Full mode does everything small does, but also uses strict-id compression, and converts hex codes to their short color name alternatives.
 
 
 Here's a few different ways to initiate a mode.
@@ -123,3 +123,5 @@ Contributors
 [Stoyan Stefanov](http://www.phpied.com/) - [At rules writeup](http://www.phpied.com/css-railroad-diagrams/) and test suite help.
 
 [Julien Deniau](http://www.jeuxvideo.fr/) - Pointed out escaped characters issue
+
+[Olivier Gorzalka](http://clearideaz.com/) - Strict error warnings cleanup

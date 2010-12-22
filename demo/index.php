@@ -5,10 +5,15 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 require( "../src/CSSCompression.inc" );
-$modes = CSSCompression::modes();
+$modes = array(
+	'safe' => 'Safe (99% safe)',
+	'sane' => 'Sane (90% safe)',
+	'small' => 'Small (65% safe)',
+	'full' => 'Full (50% safe)'
+);
 $select = '';
-foreach ( $modes as $mode => $config ) {
-	$select .= "<option value='$mode'>" . ucfirst( $mode ) . "</option>";
+foreach ( $modes as $mode => $display ) {
+	$select .= "<option value='$mode'>" . $display . "</option>";
 }
 $select .= "<option value='custom'>Custom</option>";
 ?>
@@ -18,7 +23,7 @@ $select .= "<option value='custom'>Custom</option>";
 	<title>CSS Compressor [VERSION]</title>
 	<link rel='stylesheet' type='text/css' href='styles.css' />
 	<script type='text/javascript' src='jquery-1.4.2.js'></script>
-	<script type='text/javascript'>var CSSCompressionModes = <?php echo json_encode( $modes ); ?>;</script>
+	<script type='text/javascript'>var CSSCompressionModes = <?php echo json_encode( CSSCompression::modes() ); ?>;</script>
 	<script type='text/javascript' src='js.js'></script>
 </head>
 <body>

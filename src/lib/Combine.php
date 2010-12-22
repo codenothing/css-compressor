@@ -23,7 +23,7 @@ Class CSSCompression_Combine
 	private $options = array();
 	private $rspace = "/(?<!\\\)\s/";
 	private $rslash = "/(?<!\\\)\//";
-	private $rimportant = "/inherit|\!important|\!ie|\s/i";
+	private $rimportant = "/inherit|\!important|\!ie|(?<!\\\)\s/i";
 	private $methods = array(
 		'csw-combine' => 'BorderOutline',
 		'border-radius-combine' => 'BorderRadius',

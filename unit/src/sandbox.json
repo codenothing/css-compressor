@@ -1426,7 +1426,7 @@
 			},
 			"escaped space": {
 				"params": [ "red;\\ " ],
-				"expect": true
+				"expect": false
 			},
 			"array important": {
 				"params": [ [ "red", "!important" ] ],
@@ -1442,7 +1442,7 @@
 			},
 			"array escaped space": {
 				"params": [ [ "red", "\\ " ] ],
-				"expect": true
+				"expect": false
 			},
 			"array important fail": {
 				"params": [ [ "red", "important" ] ],
