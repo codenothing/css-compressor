@@ -569,6 +569,10 @@
 				"params": [ "#test div.elem p" ],
 				"expect": "#test div.elem p"
 			},
+			"ie star hack": {
+				"params": [ "* html div#testing p" ],
+				"expect": "* html div#testing p"
+			},
 			"url": {
 				"params": [ "#test a[url=http://www.example.com/\\#hashtag] div#elem p" ],
 				"expect": "#elem p"
