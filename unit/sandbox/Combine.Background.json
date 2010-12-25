@@ -1,0 +1,100 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Combine.Background
+ */
+{
+	"combine": {
+		"1": {
+			"paramjoin": "",
+			"params": [
+				"background-color:green;",
+				"background-image:url(images/img.gif);",
+				"background-repeat:no-repeat;",
+				"background-attachment:scroll;",
+				"background-position:center"
+			],
+			"expect": "background:green url(images/img.gif) no-repeat scroll center;"
+		},
+		"2": {
+			"paramjoin": "",
+			"params": [
+				"background-color:green;",
+				"background-image:url(images/img.gif);",
+				"background-attachment:scroll;",
+				"background-position:center;"
+			],
+			"expect": "background:green url(images/img.gif) scroll center;"
+		},
+		"3": {
+			"paramjoin": "",
+			"params": [
+				"background-color:green;",
+				"background-image:url(images/img.gif);",
+				"background-repeat:no-repeat;",
+				"background-position:center;"
+			],
+			"expect": "background:green url(images/img.gif) no-repeat center;"
+		},
+		"4": {
+			"paramjoin": "",
+			"params": [
+				"background-color:green;",
+				"background-image:url(images/img.gif);",
+				"background-repeat:no-repeat;",
+				"background-attachment:scroll;"
+			],
+			"expect": "background:green url(images/img.gif) no-repeat scroll;"
+		},
+		"5": {
+			"params": [ "background-color:green;background-image:url(images/img.gif);background-repeat:no-repeat" ],
+			"expect": "background:green url(images/img.gif) no-repeat;"
+		},
+		"6": {
+			"params": [ "background-color:green;background-image:url(images/img.gif);background-attachment:scroll;" ],
+			"expect": "background:green url(images/img.gif) scroll;"
+		},
+		"7": {
+			"params": [ "background-color:green;background-image:url(images/img.gif);background-position:center;" ],
+			"expect": "background:green url(images/img.gif) center;"
+		},
+		"8": {
+			"params": [ "color:red;background-color:green;background-image:url(images/img.gif)" ],
+			"expect": "color:red;background:green url(images/img.gif);"
+		},
+		"9": {
+			"params": [ "background-image:url(images/img.gif);background-attachment:scroll;background-position:center;color:red;" ],
+			"expect": "background:url(images/img.gif) scroll center;color:red;"
+		},
+		"10": {
+			"params": [ "background-image:url(images/img.gif);color:black;background-repeat:no-repeat;background-position:center;" ],
+			"expect": "background:url(images/img.gif) no-repeat center;color:black;"
+		},
+		"11": {
+			"params": [ "background-image:url(images/img.gif);background-repeat:no-repeat;background-attachment:scroll;" ],
+			"expect": "background:url(images/img.gif) no-repeat scroll;"
+		},
+		"12": {
+			"params": [ "background-image:url(images/img.gif);background-repeat:no-repeat;" ],
+			"expect": "background:url(images/img.gif) no-repeat;"
+		},
+		"13": {
+			"params": [ "background-image:url(images/img.gif);background-attachment:scroll;" ],
+			"expect": "background:url(images/img.gif) scroll;"
+		},
+		"14": {
+			"params": [ "background-image:url(images/img.gif);font-size:12pt;" ],
+			"expect": "background:url(images/img.gif);font-size:12pt;"
+		},
+		"15": {
+			"params": [ "background-color:green;" ],
+			"expect": "background:green;"
+		},
+		"no change": {
+			"params": [ "background-color:green;background-position:center;" ],
+			"expect": "background-color:green;background-position:center;"
+		}
+	}
+}

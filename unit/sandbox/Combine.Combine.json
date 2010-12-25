@@ -1,0 +1,99 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Combine.Combine
+ */
+{
+	"checkUncombinables": {
+		"important alone": {
+			"params": [ "!important" ],
+			"expect": true
+		},
+		"ie alone": {
+			"params": [ "!ie" ],
+			"expect": true
+		},
+		"space alone": {
+			"params": [ " " ],
+			"expect": true
+		},
+		"inherit alone": {
+			"params": [ "inherit" ],
+			"expect": true
+		},
+		"important color": {
+			"params": [ "red!important;" ],
+			"expect": true
+		},
+		"important fail": {
+			"params": [ "important" ],
+			"expect": false
+		},
+		"ie fail": {
+			"params": [ "ie" ],
+			"expect": false
+		},
+		"clean alone": {
+			"params": [ "red" ],
+			"expect": false
+		},
+		"ie color": {
+			"params": [ "red!ie;" ],
+			"expect": true
+		},
+		"inherit color space": {
+			"params": [ "red inherit;" ],
+			"expect": true
+		},
+		"escaped space": {
+			"params": [ "red;\\ " ],
+			"expect": false
+		},
+		"array important": {
+			"params": [ [ "red", "!important" ] ],
+			"expect": true
+		},
+		"array ie": {
+			"params": [ [ "red", "!ie" ] ],
+			"expect": true
+		},
+		"array inherit": {
+			"params": [ [ "red", "inherit" ] ],
+			"expect": true
+		},
+		"array escaped space": {
+			"params": [ [ "red", "\\ " ] ],
+			"expect": false
+		},
+		"array important fail": {
+			"params": [ [ "red", "important" ] ],
+			"expect": false
+		},
+		"array ie fail": {
+			"params": [ [ "red", "ie" ] ],
+			"expect": false
+		},
+		"array clean": {
+			"params": [ [ "10px", "9px", "8px", "4px" ] ],
+			"expect": false
+		}
+	},
+
+	"combine": {
+		"_special": "details",
+		"params": [
+			"font-size:12pt;list-style-type:none;font-family:arial;list-style-position:inline;",
+			"background-color:green;background-image:url(images/img.gif);",
+			"margin-top:10px;margin-left:10px;margin-right:10px;margin-bottom:10px;",
+			"margin-top:10px;color:white;margin-right:10px;color:red;"
+		],
+		"expect": [
+			"font:12pt arial;list-style:none inline;",
+			"background:green url(images/img.gif);",
+			"margin:10px;",
+			"margin-top:10px;color:white;margin-right:10px;color:red;"
+		]
+	}
+}

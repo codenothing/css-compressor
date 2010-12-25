@@ -4,7 +4,7 @@
  * [DATE]
  * Corey Hart @ http://www.codenothing.com
  */
-require( dirname( __FILE__ ) . '/../../src/CSSCompression.inc' );
+require( dirname( __FILE__ ) . '/../../src/CSSCompression.php' );
 require( dirname( __FILE__ ) . '/Color.php' );
 
 

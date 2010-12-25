@@ -1,0 +1,112 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Combine.MarginPadding
+ */
+{
+	"storage": {
+		"_special": "storage",
+		"4-way": {
+			"params": [ "margin-top:10px;margin-right:10px;margin-bottom:10px;margin-left:10px;" ],
+			"expect": {
+				"margin": "margin:10px;"
+			}
+		},
+		"2-way": {
+			"params": [ "color:red;padding-top:0;padding-right:10px;padding-bottom:0;padding-left:10px;" ],
+			"expect": {
+				"padding": "padding:0 10px;"
+			}
+		},
+		"3-way": {
+			"params": [ "margin-top:0;margin-right:10px;margin-bottom:2px;margin-left:10px;color:white;" ],
+			"expect": {
+				"margin": "margin:0 10px 2px;"
+			}
+		},
+		"just combine": {
+			"params": [ "color:red;padding-top:0;padding-right:5px;padding-bottom:10px;padding-left:2px;color:white;" ],
+			"expect": {
+				"padding": "padding:0 5px 10px 2px;"
+			}
+		},
+		"multiple": {
+			"paramjoin": ";",
+			"params": [
+				"margin-top:2px",
+				"margin-right:3px",
+				"margin-bottom:4px",
+				"margin-left:3px",
+				"padding-top:5px",
+				"padding-right:5px",
+				"padding-bottom:5px",
+				"padding-left:5px"
+			],
+			"expect": {
+				"margin": "margin:2px 3px 4px;",
+				"padding": "padding:5px;"
+			}
+		},
+		"do nothing": {
+			"params": [ "color:red;margin-top:20px;margin-left:10px;color:white;" ],
+			"expect": {}
+		}
+	},
+
+	"expand": {
+		"expand 1": {
+			"params": [ "margin:10px" ],
+			"expect": "margin-top:10px;margin-right:10px;margin-bottom:10px;margin-left:10px;"
+		},
+		"expand 2": {
+			"params": [ "color:red;padding:0 10px" ],
+			"expect": "color:red;padding-top:0;padding-right:10px;padding-bottom:0;padding-left:10px;"
+		},
+		"expand 3": {
+			"params": [ "margin:0 10px 2px;color:white;" ],
+			"expect": "margin-top:0;margin-right:10px;margin-bottom:2px;margin-left:10px;color:white;"
+		},
+		"expand 4": {
+			"params": [ "color:red;padding:0 5px 10px 2px;color:white;" ],
+			"expect": "color:red;padding-top:0;padding-right:5px;padding-bottom:10px;padding-left:2px;color:white;"
+		},
+		"future hack?": {
+			"params": [ "some-margin:10px;" ],
+			"expect": "some-margin:10px;"
+		},
+		"no expand": {
+			"params": [ "color:red;margin-top:20px;margin-left:10px;color:white;" ],
+			"expect": "color:red;margin-top:20px;margin-left:10px;color:white;"
+		}
+	},
+
+	// Margin/Padding combinations
+	"combine": {
+		"top-left": {
+			"params": [ "margin-top:10px;margin-left:10px;" ],
+			"expect": "margin-top:10px;margin-left:10px;"
+		},
+		"top-bottom": {
+			"params": [ "margin-top:10px;margin-bottom:10px;" ],
+			"expect": "margin-top:10px;margin-bottom:10px;"
+		},
+		"4 to 1": {
+			"params": [ "margin-top:10px;margin-left:10px;margin-right:10px;margin-bottom:10px;" ],
+			"expect": "margin:10px;"
+		},
+		"4 to 2": {
+			"params": [ "padding-top:12px;padding-left:10px;padding-right:10px;padding-bottom:12px;" ],
+			"expect": "padding:12px 10px;"
+		},
+		"overwrite": {
+			"params": [ "margin:0;margin-left:10px;margin-right:10px;" ],
+			"expect": "margin:0 10px;"
+		},
+		"remain the same": {
+			"params": [ "margin:0;color:blue;" ],
+			"expect": "margin:0;color:blue;"
+		}
+	}
+}

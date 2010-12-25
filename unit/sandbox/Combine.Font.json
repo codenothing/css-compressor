@@ -1,0 +1,124 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Combine.Font
+ */
+{
+	"storage": {
+		"_special": "storage",
+		"1": {
+			"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial" ],
+			"expect": {
+				"font-style": "italic",
+				"font-variant": "normal",
+				"font-weight": "bold",
+				"font-family": "arial",
+				"size/height": "12pt/20px"
+			}
+		},
+		"2": {
+			"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;font-family:arial;" ],
+			"expect": {
+				"font-style": "italic",
+				"font-variant": "normal",
+				"font-weight": "bold",
+				"font-size": "12pt",
+				"font-family": "arial"
+			}
+		},
+		"3": {
+			"params": [ "font-style:italic;font-variant:normal;font-size:12pt;line-height:20px;font-family:arial" ],
+			"expect": {
+				"font-style":"italic",
+				"font-variant": "normal",
+				"font-family": "arial",
+				"size/height": "12pt/20px"
+			}
+		},
+		"injection": {
+			"params": [ "font-variant:normal;font-size:12pt;font-family:arial;color:red;" ],
+			"expect": {
+				"font-variant":"normal",
+				"font-size": "12pt",
+				"font-family": "arial"
+			}
+		},
+		"nothing": {
+			"params": [ "color:red;background:blue;" ],
+			"expect": {}
+		}
+	},
+
+	"combine": {
+		"1": {
+			"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
+			"expect": "font:italic normal bold 12pt/20px arial;"
+		},
+		"2": {
+			"params": [ "font-style:italic;font-variant:normal;font-weight:bold;font-size:12pt;font-family:arial;" ],
+			"expect": "font:italic normal bold 12pt arial;"
+		},
+		"3": {
+			"params": [ "font-style:italic;font-variant:normal;font-size:12pt;line-height:20px;font-family:arial" ],
+			"expect": "font:italic normal 12pt/20px arial;"
+		},
+		"4": {
+			"params": [ "font-style:italic;font-variant:normal;font-size:12pt;font-family:arial;" ],
+			"expect": "font:italic normal 12pt arial;"
+		},
+		"5": {
+			"params": [ "font-style:italic;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
+			"expect": "font:italic bold 12pt/20px arial;"
+		},
+		"6": {
+			"params": [ "font-style:italic;color:red;font-weight:bold;font-size:12pt;font-family:arial;" ],
+			"expect": "font:italic bold 12pt arial;color:red;"
+		},
+		"7": {
+			"params": [ "font-variant:normal;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
+			"expect": "font:normal bold 12pt/20px arial;"
+		},
+		"8": {
+			"params": [ "font-variant:normal;font-weight:bold;font-size:12pt;font-family:arial;" ],
+			"expect": "font:normal bold 12pt arial;"
+		},
+		"9": {
+			"params": [ "color:red;font-weight:bold;font-size:12pt;line-height:20px;font-family:arial;" ],
+			"expect": "color:red;font:bold 12pt/20px arial;"
+		},
+		"10": {
+			"params": [ "font-weight:bold;font-size:12pt;font-family:arial;" ],
+			"expect": "font:bold 12pt arial;"
+		},
+		"11": {
+			"params": [ "font-variant:normal;font-size:12pt;line-height:20px;font-family:arial" ],
+			"expect": "font:normal 12pt/20px arial;"
+		},
+		"12": {
+			"params": [ "font-variant:normal;font-size:12pt;font-family:arial;color:red;" ],
+			"expect": "font:normal 12pt arial;color:red;"
+		},
+		"13": {
+			"params": [ "font-style:italic;font-size:12pt;line-height:20px;font-family:arial;" ],
+			"expect": "font:italic 12pt/20px arial;"
+		},
+		"14": {
+			"params": [ "font-style:italic;font-size:12pt;font-family:arial;" ],
+			"expect": "font:italic 12pt arial;"
+		},
+		"15": {
+			"params": [ "font-size:12pt;color:black;line-height:20px;font-family:arial" ],
+			"expect": "font:12pt/20px arial;color:black;"
+		},
+		"16": {
+			"params": [ "color:white;font-size:12pt;font-family:arial;" ],
+			"expect": "color:white;font:12pt arial;"
+		},
+		"no change": {
+			"params": [ "font-style:italic;font-size:12pt;" ],
+			"expect": "font-style:italic;font-size:12pt;"
+		}
+	}
+}

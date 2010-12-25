@@ -39,16 +39,16 @@ This command runs all sandboxed tests, as well as double compressions on any sty
 but is a helpful check to see that most compression is done the first time around.
 
 
+make test-regression VERSION=temp
+--------------------------------
+
+The regression command takes an optional assignment which will do testing against the given version. Defaults is to the last run test.
+
+
 make benchmark
 --------------
 
 This command runs the benchmark process. This will create a new temp directory for regression testing and comparison.
-
-
-make benchmark VERSION=3.0
---------------------------
-
-The benchmark command takes an optional assignment which will strictly do regression testing against the given version.
 
 
 make clean
@@ -57,8 +57,7 @@ make clean
 This command removes all generated files used for comparisons and benchmarks.
 
 
-unit/src/sandbox.json
----------------------
+unit/sandbox/
+-------------
 
-The sandbox json spec, is exactly that, a sandbox of tests to run against as many methods possible in each of the classes.
-Take a look at some of the other examples to get an idea of how to add/modify to the list.
+The sandbox directory contains json files for focused tests used in unit testing.

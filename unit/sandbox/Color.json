@@ -1,0 +1,125 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Color
+ */
+{
+	// RGB Conversions
+	"rgb2hex": {
+		"single numeric": {
+			"params": [ "rgb(145)" ],
+			"expect": "#919191"
+		},
+		"numeric": {
+			"params": [ "rgb(145,123,16)" ],
+			"expect": "#917b10"
+		},
+		"single percentage": {
+			"params": [ "rgb(50%)" ],
+			"expect": "#7f7f7f"
+		},
+		"percentage": {
+			"params": [ "rgb(50%,50%,50%)" ],
+			"expect": "#7f7f7f"
+		}
+	},
+
+	// Long color names to hex codes
+	"color2hex": {
+		"aliceblue": {
+			"params": [ "aliceblue" ],
+			"expect": "#f0f8ff"
+		},
+		"darkgoldenrod": {
+			"params": [ "darkgoldenrod" ],
+			"expect": "#b8860b"
+		},
+		"lightgoldenrodyellow": {
+			"params": [ "lightgoldenrodyellow" ],
+			"expect": "#fafad2"
+		},
+		"red": {
+			"params": [ "red" ],
+			"expect": "red"
+		}
+	},
+
+	// Long hex to short name conversions
+	"hex2color": {
+		"azure": {
+			"params": [ "#f0ffff" ],
+			"expect": "azure"
+		},
+		"peru": {
+			"params": [ "#cd853f" ],
+			"expect": "peru"
+		},
+		"no change": {
+			"params": [ "#cd8599" ],
+			"expect": "#cd8599"
+		}
+	},
+
+	// Long hex to short name conversions
+	"hex2safe": {
+		"green": {
+			"params": [ "#008000" ],
+			"expect": "green"
+		},
+		"olive": {
+			"params": [ "#808000" ],
+			"expect": "olive"
+		},
+		"peru (not safe)": {
+			"params": [ "#cd853f" ],
+			"expect": "#cd853f"
+		},
+		"no change": {
+			"params": [ "#cd8599" ],
+			"expect": "#cd8599"
+		}
+	},
+
+	// Long hex to short hex conversions
+	"hex2short": {
+		// Long hex to short hex conversions
+		"#a60": {
+			"params": [ "#aa6600" ],
+			"expect": "#a60"
+		},
+		"#736": {
+			"params": [ "#773366" ],
+			"expect": "#736"
+		},
+		"#772213": {
+			"params": [ "#772213" ],
+			"expect": "#772213"
+		}
+	},
+
+	// Main color handler, runs all of the tests above
+	"color": {
+		"peru": {
+			"params": [ "#cd853f" ],
+			"expect": "peru"
+		},
+		"aliceblue": {
+			"params": [ "aliceblue" ],
+			"expect": "#f0f8ff"
+		},
+		"red": {
+			"params": [ "#FF0000" ],
+			"expect": "red"
+		},
+		"Lowercase Hex Codes short": {
+			"params": [ "#ABC" ],
+			"expect": "#abc"
+		},
+		"Lowercase Hex Codes": {
+			"params": [ "#ABCABC" ],
+			"expect": "#abcabc"
+		}
+	}
+}

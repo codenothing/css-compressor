@@ -1,0 +1,232 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Individuals
+ */
+{
+	"borderRadius": {
+		// Directionals handles this, but just to make sure we get there
+		"4 to 1": {
+			"params": [ "border-radius", "10px 10px 10px 10px" ],
+			"expect": "10px"
+		},
+		"3 to 2": {
+			"params": [ "-webkit-border-radius", "10px .15px 10px" ],
+			"expect": "10px .15px"
+		},
+		"2 to 1": {
+			"params": [ "-moz-border-radius", "10in 10in" ],
+			"expect": "10in"
+		},
+		"slash 4 to 1": {
+			"params": [ "border-radius", "10px 10.0px 10px 10.0px/10.0px 10px 10px 10.0px" ],
+			"expect": "10px/10px"
+		},
+		"slash 4 to 1/4 to 2": {
+			"params": [ "-moz-border-radius", "10px 10.0px 10px 10.0px/10.0px -9px 10px -9.0px" ],
+			"expect": "10px/10px -9px"
+		},
+		"slash 4 to 3/3 to 2": {
+			"params": [ "-webkit-border-radius", "10px -9.0px 11px -9.0px/10.0px -9px 10px" ],
+			"expect": "10px -9px 11px/10px -9px"
+		},
+		"Do Nothing": {
+			"params": [ "border-top-left-radus", "10px 10px" ],
+			"expect": "10px 10px"
+		}
+	},
+
+	// Directionals/Unit compression
+	"directionals": {
+		"4 to 1": {
+			"params": [ "10px 10px 10px 10px" ],
+			"expect": "10px"
+		},
+		"4 to 2": {
+			"params": [ ".5px 15px .5px 15px" ],
+			"expect": ".5px 15px"
+		},
+		"4 to 3": {
+			"params": [ "10px -15px 9px -15px" ],
+			"expect": "10px -15px 9px"
+		},
+		"3 to 2": {
+			"params": [ "10px .15px 10px" ],
+			"expect": "10px .15px"
+		},
+		"3 to 3": {
+			"params": [ "10px 15px 12px" ],
+			"expect": "10px 15px 12px"
+		},
+		"4 to 4": {
+			"params": [ "10cm 9cm 8cm 7cm" ],
+			"expect": "10cm 9cm 8cm 7cm"
+		},
+		"2 to 1": {
+			"params": [ "10in 10in" ],
+			"expect": "10in"
+		},
+		"2 to 2": {
+			"params": [ "8in 7in" ],
+			"expect": "8in 7in"
+		},
+		"1 to 1": {
+			"params": [ "10cm" ],
+			"expect": "10cm"
+		}
+	},
+
+	// Font-Weight compressions
+	"fontweight": {
+		"normal": {
+			"params": [ "normal" ],
+			"expect": "400"
+		},
+		"bold": {
+			"params": [ "bold" ],
+			"expect": "700"
+		},
+		"heavy": {
+			"params": [ "heavy" ],
+			"expect": "heavy"
+		},
+		"blah": {
+			"params": [ "blah" ],
+			"expect": "blah"
+		},
+		"font-bold": {
+			"params": [ "bold 12pt" ],
+			"expect": "700 12pt"
+		},
+		// We don't convert normal in expanded font properties
+		// as normal is used in font-style and font-varient
+		"font-normal": {
+			"params": [ "normal 12pt" ],
+			"expect": "normal 12pt"
+		}
+	},
+
+	// Special font property conversions
+	"font": {
+		"font-size/line-height": {
+			"params": [ "normal 0.5px/10.0em Georgia, sans-serif" ],
+			"expect": "normal .5px/10em Georgia, sans-serif"
+		},
+		"font-size/line-height start": {
+			"params": [ "0.5px/10.0em Georgia, sans-serif" ],
+			"expect": ".5px/10em Georgia, sans-serif"
+		}
+	},
+
+	// Special clip conversions
+	"clip": {
+		"commas": {
+			"params": [ "rect(10.0px,-0.9px,5px,-.9px)" ],
+			"expect": "rect(10px,-.9px,5px,-.9px)"
+		},
+		"space": {
+			"params": [ "rect( 10.0px -0.9px 5px -.9px )" ],
+			"expect": "rect(10px -.9px 5px -.9px)"
+		},
+		"donothing": {
+			"params": [ "nothing( 10.0px -0.9px 5px -.9px )" ],
+			"expect": "nothing( 10.0px -0.9px 5px -.9px )"
+		}
+	},
+
+	// Converting none values to 0
+	"none": {
+		"background": {
+			"params": [ "background", "none" ],
+			"expect": "0"
+		},
+		"border": {
+			"params": [ "border", "none" ],
+			"expect": "0"
+		},
+		"border-top": {
+			"params": [ "border-top", "none" ],
+			"expect": "0"
+		},
+		"border-left": {
+			"params": [ "border-left", "none" ],
+			"expect": "0"
+		},
+		"border-right": {
+			"params": [ "border-right", "none" ],
+			"expect": "0"
+		},
+		"border-top": {
+			"params": [ "border-top", "none" ],
+			"expect": "0"
+		},
+		"Shorthand": {
+			"params": [ "background", "white none no-repeat" ],
+			"expect": "white none no-repeat"
+		},
+		"Last Value": {
+			"params": [ "background", "white none" ],
+			"expect": "white none"
+		},
+		"Nothing": {
+			"params": [ "background", "white url(someimage.png)" ],
+			"expect": "white url(someimage.png)"
+		},
+		"border nothing": {
+			"params": [ "border-style", "none" ],
+			"expect": "none"
+		}
+	},
+
+	// MSIE Filters
+	"filter": {
+		"Simple": {
+			"params": [ "-ms-filter", "PROGID:DXImageTransform.Microsoft.Alpha(Opacity=30)" ],
+			"expect": "alpha(opacity=30)"
+		},
+		"quotes": {
+			"params": [ "-ms-filter", "\"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)\"" ],
+			"expect": "alpha(opacity=80)"
+		}
+	},
+
+	// Main individuals, combination of Color, Numeric and Individual handlers
+	"individuals": {
+		// Test lowercasing of props, and various numeric conversions
+		"Directionals 4 to 1": {
+			"params": [ "MARGIN", "10.0px 10.000px 010.0px 10px" ],
+			"join": ":",
+			"expect": "margin:10px"
+		},
+		// Long hex to short name conversions
+		"Lowercase Hex: #7F9D0A": {
+			"params": [ "color", "#7F9D0A" ],
+			"join": ":",
+			"expect": "color:#7f9d0a"
+		},
+		// Border-spacing
+		"border-spacing": {
+			"params": [ "border-spacing", "10.0px 10px" ],
+			"join": ":",
+			"expect": "border-spacing:10px"
+		},
+		// Border-radius
+		"border-radius": {
+			"params": [ "border-radius", "10.0px -0.10px 10.0px -.10px/-0.9px 1px 2px 1.0px" ],
+			"join": ":",
+			"expect": "border-radius:10px -.1px/-.9px 1px 2px"
+		},
+		"-moz-border-radius": {
+			"params": [ "-moz-border-radius", "5px 6px 7px 6px/-1.0px" ],
+			"join": ":",
+			"expect": "-moz-border-radius:5px 6px 7px/-1px"
+		},
+		"-webkit-border-radius": {
+			"params": [ "-webkit-border-radius", "10px 10.0px 10px 10.0px" ],
+			"join": ":",
+			"expect": "-webkit-border-radius:10px"
+		}
+	}
+}

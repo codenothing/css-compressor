@@ -1,0 +1,53 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Cleanup
+ */
+{
+	// Removes definitions defined twice, usually injected by the compressor itself
+	"removeMultipleDefinitions": {
+		"simple": {
+			"params": [ "margin-left:10px;color:blue;margin-left:10px;color:blue;" ],
+			"expect": "margin-left:10px;color:blue;"
+		}
+	},
+
+	// Escaped character removal
+	"removeInjections": {
+		"multiple": {
+			"params": [ "background:url(http\\://www.codenothing.com/random.php?foo=bar\\;&colon=te\\:st\\;)" ],
+			"expect": "background:url(http://www.codenothing.com/random.php?foo=bar;&colon=te:st;)"
+		},
+		"single": {
+			"params": [ "color:blue\\;" ],
+			"expect": "color:blue\\;"
+		}
+	},
+
+	// last semi-colon
+	"removeUnnecessarySemicolon": {
+		"1": {
+			"params": [ "color:red;font-size:12pt;" ],
+			"expect": "color:red;font-size:12pt"
+		},
+		"2": {
+			"params": [ "background:white;" ],
+			"expect": "background:white"
+		}
+	},
+
+	// Cleanup has it's own special test handler
+	"cleanup": {
+		"_special": "details",
+		"params": [
+			"color:blue;font-size:12pt;color:blue;font-size:12pt;",
+			"color:blue;background:red url(http\\://www.example.com?a=someitem\\;);color:blue;"
+		],
+		"expect": [
+			"color:blue;font-size:12pt",
+			"color:blue;background:red url(http\\://www.example.com?a=someitem\\;)"
+		]
+	}
+}

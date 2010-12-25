@@ -1,0 +1,47 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Combine.Aural
+ */
+{
+	"combine": {
+		"cue": {
+			"params": [ "cue-before:url(sound.wav);color:red;cue-after:url(after.wav);" ],
+			"expect": "cue:url(sound.wav) url(after.wav);color:red;"
+		},
+		"pause": {
+			"params": [ "color:white;pause-before:2s;pause-after:3s" ],
+			"expect": "color:white;pause:2s 3s;"
+		},
+		"do nothing": {
+			"params": [ "pause-before:2s;color:red;" ],
+			"expect": "pause-before:2s;color:red;"
+		}
+	},
+
+	"storage": {
+		"_special": "storage",
+		"cue": {
+			"params": [ "cue-before:url(sound.wav);color:red;cue-after:url(after.wav);" ],
+			"expect": {
+				"cue": "cue:url(sound.wav) url(after.wav);"
+			}
+		},
+		"pause": {
+			"params": [ "color:white;pause-before:2s;pause-after:3s" ],
+			"expect": {
+				"pause": "pause:2s 3s;"
+			}
+		},
+		"pause important": {
+			"params": [ "color:white;pause-before:2s!important;pause-after:3s;" ],
+			"expect": {}
+		},
+		"nothing": {
+			"params": [ "pause-before:2s;color:red;" ],
+			"expect": {}
+		}
+	}
+}

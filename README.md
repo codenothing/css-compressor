@@ -8,7 +8,7 @@ It finds possible CSS shorthand techniques for combination of properties.
 Usage
 -----
 
-	require( 'src/CSSCompression.inc' );
+	require( 'src/CSSCompression.php' );
 	$compressed = CSSCompression::express( $css, 'sane' );
 
 

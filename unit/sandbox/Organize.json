@@ -1,0 +1,88 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Organize
+ */
+{
+	// Selector based combination
+	"reduceSelectors": {
+		"_special": "both",
+		"selectors": {
+			"params": [
+				"#id div.class",
+				"#secondary .oops",
+				"#today p.boss",
+				"#id div.class",
+				"#today p.boss",
+				"#id div.class",
+				"#id div.class",
+				"#secondary .oops"
+			],
+			"expect": [
+				"#id div.class",
+				"#secondary .oops",
+				"#today p.boss"
+			]
+		},
+		"details": {
+			"params": [
+				"test1;",
+				"test2;",
+				"test3;",
+				"test4;",
+				"test5;",
+				"test6;",
+				"test7;",
+				"test8;"
+			],
+			"expect": [
+				"test1;test4;test6;test7;",
+				"test2;test8;",
+				"test3;test5;"
+			]
+		}
+	},
+
+	// Detail based combination
+	"reduceDetails": {
+		"_special": "both",
+		"selectors": {
+			"params": [
+				"#id div.class",
+				"#secondary .oops",
+				"#today p.boss",
+				"#id div.class",
+				"#today p.boss",
+				"#id div.class",
+				"#id div.class",
+				"#secondary .oops"
+			],
+			"expect": [
+				"#id div.class,#today p.boss,#id div.class",
+				"#secondary .oops,#id div.class",
+				"#id div.class",
+				"#today p.boss,#secondary .oops"
+			]
+		},
+		"details": {
+			"params": [
+				"color:red;font-size:12pt;font-weight:bold;",
+				"margin-left:10px;margin-top:20px;",
+				"font-size:12pt;font-weight:bold;color:red;",
+				"background:white;",
+				"border:1px solid black;border-radius:20px;",
+				"margin-top:20px;margin-left:10px;",
+				"font-weight:bold;color:red;font-size:12pt;",
+				"border-radius:20px;border:1px solid black;"
+			],
+			"expect": [
+				"color:red;font-size:12pt;font-weight:bold;",
+				"margin-left:10px;margin-top:20px;",
+				"background:white;",
+				"border:1px solid black;border-radius:20px;"
+			]
+		}
+	}
+}

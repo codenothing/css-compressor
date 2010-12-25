@@ -1,0 +1,125 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Numeric
+ */
+{
+	// Decimal removal
+	"decimal": {
+		"remove": {
+			"params": [ "1.0em" ],
+			"expect": "1em"
+		},
+		"negative remove": {
+			"params": [ "-1.0em" ],
+			"expect": "-1em"
+		},
+		"positive remove": {
+			"params": [ "+1.0em" ],
+			"expect": "1em"
+		},
+		"long decimal int": {
+			"params": [ "1.00000em" ],
+			"expect": "1em"
+		},
+		"negative long decimal int": {
+			"params": [ "-1.00000em" ],
+			"expect": "-1em"
+		},
+		"positive long decimal int": {
+			"params": [ "+1.00000em" ],
+			"expect": "1em"
+		},
+		"long decimal": {
+			"params": [ "1.10000em" ],
+			"expect": "1.1em"
+		},
+		"negative long decimal": {
+			"params": [ "-1.10000em" ],
+			"expect": "-1.1em"
+		},
+		"keep": {
+			"params": [ "1.059em" ],
+			"expect": "1.059em"
+		},
+		"negative keep": {
+			"params": [ "-1.059em" ],
+			"expect": "-1.059em"
+		}
+	},
+
+	// Unit removal
+	"units": {
+		"remove": {
+			"params": [ "0px" ],
+			"expect": "0"
+		},
+		"percentage": {
+			"params": [ "0%" ],
+			"expect": "0"
+		},
+		"non-zero": {
+			"params": [ "50px" ],
+			"expect": "50px"
+		},
+		"non-zero decimal": {
+			"params": [ "50.0px" ],
+			"expect": "50.0px"
+		},
+		"keep": {
+			"params": [ "1pt" ],
+			"expect": "1pt"
+		}
+	},
+
+	// Zero Removal
+	"zeroes": {
+		"0.8px": {
+			"params": [ "0.8px" ],
+			"expect": ".8px"
+		},
+		"-0.5px": {
+			"params": [ "-0.5px" ],
+			"expect": "-.5px"
+		},
+		"+0.5px": {
+			"params": [ "+0.5px" ],
+			"expect": ".5px"
+		},
+		"0.2983%": {
+			"params": [ "0.2983%" ],
+			"expect": ".2983%"
+		},
+		"-10.5px": {
+			"params": [ "-10.5px" ],
+			"expect": "-10.5px"
+		},
+		"10.2983%": {
+			"params": [ "10.2983%" ],
+			"expect": "10.2983%"
+		}
+	},
+
+	// Main numeric handler, just checking that it handles
+	// all of the above scenarios
+	"numeric": {
+		"0.8px": {
+			"params": [ "0.8px" ],
+			"expect": ".8px"
+		},
+		"0 pixel": {
+			"params": [ "0px" ],
+			"expect": "0"
+		},
+		"decimal removal": {
+			"params": [ "1.0em" ],
+			"expect": "1em"
+		},
+		"Nothing": {
+			"params": [ "1pt" ],
+			"expect": "1pt"
+		}
+	}
+}

@@ -1,0 +1,114 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Trim
+ */
+{
+	// Stripping comments out from stylesheet
+	"comments": {
+		"basic": {
+			"params": [
+				"te/*abc*/st"
+			],
+			"expect": "test"
+		},
+		"escaped": {
+			"params": [
+				"te/*abc*\\/def*/st"
+			],
+			"expect": "test"
+		},
+		"in a string": {
+			"params": [
+				"t\"/*e\"/*ab\"c*\\/def*/st"
+			],
+			"expect": "t\"/*e\"st"
+		},
+		"ignore": {
+			"params": [ "#red { content: blue; }" ],
+			"expect": "#red { content: blue; }"
+		}
+	},
+
+	// Trimming down the stylesheet, removing all whitespace possible
+	"strip": {
+		"simple": {
+			"paramjoin": "\n\t",
+			"params": [
+				"\n\n\n\n\t\t\n",
+				"\n\t\t\t\t\t#red > div.today + b.old, body.broken, #wtf {\n\n",
+				"\t\n\tbackground: URL(\"someimg.jpg\");;;;\n\n\n",
+				"\t\n\tbackground: url('someimg.jpg');;;;\n\n\n",
+				"\t\n\tbackground: URL(someimg.jpg);;;;\n\n\n",
+				"\t\tborder: 1px solid red;;;;;\n\t\n\t",
+				"\tcolor: white !important;;;;;\n\t\n",
+				"}\n\n\n"
+			],
+			"expect": [
+				"#red>div.today+b.old,body.broken,#wtf{",
+				"background: url(someimg.jpg);",
+				"background: url(someimg.jpg);",
+				"background: url(someimg.jpg);",
+				"border: 1px solid red;",
+				"color: white!important;",
+				"}"
+			]
+		}
+	},
+
+	// Escaping special characters
+	"escape": {
+		// Single property with URL
+		"single": {
+			"params": [ "#one{background:url(http://www.example1.com?a=semi;);}" ],
+			"expect": "#one{background:url(http\\:\\/\\/www\\.example1\\.com?a\\=semi\\;);}"
+		},
+
+		// Many properties with URL
+		"many": {
+			"paramjoin": "",
+			"params": [
+				"#one{background:url(http://www.example1.com?a=semi;);}",
+				"#two{background:url(http://www.example2.com?a=semi;);}",
+				"#three{background:url(http://www.example3.com?a=semi;);}",
+				"#four{background:url(http://www.example4.com?a=semi;);}"
+			],
+			"expect": [
+				"#one{background:url(http\\:\\/\\/www\\.example1\\.com?a\\=semi\\;);}",
+				"#two{background:url(http\\:\\/\\/www\\.example2\\.com?a\\=semi\\;);}",
+				"#three{background:url(http\\:\\/\\/www\\.example3\\.com?a\\=semi\\;);}",
+				"#four{background:url(http\\:\\/\\/www\\.example4\\.com?a\\=semi\\;);}"
+			]
+		}
+	},
+
+	// Combines all of the above methods
+	"trim": {
+		"combined": {
+			"paramjoin": "\n\t",
+			"params": [
+				"\n\n\n\n\t\t\n",
+				"\n\t\t\t\t\t#red > div.today + b.old, body.broken, #wtf {\n\n",
+				"\t\n\tbackground: url(\"http://www.example1.com?a=semi;\");;;;\n\n\n",
+				"\t\tborder: 1px solid red;;;;;\n\t\n\t",
+				"\tcolor: white !important;;;;;\n\t\n",
+				"\n\t}\n\n\n",
+				"#next \t\t {\n",
+				"\t\n\tbackground: url(\"http://www.example2.com?a=semi;\");;;;\n\n\n",
+				"\n}\n\n"
+			],
+			"expect": [
+				"#red>div.today+b.old,body.broken,#wtf{",
+				"background: url(http\\:\\/\\/www\\.example1\\.com?a\\=semi\\;);",
+				"border: 1px solid red;",
+				"color: white!important;",
+				"}",
+				"#next{",
+				"background: url(http\\:\\/\\/www\\.example2\\.com?a\\=semi\\;);",
+				"}"
+			]
+		}
+	}
+}

@@ -1,0 +1,70 @@
+/**
+ * CSS Compressor [VERSION]
+ * [DATE]
+ * Corey Hart @ http://www.codenothing.com
+ *
+ * @class Combine.List
+ */
+{
+	"replace": {
+		"1": {
+			"params": [ "list-style-type:none;list-style-position:inline;list-style-image:url(images/img.gif)" ],
+			"expect": "list-style:none inline url(images/img.gif);"
+		},
+		"2": {
+			"params": [ "list-style-type:none;color:white;list-style-position:inline;" ],
+			"expect": "list-style:none inline;"
+		},
+		"3": {
+			"params": [ "color:red;list-style-type:none;list-style-image:url(images/img.gif);" ],
+			"expect": "list-style:none url(images/img.gif);"
+		},
+		"4": {
+			"params": [ "list-style-position:inline;list-style-image:url(images/img.gif)" ],
+			"expect": "list-style:inline url(images/img.gif);"
+		},
+		"5": {
+			"params": [ "list-style-type:none;color:black;" ],
+			"expect": "list-style:none;"
+		},
+		"6": {
+			"params": [ "list-style-position:inline;" ],
+			"expect": "list-style:inline;"
+		},
+		"7": {
+			"params": [ "list-style-image:url(images/img.gif);" ],
+			"expect": "list-style:url(images/img.gif);"
+		}
+	},
+
+	"combine": {
+		"1": {
+			"params": [ "list-style-type:none;list-style-position:inline;list-style-image:url(images/img.gif);" ],
+			"expect": "list-style:none inline url(images/img.gif);"
+		},
+		"2": {
+			"params": [ "list-style-type:none;color:white;list-style-position:inline;" ],
+			"expect": "list-style:none inline;color:white;"
+		},
+		"3": {
+			"params": [ "color:red;list-style-type:none;list-style-image:url(images/img.gif);" ],
+			"expect": "color:red;list-style:none url(images/img.gif);"
+		},
+		"4": {
+			"params": [ "list-style-position:inline;list-style-image:url(images/img.gif);" ],
+			"expect": "list-style:inline url(images/img.gif);"
+		},
+		"5": {
+			"params": [ "list-style-type:none;color:black;" ],
+			"expect": "list-style:none;color:black;"
+		},
+		"6": {
+			"params": [ "list-style-position:inline;" ],
+			"expect": "list-style:inline;"
+		},
+		"7": {
+			"params": [ "list-style-image:url(images/img.gif);" ],
+			"expect": "list-style:url(images/img.gif);"
+		}
+	}
+}
