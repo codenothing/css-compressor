@@ -210,7 +210,7 @@ Class CSSCompression_Cleanup
 			}
 		}
 		else {
-			throw new CSSCompression_Exception( "Unknown method in Color Class - " . $method );
+			throw new CSSCompression_Exception( "Unknown method in Cleanup Class - " . $method );
 		}
 	}
 };

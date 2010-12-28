@@ -46,9 +46,7 @@ Class CSSCompression_Color
 
 		if ( ! self::$color2hex ) {
 			foreach ( self::$files as $v => $file ) {
-				if ( ( self::$$v = CSSCompression::getJSON( $file ) ) instanceof CSSCompression_Exception ) {
-					throw self::$$v;
-				}
+				self::$$v = CSSCompression::getJSON( $file );
 			}
 		}
 	}

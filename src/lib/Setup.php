@@ -274,7 +274,7 @@ Class CSSCompression_Setup
 			return call_user_func_array( array( $this, $method ), $args );
 		}
 		else {
-			throw new CSSCompression_Exception( "Unknown method in Color Class - " . $method );
+			throw new CSSCompression_Exception( "Unknown method in Setup Class - " . $method );
 		}
 	}
 };

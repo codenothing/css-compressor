@@ -247,7 +247,7 @@ Class CSSCompression_Selectors
 			}
 		}
 		else {
-			throw new CSSCompression_Exception( "Unknown method in Color Class - " . $method );
+			throw new CSSCompression_Exception( "Unknown method in Selectors Class - " . $method );
 		}
 	}
 };

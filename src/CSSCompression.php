@@ -5,7 +5,7 @@
  * Corey Hart @ http://www.codenothing.com
  */ 
 
-// Controller handles all subclass loading
+// Static dependencies, Subclasses loaded ondemand
 require( dirname(__FILE__) . '/lib/Exception.php' );
 require( dirname(__FILE__) . '/lib/Control.php' );
 
@@ -405,30 +405,33 @@ Class CSSCompression
 
 		// Check for errors
 		if ( $json === NULL ) {
+			$e = '';
 			// JSON Errors, taken directly from http://php.net/manual/en/function.json-last-error.php
 			switch( json_last_error() ) {
 				case JSON_ERROR_NONE:
-					$json = new CSSCompression_Exception( 'JSON Error - No error has occurred' );
+					$e = 'No error has occurred';
 					break;
 				case JSON_ERROR_DEPTH:
-					$json = new CSSCompression_Exception( 'JSON Error - The maximum stack depth has been exceeded' );
+					$e = 'The maximum stack depth has been exceeded';
 					break;
 				case JSON_ERROR_CTRL_CHAR:
-					$json = new CSSCompression_Exception( 'JSON Error - Control character error, possibly incorrectly encoded' );
+					$e = 'Control character error, possibly incorrectly encoded';
 					break;
 				case JSON_ERROR_STATE_MISMATCH:
-					$json = new CSSCompression_Exception( 'JSON Error - Invalid or malformed JSON' );
+					$e = 'Invalid or malformed JSON';
 					break;
 				case JSON_ERROR_SYNTAX:
-					$json = new CSSCompression_Exception( 'JSON Error - Syntax error' );
+					$e = 'Syntax error';
 					break;
 				case JSON_ERROR_UTF8:
-					$json = new CSSCompression_Exception( 'JSON Error - Malformed UTF-8 characters, possibly incorrectly encoded' );
+					$e = 'Malformed UTF-8 characters, possibly incorrectly encoded';
 					break;
 				default:
-					$json = new CSSCompression_Exception( 'Unknown JSON Error' );
+					$e = 'Unknown JSON Error';
 					break;
 			}
+
+			throw new CSSCompression_Exception( "JSON Error in $file: $e" );
 		}
 
 		// Good to go
