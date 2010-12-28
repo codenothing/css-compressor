@@ -1,5 +1,5 @@
 [CSS Compressor](http://www.codenothing.com/css-compressor/)
-========================
+============================================================
 
 CSSCompression is a PHP based CSS minifier that analyzes stylesheets for various compressions.
 It finds possible CSS shorthand techniques for combination of properties.

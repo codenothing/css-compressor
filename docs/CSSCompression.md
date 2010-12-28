@@ -1,23 +1,23 @@
-CSSCompression
-==============
+Class CSSCompression
+====================
 
 Below is a description of all public access points to the compressor.
 
 
 const *bool* DEV
---------------
+----------------
 
 Signifies development mode. When true, back door access to all subclasses is enabled. Should always be false in production.
 
 
 const *bool* TOKEN
-----------------
+------------------
 
 Special marker that gets injected and removed into the stylesheet during compression. Change this if it exists in your sheet.
 
 
 public static *array* defaults
-----------------------------
+------------------------------
 
 Default settings for every instance.
 
@@ -78,7 +78,7 @@ Usage:
 
 
 public function __construct( [ *mixed* $css = NULL, *mixed* $options = NULL ] )
----------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 Builds the subclasses first, then does one of the following
 
@@ -92,7 +92,7 @@ Builds the subclasses first, then does one of the following
 
  - Passing a long string argument, and an array of options argument, merges those with default options, and runs compression on the css string.
 
-Here's a few examples
+Usage:
 
 	// Create an instance in 'sane' mode
 	$CSSC = new CSSCompression( 'sane' );
@@ -114,7 +114,7 @@ Here's a few examples
 
 
 *array* public function mode( *string* $mode = NULL )
-------------------------------------------------
+-----------------------------------------------------
 
 Sets the mode of the instance.
 
@@ -123,7 +123,7 @@ Sets the mode of the instance.
 
 
 *array* public static function modes( [ *mixed* $mode = NULL, *array* $config = NULL ] )
-----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 
 Mode configuration, any one of the following combination of arguments is allowed
 
@@ -135,7 +135,7 @@ Mode configuration, any one of the following combination of arguments is allowed
 
  - Passing a single array argument merges a set of modes into the configured set
 
-Here's a few demo examples
+Usage:
 
 	// Returns the entire list of modes
 	$modes = CSSCompression::modes();
@@ -156,7 +156,7 @@ Here's a few demo examples
 
 
 *mixed* public function option( [ *mixed* $name = NULL, *mixed* $value = NULL ] )
----------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 
 Custom option handling, any one of the following may happen
 
@@ -168,7 +168,7 @@ Custom option handling, any one of the following may happen
 
  - Passing a string name argument, and a value argument sets the value to it's corresponding option name.
 
-Here's a few examples.
+Usage:
 
 	// Get the entire options array for this instance
 	$options = $CSSC->option();
@@ -184,7 +184,7 @@ Here's a few examples.
 
 
 *string* public function compress( *string* $css = NULL, [ *mixed* $options = NULL ] )
---------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
 
 Compresses the given string with the given options/mode. $options can be the name of a mode, or an array of options.
 
@@ -199,7 +199,7 @@ Compresses the given string with the given options/mode. $options can be the nam
 
 
 *string* public static function express( *string* $css = NULL, [ *mixed* $options = NULL ] )
---------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 
 Use's it's own singleton instance to return compressed css sheets.  $options can be the name of a mode, or an array of options.
 
@@ -214,7 +214,7 @@ Use's it's own singleton instance to return compressed css sheets.  $options can
 
 
 *bool* public function reset()
-----------------------------
+------------------------------
 
 Cleans out compression instance, all of it's subclasses, and resets options back to their defaults.
 
@@ -223,7 +223,7 @@ Cleans out compression instance, all of it's subclasses, and resets options back
 
 
 *bool* public function flush()
-----------------------------
+------------------------------
 
 Cleans out class vars.
 
@@ -232,7 +232,7 @@ Cleans out class vars.
 
 
 *object* public static function getInstance( [ *string* name = NULL ] )
--------------------------------------------------------------------
+-----------------------------------------------------------------------
 
 Returns a singleton instance of the compressor
 
@@ -244,7 +244,7 @@ Returns a singleton instance of the compressor
 
 
 *array* public static function getJSON( *string* $file )
-----------------------------------------------------
+--------------------------------------------------------
 
 Pulls the contents of the $file, does some quick comment stripping, then returns a json decoded hash. Mainly for internal use.
 
