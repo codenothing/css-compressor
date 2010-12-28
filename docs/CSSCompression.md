@@ -23,7 +23,7 @@ Default settings for every instance.
 
 
 const *int* READ_MAX, const *int* READ_MED, const *int* READ_MIN, const *int* READ_NONE
--------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
 
 Readability constants. Tells what format to return the css back after compression.
 
@@ -39,14 +39,37 @@ This is the list of readable vars on any given instance
  - *array* **stats**: Contains the result stats of the last compression ran.
  - *string* **(option-name)**: Contains the value of that option **name**.
 
+	// Print out compressed css
+	echo $CSSC->css;
+
+	// Print out the current mode
+	echo $CSSC->mode;
+
+	// Print out list of options
+	print_r( $CSSC->options );
+
+	// Print out result stats
+	print_r( $CSSC->stats );
+
+	// Print out a single options value
+	echo $CSSC->readability;
+
 
 Setters
 =======
 
 Currently, you can only directly set options
 
- - *string* options, *array* value: Merge an array of options with the current defaults
- - *string* name, *mixed* value: Set the option **name** with the **value**.
+ - *string* **options**, *array* **value**: Merge an array of options with the current defaults
+ - *string* **name**, *mixed* **value**: Set the option **name** with the **value**.
+
+	// Merge a custom set of options into the defined set
+	// Remeber that it doesn't set, just merges
+	$CSSC->options = array( 'readability' => CSSCompression::READ_MAX, 'organize' => true );
+
+	// Set a single options value
+	$CSSC->readability = CSSCompression::READ_MAX;
+	$CSSC->organize = true;
 
 
 

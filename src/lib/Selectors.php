@@ -199,19 +199,15 @@ Class CSSCompression_Selectors
 	 * @param (string) selector: CSS Selector
 	 */
 	private function strictid( $selector ) {
-		if ( $selector[ 0 ] != '*' ) {
-			$parts = preg_split( $this->rcomma, $selector );
-			foreach ( $parts as &$s ) {
-				if ( preg_match( $this->rid, $s ) ) {
-					$p = preg_split( $this->rid, $s );
-					$s = '#' . array_pop( $p );
-				}
+		$parts = preg_split( $this->rcomma, $selector );
+		foreach ( $parts as &$s ) {
+			if ( preg_match( $this->rid, $s ) ) {
+				$p = preg_split( $this->rid, $s );
+				$s = '#' . array_pop( $p );
 			}
-
-			$selector = implode( ',', $parts );
 		}
 
-		return $selector;
+		return implode( ',', $parts );
 	}
 
 	/**

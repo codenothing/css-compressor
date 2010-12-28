@@ -92,12 +92,7 @@ Class CompressionBenchmark
 	private function build(){
 		$this->root = dirname(__FILE__) . '/';
 		$this->regressiontest = isset( $_SERVER['argv'][ 1 ] );
-		$this->version = ! $this->regressiontest || $_SERVER['argv'][ 1 ] == 'temp' ? CSSCompression::VERSION : $_SERVER['argv'][ 1 ];
-
-		// Check for dev mode
-		if ( strpos( $this->version, 'VERSION') !== false ) {
-			$this->version = 'temp-' . time();
-		}
+		$this->version = strpos( CSSCompression::VERSION, 'VERSION') === false ? CSSCompression::VERSION : 'temp-' . time();
 
 		// Make the dist
 		if ( ! is_dir( $this->root . 'dist/') ) {
