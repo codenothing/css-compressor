@@ -4,25 +4,25 @@ CSSCompression
 Below is a description of all public access points to the compressor.
 
 
-const bool DEV
+const *bool* DEV
 --------------
 
 Signifies development mode. When true, back door access to all subclasses is enabled. Should always be false in production.
 
 
-const bool TOKEN
+const *bool* TOKEN
 ----------------
 
 Special marker that gets injected and removed into the stylesheet during compression. Change this if it exists in your sheet.
 
 
-public static array defaults
+public static *array* defaults
 ----------------------------
 
 Default settings for every instance.
 
 
-const int READ_MAX, const int READ_MED, const int READ_MIN, const int READ_NONE
+const *int* READ_MAX, const *int* READ_MED, const *int* READ_MIN, const *int* READ_NONE
 -------------------------------------------------------------------------------
 
 Readability constants. Tells what format to return the css back after compression.
@@ -50,7 +50,7 @@ Currently, you can only directly set options
 
 
 
-public function __construct( [ mixed $css = NULL, mixed $options = NULL ] )
+public function __construct( [ *mixed* $css = NULL, *mixed* $options = NULL ] )
 ---------------------------------------------------------------
 
 Builds the subclasses first, then does one of the following
