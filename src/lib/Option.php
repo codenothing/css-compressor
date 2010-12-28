@@ -51,7 +51,11 @@ Class CSSCompression_Option
 			return isset( $this->options[ $name ] ) ? $this->options[ $name ] : NULL;
 		}
 		else {
-			$this->Control->mode = $this->custom;
+			// Readability doesn't signify custom settings
+			if ( $name != 'readability' ) {
+				$this->Control->mode = $this->custom;
+			}
+
 			return ( $this->options[ $name ] = $value );
 		}
 	}

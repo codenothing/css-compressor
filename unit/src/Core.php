@@ -34,7 +34,8 @@ Class CSScompression_Unit_Core extends CSScompression_Unit_Sheets
 	/**
 	 * Constructor - runs the test suite
 	 *
-	 * @param (array) block: Array of files to temporarily focus on/ignore
+	 * @param (array) block: Array of files to temporarily ignore
+	 * @param (array) specials: List of special settings for certain files
 	 */ 
 	public function __construct( $block = array(), $specials = array() ) {
 		$this->block = $block;
@@ -59,19 +60,6 @@ Class CSScompression_Unit_Core extends CSScompression_Unit_Sheets
 	}
 
 	/**
-	 * Turns all options to true
-	 *
-	 * @params none
-	 */ 
-	protected function reset(){
-		$options = $this->compressor->option();
-		foreach ( $options as $key => $value ) {
-			$this->compressor->option( $key, true );
-		}
-		$this->compressor->option( 'readability', CSSCompression::READ_NONE );
-	}
-
-	/**
 	 * Removes all files in a directory (NOT RECURSIVE)
 	 *
 	 * @param (string) dir: Full directory path
@@ -83,10 +71,23 @@ Class CSScompression_Unit_Core extends CSScompression_Unit_Sheets
 
 		$handle = opendir( $dir );
 		while ( ( $file = readdir( $handle ) ) !== false ) {
-			if ( $file != '.' && $file != '..' && strpos( $file, 'README' ) === false ) {
+			if ( $file != '.' && $file != '..' && is_file( $dir . $file ) && strpos( $file, 'README' ) === false ) {
 				unlink( $dir . $file );
 			}
 		}
+	}
+
+	/**
+	 * Turns all options to true
+	 *
+	 * @params none
+	 */ 
+	protected function reset(){
+		$options = $this->compressor->option();
+		foreach ( $options as $key => $value ) {
+			$this->compressor->option( $key, true );
+		}
+		$this->compressor->option( 'readability', CSSCompression::READ_NONE );
 	}
 
 	/**

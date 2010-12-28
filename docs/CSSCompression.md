@@ -22,8 +22,8 @@ public static array defaults
 Default settings for every instance.
 
 
-const int READ_MAX, int READ_MED, int READ_MIN, int READ_NONE
--------------------------------------------------------------
+const int READ_MAX, const int READ_MED, const int READ_MIN, const int READ_NONE
+-------------------------------------------------------------------------------
 
 Readability constants. Tells what format to return the css back after compression.
 
@@ -33,11 +33,11 @@ Getters
 
 This is the list of readable vars on any given instance
 
- - string **css**: Contains the compressed result of the last compression ran.
- - string **mode**: Contains the current mode of the instance
- - array **options**: Contains the complete array of currently defined options
- - array **stats**: Contains the result stats of the last compression ran.
- - string **(option-name)**: Contains the value of that option **name**.
+ - *string* **css**: Contains the compressed result of the last compression ran.
+ - *string* **mode**: Contains the current mode of the instance
+ - *array* **options**: Contains the complete array of currently defined options
+ - *array* **stats**: Contains the result stats of the last compression ran.
+ - *string* **(option-name)**: Contains the value of that option **name**.
 
 
 Setters
@@ -45,8 +45,8 @@ Setters
 
 Currently, you can only directly set options
 
- - string options, array value: Merge an array of options with the current defaults
- - string name, mixed value: Set the option **name** with the **value**.
+ - *string* options, *array* value: Merge an array of options with the current defaults
+ - *string* name, *mixed* value: Set the option **name** with the **value**.
 
 
 
@@ -86,7 +86,7 @@ Here's a few examples
 	echo $CSSC->css;
 
 
-bool public function mode( string $mode = NULL )
+*array* public function mode( *string* $mode = NULL )
 ------------------------------------------------
 
 Sets the mode of the instance.
@@ -95,7 +95,7 @@ Sets the mode of the instance.
 	$CSSC->modes( 'sane' );
 
 
-array public static function modes( [ mixed $mode = NULL, array $config = NULL ] )
+*array* public static function modes( [ *mixed* $mode = NULL, *array* $config = NULL ] )
 ----------------------------------------------------------------------------------
 
 Mode configuration, any one of the following combination of arguments is allowed
@@ -128,7 +128,7 @@ Here's a few demo examples
 **NOTE:** When an instance congures itself to a mode, it sets every option to true, and expects the mode configuration to tell it what is false.
 
 
-mixed public function option( [ mixed $name = NULL, mixed $value = NULL ] )
+*mixed* public function option( [ *mixed* $name = NULL, *mixed* $value = NULL ] )
 ---------------------------------------------------------------------------
 
 Custom option handling, any one of the following may happen
@@ -156,7 +156,7 @@ Here's a few examples.
 	$CSSC->option( 'readability', CSSCompression::READ_MAX );
 
 
-string public function compress( string $css = NULL, [ mixed $options = NULL ] )
+*string* public function compress( *string* $css = NULL, [ *mixed* $options = NULL ] )
 --------------------------------------------------------------------------------
 
 Compresses the given string with the given options/mode. $options can be the name of a mode, or an array of options.
@@ -171,7 +171,7 @@ Compresses the given string with the given options/mode. $options can be the nam
 	$compressed = $CSSC->comrpess( $css, array( 'readability' => CSSCompression::READ_MAX ) );
 
 
-string public static function express( string $css = NULL, [ mixed $options = NULL ] )
+*string* public static function express( *string* $css = NULL, [ *mixed* $options = NULL ] )
 --------------------------------------------------------------------------------------
 
 Use's it's own singleton instance to return compressed css sheets.  $options can be the name of a mode, or an array of options.
@@ -186,7 +186,7 @@ Use's it's own singleton instance to return compressed css sheets.  $options can
 	$compressed = CSSCompression::express( $css, array( 'readability' => CSSCompression::READ_MAX ) );
 
 
-bool public function reset()
+*bool* public function reset()
 ----------------------------
 
 Cleans out compression instance, all of it's subclasses, and resets options back to their defaults.
@@ -195,7 +195,7 @@ Cleans out compression instance, all of it's subclasses, and resets options back
 	$CSSC->reset();
 
 
-bool public function flush()
+*bool* public function flush()
 ----------------------------
 
 Cleans out class vars.
@@ -204,7 +204,7 @@ Cleans out class vars.
 	$CSSC->flush();
 
 
-object public static function getInstance( [ string name = NULL ] )
+*object* public static function getInstance( [ *string* name = NULL ] )
 -------------------------------------------------------------------
 
 Returns a singleton instance of the compressor
@@ -216,7 +216,7 @@ Returns a singleton instance of the compressor
 	$CSSC = CSSCompression::getInstance( 'rose' );
 
 
-array public static function getJSON( string $file )
+*array* public static function getJSON( *string* $file )
 ----------------------------------------------------
 
 Pulls the contents of the $file, does some quick comment stripping, then returns a json decoded hash. Mainly for internal use.

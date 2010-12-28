@@ -1,5 +1,5 @@
 Options
-=========
+=======
 
 Here's a few different ways to set options.
 
@@ -203,6 +203,7 @@ Combines border-radius properties
 
 unnecessary-semicolons
 ---------------------- 
+
 Removes the last semicolon of a property set
 
  - *{margin: 2px; color: blue;} -> {margin: 2px; color: blue}*

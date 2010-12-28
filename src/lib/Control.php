@@ -148,7 +148,7 @@ Class CSSCompression_Control
 	 */
 	public function reset(){
 		$this->Option->reset();
-		$this->flush();
+		return $this->flush();
 	}
 
 	/**
@@ -172,6 +172,8 @@ Class CSSCompression_Control
 				'time' => 0,
 			),
 		);
+
+		return true;
 	}
 
 	/**
