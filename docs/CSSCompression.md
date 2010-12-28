@@ -68,7 +68,7 @@ Currently, you can only directly set options
 Usage:
 
 	// Merge a custom set of options into the defined set
-	// Remeber that it doesn't set, just merges
+	// Remember that it doesn't set, just merges
 	$CSSC->options = array( 'readability' => CSSCompression::READ_MAX, 'organize' => true );
 
 	// Set a single options value
@@ -119,7 +119,7 @@ Here's a few examples
 Sets the mode of the instance.
 
 	// Set this instance to 'sane' mode
-	$CSSC->modes( 'sane' );
+	$CSSC->mode( 'sane' );
 
 
 *array* public static function modes( [ *mixed* $mode = NULL, *array* $config = NULL ] )
@@ -152,7 +152,7 @@ Here's a few demo examples
 		'blue' => array( 'rm-multi-define' => false, 'readability' => CSSCompression::READ_NONE )
 	));
 
-**NOTE:** When an instance congures itself to a mode, it sets every option to true, and expects the mode configuration to tell it what is false.
+**NOTE:** When an instance configures itself to a mode, it sets every option to true, and expects the mode configuration to tell it what is false.
 
 
 *mixed* public function option( [ *mixed* $name = NULL, *mixed* $value = NULL ] )
