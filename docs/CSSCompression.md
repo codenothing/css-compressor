@@ -39,6 +39,8 @@ This is the list of readable vars on any given instance
  - *array* **stats**: Contains the result stats of the last compression ran.
  - *string* **(option-name)**: Contains the value of that option **name**.
 
+Usage:
+
 	// Print out compressed css
 	echo $CSSC->css;
 
@@ -62,6 +64,8 @@ Currently, you can only directly set options
 
  - *string* **options**, *array* **value**: Merge an array of options with the current defaults
  - *string* **name**, *mixed* **value**: Set the option **name** with the **value**.
+
+Usage:
 
 	// Merge a custom set of options into the defined set
 	// Remeber that it doesn't set, just merges
