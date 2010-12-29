@@ -70,6 +70,9 @@ Class CompressionBenchmark
 
 		// If just doing benchmarks, clear out
 		if ( ! $this->regressiontest ) {
+			if ( strpos( CSSCompression::VERSION, 'VERSION' ) === false ) {
+				$this->store();
+			}
 			return;
 		}
 		// Only store results in non-comparrison mode

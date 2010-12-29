@@ -239,7 +239,7 @@ Returns a singleton instance of the compressor
 	// Get a singleton instance
 	$CSSC = CSSCompression::getInstance();
 
-	// Get the store 'rose' singleton instance
+	// Get the stored 'rose' singleton instance
 	$CSSC = CSSCompression::getInstance( 'rose' );
 
 
@@ -248,4 +248,4 @@ Returns a singleton instance of the compressor
 
 Pulls the contents of the $file, does some quick comment stripping, then returns a json decoded hash. Mainly for internal use.
 
-	$json = CSSCompression::getJSON( $filepath );
+	$json = CSSCompression::getJSON( "/path/to/my/file.json" );
