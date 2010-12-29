@@ -135,6 +135,10 @@
 			"params": [ "a:first-letter,a,b" ],
 			"expect": "a:first-letter ,a,b"
 		},
+		"first-letter comma exists": {
+			"params": [ "a:first-letter ,a,b" ],
+			"expect": "a:first-letter ,a,b"
+		},
 		"first-line tree": {
 			"params": [ "a:first-line>a" ],
 			"expect": "a:first-line>a"

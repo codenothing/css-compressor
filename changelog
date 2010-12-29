@@ -6,7 +6,7 @@
 
 # Compressor Additions
 - Configuration Modes
-- pseduo-space, add space between pseduo selectors and comman/brace for ie6
+- pseduo-space, add space between pseduo selectors and comma/brace for ie6
 - removing leading 0 of a decimal, 0.633px -> .633px
 - handling all At Rules (charsets,media,imports,font-family,etc..)
 - handling ms filter paths
@@ -17,5 +17,6 @@
 
 # Codebase Changes
 - Converted to subclass architecture, more modular.
-- Using JSON based sandbox spec for focused unit tests.
+- Using JSON based sandbox specs for focused unit tests.
 - Helper conversion definitions(long2hex, hex2short) are now in JSON based files.
+- Added benchmark/regression testing

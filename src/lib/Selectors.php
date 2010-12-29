@@ -22,7 +22,8 @@ Class CSSCompression_Selectors
 	 * @param (regex) rcomma: looks for an unescaped comma character
 	 * @param (regex) rspace: looks for an unescaped space character
 	 * @param (regex) rid: looks for an unescaped hash character
-	 * @param (array) pseudos: Contains pattterns and replacments to space out pseudo selectors
+	 * @param (regex) rpseudo: Add space after first-letter|line pseudo selector
+	 * --- when it occurs before comma or rule set
 	 */
 	private $Control;
 	private $token = '';
@@ -36,18 +37,7 @@ Class CSSCompression_Selectors
 	private $rcomma = "/(?<!\\\),/";
 	private $rspace = "/(?<!\\\)\s/";
 	private $rid = "/(?<!\\\)#/";
-	private $pseudos = array(
-		'patterns' => array(
-			"/\:first-(letter|line)[,]/i",
-			"/  /",
-			"/:first-(letter|line)$/i",
-		),
-		'replacements' => array(
-			":first-$1 ,",
-			" ",
-			":first-$1 ",
-		)
-	);
+	private $rpseudo = "/:first-(letter|line)(,|$)/i";
 
 	/**
 	 * Stash a reference to the controller on each instantiation
@@ -228,7 +218,7 @@ Class CSSCompression_Selectors
 	 * @param (string) selector: CSS Selector
 	 */ 
 	private function pseudoSpace( $selector ) {
-		return preg_replace( $this->pseudos['patterns'], $this->pseudos['replacements'], $selector );
+		return preg_replace( $this->rpseudo, ":first-$1 $2", $selector );
 	}
 
 	/**
