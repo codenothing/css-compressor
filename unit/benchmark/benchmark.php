@@ -59,7 +59,7 @@ Class CompressionBenchmark
 			);
 
 			// Regression testing
-			if ( $this->regressiontest ) {
+			if ( $this->regressiontest && strpos( $_SERVER['argv'][ 1 ], 'temp-' ) !== false ) {
 				$this->instances[ $mode ]->option( 'readability', CSSCompression::READ_MAX );
 			}
 		}
