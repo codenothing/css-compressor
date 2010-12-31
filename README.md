@@ -29,7 +29,7 @@ Modes are pre-defined sets of options that can be set by passing in the mode nam
 
  - **small**: (65% safe) Small mode reorganizes the whole sheet, combines as much as it can, and will break most comment hacks. 
 
- - **full**: (50% safe) Full mode does everything small does, but also converts hex codes to their short color name alternatives.
+ - **full**: (64% safe) Full mode does everything small does, but also converts hex codes to their short color name alternatives.
 
 
 Here's a few different ways to initiate a mode.
