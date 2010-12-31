@@ -53,6 +53,9 @@ Class CSScompression_Unit_Sheets extends CSScompression_Unit_Sandbox
 	 * @params none
 	 */
 	protected function sheets(){
+		// Test options
+		$this->options();
+
 		// Test express compression
 		$this->express();
 
@@ -66,6 +69,23 @@ Class CSScompression_Unit_Sheets extends CSScompression_Unit_Sandbox
 		// Multi compression checks (just added sugar)
 		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'all' ) {
 			$this->testDoubles();
+		}
+	}
+
+	/**
+	 * Option testing - sanity check
+	 *
+	 * @params none
+	 */
+	private function options(){
+		foreach ( $this->instances as $mode => $instance ) {
+			$this->mark( "Option Array Matching", $mode, $instance->options === $instance->option() );
+
+			// Test that each option has it's own value on the instance
+			foreach ( $instance->options as $name => $value ) {
+				$this->mark( "Fn-Option.$mode", $name, $instance->option( $name ) === $value );
+				$this->mark( "Direct-Option.$mode", $name, $instance->$name === $value );
+			}
 		}
 	}
 

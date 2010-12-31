@@ -71,17 +71,27 @@ The compressor has an option function attached to it, that has multiple function
 
  - If both a name and value are passed, then that value is set to it's corresponding key in the array.
 
-Here's a few examples
+Usage
 
 	// Returns entire options array
 	$options = $CSSC->option();
 
-	// Returns the readability value
+	// Returns the readability option value
 	$readability = $CSSC->option( 'readability' );
 
 	// Sets the readability to non-readable
 	$CSSC->option( 'readability', CSSCompression::READ_NONE );
 
+Alternatively, you can use direct access methods
+
+	// Direct access to options array
+	$options = $CSSC->options;
+	
+	// Direct access to readability option value
+	$readability = $CSSC->readability;
+	
+	// Direct setting of readability value
+	$CSSC->readability = CSSCompression::READ_NONE;
 
 Additionally, a reset function is provided to revert back to base options (decided at runtime).
 

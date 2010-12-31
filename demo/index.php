@@ -4,12 +4,12 @@
  * [DATE]
  * Corey Hart @ http://www.codenothing.com
  */ 
-require( "../src/CSSCompression.inc" );
+require( "../src/CSSCompression.php" );
 $modes = array(
 	'safe' => 'Safe (99% safe)',
 	'sane' => 'Sane (90% safe)',
 	'small' => 'Small (65% safe)',
-	'full' => 'Full (50% safe)'
+	'full' => 'Full (64% safe)'
 );
 $select = '';
 foreach ( $modes as $mode => $display ) {
@@ -197,9 +197,7 @@ $select .= "<option value='custom'>Custom</option>";
 </form>
 
 <p style='margin-top:40px;font-size:9pt;'>
-Have a question? Found a bug? Test it using the 
-<a href='sandbox/'>sandbox</a> or 
-<a href='mailto:corey@codenothing.com?Subject=CSSC Question/Bug'>mail me</a>.
+Have a question? Found a bug? <a href='mailto:ask@codenothing.com?Subject=CSSC Question/Bug'>Let Me Know</a>.
 </p>
 
 <div style='margin-top:50px;'>

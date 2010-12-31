@@ -4,7 +4,7 @@
  * [DATE]
  * Corey Hart @ http://www.codenothing.com
  */ 
-require("../src/CSSCompression.inc");
+require("../src/CSSCompression.php");
 
 // Make sure all options have a setting
 foreach ( CSSCompression::$defaults as $key => $value ) {
