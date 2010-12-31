@@ -13,6 +13,15 @@ require( dirname(__FILE__) . '/lib/Control.php' );
 Class CSSCompression
 {
 	/**
+	 * CSSCompression Info
+	 *
+	 * @const (string) VERSION: Release version
+	 * @const (string) DATE: Release date
+	 */
+	const VERSION = "[VERSION]";
+	const DATE = "[DATE]";
+
+	/**
 	 * WARNING: This should ALWAYS BE FALSE in production
 	 * When DEV is true, backdoor access to private methods is opened.
 	 * Only used for unit testing and development.
@@ -28,15 +37,6 @@ Class CSSCompression
 	 * won't help, so don't pick a complicated token.
 	 */
 	const TOKEN = "@____CSSCOMPRESSION_TOKEN____@";
-
-	/**
-	 * CSSCompression Metadata
-	 *
-	 * @const (string) VERSION: Release version
-	 * @const (string) DATE: Release date
-	 */
-	const VERSION = "[VERSION]";
-	const DATE = "[DATE]";
 
 	/**
 	 * The default set of options for every instance.
@@ -149,27 +149,14 @@ Class CSSCompression
 	);
 
 	/**
-	 * Readability Constants
+	 * Modes are predefined sets of configuration for referencing. When creating a mode, all options are set to true,
+	 * and the mode array defines which options are to be false
 	 *
-	 * @param (int) READ_MAX: Maximum readability of output
-	 * @param (int) READ_MED: Medium readability of output
-	 * @param (int) READ_MIN: Minimal readability of output
-	 * @param (int) READ_NONE: No readability of output (full compression into single line)
-	 */ 
-	const READ_MAX = 3;
-	const READ_MED = 2;
-	const READ_MIN = 1;
-	const READ_NONE = 0;
-
-	/**
-	 * Modes are predefined sets of configuration for referencing
-	 * When creating a mode, all options are set to true, and the mode array
-	 * defines which options are to be false
-	 *
-	 * @mode safe: Keeps selector and detail order, and prevents hex to shortname conversion
-	 * @mode sane: Does most combinations while keeping selector order.
-	 * @mode medium: Prevents hex to shortname conversion
-	 * @mode small: Full compression
+	 * @mode safe: Safe mode does zero combinations or organizing. It's the best mode if you use a lot of hacks
+	 * @mode sane: Sane mode does most combinations(multiple long hand notations to single shorthand),
+	 * --- but still keeps most declarations in their place
+	 * @mode small: Small mode reorganizes the whole sheet, combines as much as it can, and will break most comment hacks
+	 * @mode full: Full mode does everything small does, but also converts hex codes to their short color name alternatives
 	 */
 	private static $modes = array(
 		'safe' => array(
@@ -204,6 +191,19 @@ Class CSSCompression
 			'pseudo-space' => false,
 		),
 	);
+
+	/**
+	 * Readability Constants
+	 *
+	 * @param (int) READ_MAX: Maximum readability of output
+	 * @param (int) READ_MED: Medium readability of output
+	 * @param (int) READ_MIN: Minimal readability of output
+	 * @param (int) READ_NONE: No readability of output (full compression into single line)
+	 */ 
+	const READ_MAX = 3;
+	const READ_MED = 2;
+	const READ_MIN = 1;
+	const READ_NONE = 0;
 
 	/**
 	 * Static Helpers

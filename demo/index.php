@@ -197,7 +197,7 @@ $select .= "<option value='custom'>Custom</option>";
 </form>
 
 <p style='margin-top:40px;font-size:9pt;'>
-Have a question? Found a bug? <a href='mailto:ask@codenothing.com?Subject=CSSC Question/Bug'>Let Me Know</a>.
+	Have a question? Found a bug? <a href='mailto:ask@codenothing.com?Subject=CSSC Question/Bug'>Let Me Know</a>.
 </p>
 
 <div style='margin-top:50px;'>
