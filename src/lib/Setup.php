@@ -12,6 +12,7 @@ Class CSSCompression_Setup
 	 *
 	 * @class Control: Compression Controller
 	 * @class Individuals: Individuals Instance
+	 * @instance instance: CSSCompression Instance
 	 * @param (string) token: Copy of the injection token
 	 * @param (array) options: Reference to options
 	 * @param (array) stats: Reference to stats
@@ -27,6 +28,7 @@ Class CSSCompression_Setup
 	 */
 	private $Control;
 	private $Individuals;
+	private $instance;
 	private $token = '';
 	private $options = array();
 	private $stats = array();
@@ -183,6 +185,14 @@ Class CSSCompression_Setup
 			$content .= $row;
 		}
 
+		// Ensure copy of instance exists
+		if ( ! $this->instance ) {
+			$this->instance = new CSSCompression();
+		}
+
+		// Fresh start
+		$this->instance->reset();
+
 		// Compress the nested section independently after removing the wrapping braces
 		// Also make sure to only organize media sections
 		if ( $options['organize'] == true && $organize == false ) {
@@ -190,7 +200,7 @@ Class CSSCompression_Setup
 		}
 		// Independent sections should be prepended to the next compressed section
 		$content = ( $independent == '' ? '' : $independent . $newline )
-			. CSSCompression::express( substr( $content, 1, -1 ), $options );
+			. $this->instance->compress( substr( $content, 1, -1 ), $options );
 
 		// Formatting for anything higher then 0 readability
 		if ( $newline == "\n" ) {

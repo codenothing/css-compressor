@@ -347,6 +347,7 @@ Class CSSCompression
 			self::$express = new CSSCompression();
 		}
 
+		self::$express->reset();
 		return self::$express->compress( $css, $options );
 	}
 
