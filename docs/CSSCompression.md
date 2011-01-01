@@ -4,6 +4,18 @@ Class CSSCompression
 Below is a description of all public access points to the compressor.
 
 
+const *bool* VERSION
+--------------------
+
+Release version
+
+
+const *bool* DATE
+-----------------
+
+Release Date
+
+
 const *bool* DEV
 ----------------
 

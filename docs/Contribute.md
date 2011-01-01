@@ -39,7 +39,7 @@ This command runs all sandboxed tests, as well as double compressions on any sty
 but is a helpful check to see that most compression is done the first time around.
 
 
-make test-regression VERSION=temp
+make test-regression [ VERSION=temp ]
 --------------------------------
 
 The regression command takes an optional assignment which will do testing against the given version. Defaults is to the last run test.

@@ -204,7 +204,7 @@ Combines border-radius properties
 unnecessary-semicolons
 ---------------------- 
 
-Removes the last semicolon of a property set
+Removes the last semicolon of a rule set
 
  - *{margin: 2px; color: blue;} -> {margin: 2px; color: blue}*
 
