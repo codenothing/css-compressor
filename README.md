@@ -63,7 +63,7 @@ Yes the compressor provides singleton access(separate from express), but use it 
 Option Handling
 ---------------
 
-The compressor has an option function attached to it, that has multiple functionalities.
+The compressor has an option function with multiple functionalities.
 
  - If no arguments are passed in, the entire options array is returned.
 
