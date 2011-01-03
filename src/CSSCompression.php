@@ -26,7 +26,7 @@ Class CSSCompression
 	 * When DEV is true, backdoor access to private methods is opened.
 	 * Only used for unit testing and development.
 	 */
-	const DEV = true;
+	const DEV = false;
 
 	/**
 	 * TOKEN is a special string that gets used as a marker within
