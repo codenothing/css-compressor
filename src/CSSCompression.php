@@ -1,7 +1,7 @@
 <?php
 /**
- * CSS Compressor [VERSION]
- * [DATE]
+ * CSS Compressor 3.0
+ * January 03, 2011
  * Corey Hart @ http://www.codenothing.com
  */ 
 
@@ -18,8 +18,8 @@ Class CSSCompression
 	 * @const (string) VERSION: Release version
 	 * @const (string) DATE: Release date
 	 */
-	const VERSION = "[VERSION]";
-	const DATE = "[DATE]";
+	const VERSION = "3.0";
+	const DATE = "January 03, 2011";
 
 	/**
 	 * WARNING: This should ALWAYS BE FALSE in production

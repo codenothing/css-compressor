@@ -1,7 +1,7 @@
 <?php
 /**
- * CSS Compressor [VERSION] - Test Suite
- * [DATE]
+ * CSS Compressor 3.0 - Test Suite
+ * January 03, 2011
  * Corey Hart @ http://www.codenothing.com
  */
 require( dirname( __FILE__ ) . '/../../src/CSSCompression.php' );
