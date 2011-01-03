@@ -34,7 +34,7 @@ $select .= "<option value='custom'>Custom</option>";
 
 <iframe name='compression'></iframe>
 <form action='result.php' method='POST' target='compression'>
-<table>
+<table cellspacing='2'>
 <tr valign='top'>
 	<td width='50%'>
 		<textarea name='css'></textarea>

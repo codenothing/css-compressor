@@ -23,7 +23,7 @@ $CSSC->compress( $_POST['css'] );
 
 // Size display
 function size( $size ) {
-	$original = "(${size}B)";
+	$original = " (${size}B)";
 	$ext = array( 'B', 'K', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
 	for ( $c = 0; $size > 1024; $c++ ) {
 		$size /= 1024;
