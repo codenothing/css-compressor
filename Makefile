@@ -24,6 +24,9 @@ test-file:
 test-regression:
 	@php unit/benchmark/benchmark.php $(VERSION)
 
+test-cli:
+	@php cli/cli.php -i cli/test/a.css > cli/test/result.css
+
 benchmark:
 	@php unit/benchmark/benchmark.php
 

@@ -1,0 +1,1 @@
+@import "http://example.com/a.css";@import '/abs/path/man.css';@import '/abs/path/man.css';a{color:red}a{color:red}a{color:red}a{color:red}div{content:"d.css"}div{content:'e.css'}div{content:"c.css"}

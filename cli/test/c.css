@@ -1,0 +1,4 @@
+@import "dir/d.css";
+@import "dir/e.css";
+
+div { content: "c.css" }

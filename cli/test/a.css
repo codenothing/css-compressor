@@ -1,0 +1,13 @@
+/* Clean Includes */
+@import "b.css";
+@import url(../test/b.css);
+@import url("dir/../b.css");
+@import url('./b.css');
+
+/* Nested Includes */
+@import "c.css";
+
+/* Absolutes should not be resolved */
+@import "http://example.com/a.css";
+@import url('/abs/path/man.css');
+@import url("/abs/path/man.css");
