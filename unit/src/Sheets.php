@@ -53,21 +53,15 @@ Class CSScompression_Unit_Sheets extends CSScompression_Unit_Sandbox
 	 * @params none
 	 */
 	protected function sheets(){
-		// Test options
-		$this->options();
-
-		// Test express compression
-		$this->express();
-
-		// Test singleton access
-		$this->singleton();
-
 		// Full sheet tests (security checks)
 		$this->reset();
 		$this->testSheets();
 
-		// Multi compression checks (just added sugar)
+		// Multi compression, option, express and singleton checks (just added sugar)
 		if ( isset( $_SERVER['argv'][ 1 ] ) && $_SERVER['argv'][ 1 ] == 'all' ) {
+			$this->options();
+			$this->express();
+			$this->singleton();
 			$this->testDoubles();
 		}
 	}
