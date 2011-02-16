@@ -39,7 +39,6 @@ Class CSSCompression_Cli
 	private $content = '';
 	private $rcss = "/\.css$/";
 	private $rchopfile= "/\/[^\/]*$/";
-	private $rprefix = "/^(\/|\~\/)/";
 	private $rmarker = "/(\/\*|\"|'|@import)/";
 	private $rquote = "/(?<!\\\)\"/";
 	private $rsinglequote = "/(?<!\\\)'/";
@@ -73,7 +72,7 @@ Class CSSCompression_Cli
 			$arg = array_shift( $this->args );
 
 			if ( preg_match( $this->rcss, $arg ) ) {
-				$path = preg_match( $this->rprefix, $arg ) ? $arg : $this->cwd . $arg;
+				$path = strrpos( $arg, $this->cwd ) === false ? $this->cwd . $arg : $arg;
 				$this->content .= $this->imports( $path );
 			}
 			else if ( substr( $arg, 0, 2 ) == '--' ) {
