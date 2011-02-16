@@ -1,3 +1,9 @@
+#simple {
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px
+}
+
 #a1 {
 	border-radius: 5px
 }

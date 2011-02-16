@@ -39,6 +39,32 @@
 			"params": [ "-webkit-border-radius:10px/10px;" ],
 			"expect": "-webkit-border-radius:10px/10px;"
 		},
+		"simple multiple": {
+			"params": [
+				"border-radius:4px;",
+				"-webkit-border-radius:4px;",
+				"-moz-border-radius:4px;"
+			],
+			"paramjoin": "",
+			"expect": [
+				"border-radius:4px;",
+				"-webkit-border-radius:4px;",
+				"-moz-border-radius:4px;"
+			]
+		},
+		"complex multiple": {
+			"params": [
+				"border-radius:5px 4px 5px 4px/5px 5px;",
+				"-webkit-border-radius:5px 4px 5px 4px/5px 5px;",
+				"-moz-border-radius:5px 4px 5px 4px/5px 5px;"
+			],
+			"paramjoin": "",
+			"expect": [
+				"border-radius:5px 4px/5px;",
+				"-webkit-border-radius:5px 4px/5px;",
+				"-moz-border-radius:5px 4px/5px;"
+			]
+		},
 		"full regular": {
 			"params": [
 				"border-top-left-radius:10px;",

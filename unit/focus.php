@@ -26,9 +26,9 @@ new FocusedTest(array(
 	'options' => array(
 	),
 	'params' => array(
-		"border-radius:10px 10px 10px 10px",
+		"border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;",
 	),
-	'expect' => "border-radius:10px;",
+	'expect' => "border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;",
 ));
 
 ?>

@@ -1,3 +1,10 @@
+/* Multiple Defn's */
+#simple {
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+}
+
 /* Numeric Testing and Individual Combinations */
 #a1 {
 	border-radius: 5px 5.0px 5px 5.00px;
