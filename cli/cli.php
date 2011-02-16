@@ -54,7 +54,7 @@ Class CSSCompression_Cli
 	 */
 	public function __construct( $args = array() ) {
 		// Render arguments
-		$this->cwd = getcwd() . '/';
+		$this->cwd = getcwd() . DIRECTORY_SEPARATOR;
 		$this->args = $args;
 		$this->read();
 
@@ -72,7 +72,7 @@ Class CSSCompression_Cli
 			$arg = array_shift( $this->args );
 
 			if ( preg_match( $this->rcss, $arg ) ) {
-				$path = strrpos( $arg, $this->cwd ) === false ? $this->cwd . $arg : $arg;
+				$path = strpos( $arg, $this->cwd ) === false ? $this->cwd . $arg : $arg;
 				$this->content .= $this->imports( $path );
 			}
 			else if ( substr( $arg, 0, 2 ) == '--' ) {
