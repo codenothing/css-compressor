@@ -1,3 +1,10 @@
+# Deprecated
+
+This project is no longer being maintained. It has been rewritten in javascript and now lives at [CSSCompressor](https://github.com/codenothing/CSSCompressor)
+
+----
+
+
 [CSS Compressor](http://www.codenothing.com/css-compressor/)
 ============================================================
 
